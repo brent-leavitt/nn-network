@@ -1,0 +1,44 @@
+Service Enrollment Tokens - read me
+NB Network Plugin
+Created on 9 Oct 2018
+Last Updated on 9 Oct 2018
+----
+
+The New Beginning Childbirth Services Network makes use of Service Enrollment Tokens, a core piece of information throughout the network to track Services being handled by the system. Like intangible products, these tokens represent services that are offered by the New Beginnings family of businesses. 
+
+A Service token in its most basic format is a collection of information about a service that we (the company) have offered to a user (we call them "patrons"). 
+
+The template for a Service Token is nothing more than a type and duration of time. With these two properties, the service token templates are stored in the Options table of a respective site. Because different sites have different types of token templates, they are set on a local (instead of network wide) level. 
+
+The service enrollment tokens themselves are stored in an individual patron's user_meta. Multiple enrollment tokens may be stored for any given user. The collection of information stored in a meta_data entry is as follows: 
+
+	//Come back to this: 
+	
+	$nb_service_tokens = array(
+		'(token_id)' = array(
+			'type' 		=> '(token_type)',
+			'date' 		=> '(token_date)',
+			'service' 	=> '', //Service ID like 'CBL' for Childbirth Library, or 'BDC' Birth Doula Certification. 
+			'status' 	=> '', //'pending', 'active', 'expired', 'archived' //archived is only for old tokens. //Pending is for tokens awaiting payment. 
+		),
+		//repeat
+		
+		
+		//What information does an individual token store: 
+		- token_id //Unique	
+		- token_type
+		- date
+		- service
+		
+	)
+	
+	
+A secondary meta_data entry is stored for old or retired service tokens associated with a patron's account. 
+	
+	$nb_old_service_tokens = //Same as above.
+	
+	
+Tokens do not represent Services themselves, like a patron's certificate or the library subscription service. 
+
+A patron certificate is a CPT which has a great deal of other data connected to it. Including number of payments received. 
+	
