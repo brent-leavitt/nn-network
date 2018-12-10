@@ -98,6 +98,7 @@ if( !class_exists( 'NNAction' ) ){
 						return;
 					} 
 				} 
+				
 				//if Not registration and no patron is registered, 
 				$this->do_admin_warning( 'The user is not on file. May be illegal.' );	
 				

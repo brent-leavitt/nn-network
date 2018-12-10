@@ -172,15 +172,278 @@ if( !class_exists( 'NNRole' ) ){
 
 		Name: update_network
 		Description: updates network based on changes to requesting site.
+		
+		Because changes can only be made to database, sets of rules need to be set for what changes affect what sites across the network.
+		
+		Is every case different? Almost. 
+		
+		The challenge here is that the set of rules should be manage as an options table. 
+		What would be the abstraction of that? 
+		
+		Check for options effected by 
+		
+		Cases: 
+			LMS:
+				- User goes from being active alumnus in the LMS to inactive. 
+					- Revoke library access
+					- update CRM status. 			
+					
+				- User goes from being active student in the LMS to inactive. 
+					- Revoke library access
+					- move CRM status to inactive student also. 
 
-	*/	
+				- User goes from being inactive student in the LMS back to active. 
+					- add library status back. 
+					- update CRM status. 
+					
+				- User goes from being inactive alumnus in the LMS back to active. 
+					- add library status
+					- update CRM status. 
+		
+				
+			CMS(library): 
+				- New paying user get assigned active/learner on library
+					- CRM record gets created to learner. 
+			
+				- User goes from being inactive( non-paying ) on Library to returning to activity
+					- move CRM status back to former level (where is that stored?).
+					
+				- User goes from being active/learner(paying) on Library to reader (non-paying). 
+					- move CRM status from learner (or higher) to reader. 
+					
+			CRM: 
+				- Users go from being actively subscribed to an email service to inactive. 
+					- Does not affect other sites. 
+				
+				- User requests to moved to inactive status, but have active subscription or enrollment on other service (probable case?) 
+					
+				-  
+			---
+			Does this change require a network update? 
+			 - how do I answer this question. 
+			 
+			 - Rules are set per site as to what other sites are afffected by changes to roles on the currrent site. 
+			
+			$role_changes = [
+				0 => array( 'old_role', 'new_role', 0(network_role_change_id)),
+				1 => array( 'old_role', 'new_role' ),
+				2 => array( 'old_role', 'new_role' ),
+			];
+			
+			
+			$network_role_change = [
+				0 => array(
+					[ 0 (site_id), 'updated_role', 0 (priority) ],
+					[ 0 (site_id), 'updated_role', 0 (priority) ],
+				),
+				1 => array(
+					[ 0 (site_id), 'updated_role', 0 (priority) ],
+					[ 0 (site_id), 'updated_role', 0 (priority) ],
+				),
+				2 => array(
+					[ 0 (site_id), 'updated_role', 0 (priority) ],
+					[ 0 (site_id), 'updated_role', 0 (priority) ],
+				)
+			];
+			
+			
+			
+			or combined: 
+			
+			
+			$role_changes = [
+				0 => array( 'old_role', 'new_role' 
+					array(
+						[ 0 (site_id), 'updated_role', 0 (priority) ],
+						[ 0 (site_id), 'updated_role', 0 (priority) ],
+					)
+				),
+				1 => array( 'old_role', 'new_role'  
+					array(
+						[ 0 (site_id), 'updated_role', 0 (priority) ],
+						[ 0 (site_id), 'updated_role', 0 (priority) ],
+					)
+				),
+				2 => array( 'old_role', 'new_role'  
+					array(
+						[ 0 (site_id), 'updated_role', 0 (priority) ],
+						[ 0 (site_id), 'updated_role', 0 (priority) ],
+					)
+				),
+			];
+			
+			or a set of IDS between different groups of changes. 
+			
+			
+			
+			//This needs to throw an error message if the change at the network level cannot be completed, and the reason why? How? 
+			
+			
+			
+			//What constraints are in place to check if a change should be allowed on from a remote site? 
+				Are constraints needed beyond a case by case basis? 
+				Examples? 
+				There would be no USER input or back and forth exchange of data in this instance. Flow of data is only one way. 
+				
+				But yet are there still instances where a network change of role should be prohibited. 
+				Examples? 
+				
+				If someone is paying for a library subscription and then they sign up for doula training. The library subscription is automatically voided, and the doula training subscription takes affect. 
+				
+				Everything gets controlled from the initiating domain, so there shouldn't be a conflict of domain actions, like updating role changes. It change is happening at library, should not be a user at the LMS. If lms change registers a user, the library user is upgraded or added. When cancelled or inactivated, library role is demoted.  
+			
+			
+			//Priority level of changes. 
+				
+**** LMS ****
+			//Site ID: 6
+			
+			$role_changes = [
+				0 => array( '', 'student_active', 0), 					//New student registration
+				1 => array( 'student_active', 'student', 1 ),			//move to inactive status
+				2 => array( 'student', 'student_active', 0 ), 			//move to reactivated status
+				3 => array( 'student_active', 'alumnus_active', 2 ),	//moved to certified status
+				4 => array( 'alumnus_active', 'alumnus', 3 ),			//deactivated alumnus status
+				5 => array( 'alumnus', 'alumnus_active', 2 ),			//renewed alumnus status after deactivated. 
+				6 => array( 'alumnus_active', 'student_active', 0 ),	//case scenario?	
+				//7 => array( 'old_role', 'new_role', 0 (network_role_change_id) ),
+			];
+			
+			
+			//Network Sites: 
+				Library = 1
+				CRM = 2
+				WWW = 4
+				
+			$network_role_change = [
+				0 => array( //New student registration && //move to reactivated status
+					[ 1, 'subscriber', 9 ],
+					[ 2, 'student_active', 9 ],
+				),
+				1 => array( //move to inactive status
+					[ 1, 'visitor', 9 ],
+					[ 2, 'student', 9 ],
+				),
+				2 => array( 
+					[ 1, 'subscriber', 9 ],
+					[ 2, 'alumnus_active', 9 ],
+				),
+				3 => array(
+					[ 1 , 'visitor', 9 ], 
+					[ 2 , 'alumnus', 9 ],
+					
+				)
+			];
+			
+				
+**** LIBRARY ****
+			//Site ID: 1
+			
+			$role_changes = [
+				0 => array( '', 'visitor', 0), 					//
+				1 => array( '', 'subscriber', 1),				//
+				2 => array( 'visitor', 'subscriber', 1),		//
+				3 => array( 'subscriber', 'visitor', 0),		//
+				//? => array( 'old_role', 'new_role', 0 (network_role_change_id) ),
+			];
+			
+			
+			//Network Sites: 
+				CRM = 2
+				WWW = 4
+				LMS = 6
+				
+			$network_role_change = [
+				0 => array( //New visitor
+					[ 2, 'reader', 1 ],
+				),
+				1 => array( //move to inactive status
+					[ 2, 'learner', 2 ],
+				)
+			];
+			
+**** CRM ****
+			//Site ID: 2
+			
+			$role_changes = [
+				0 => array( '', 'reader', 0), 						//
+				1 => array( '', 'inquirer', 0), 					//
+				2 => array( 'reader', 'inactive', 1), 							//
+				//? => array( 'old_role', 'new_role', 0 (network_role_change_id) ),
+			];
+			
+			
+			//Network Sites: 
+				Library = 1
+				WWW = 4
+				LMS = 6
+				
+			$network_role_change = [
+				0 => array( //
+					[ 1, 'visitor', 1 ],
+				),
+				1 => array( //move to inactive status
+					[ 1, '', 9 ],					
+				)
+			];			
+			
+
+	*/
 			
 		
 		public function update_network(){
 			
+			$network_updated = [];
+			
+			//These two options are set in the options table. 
+			$role_changes = get_option( 'nn_role_changes' );
+			$network_role_changes = get_option( 'nn_network_role_changes' );
+			
+			//Assess what role change is being performed to know what network change need be accessed. 
+			foreach( $role_change as $change ){
+				if( strpos( $change[0], $this->old_role ) == 0 && strpos( $change[1], $this->role ) == 0 )
+					$change_id = $change[2];
+			}
+			
+			if( isset( $change_id ) ){
+				
+				
+				foreach( $network_role_changes[ $change_id ] as $site_change ){
+					
+					$network_updated[ $site_change[0] ] = update_network_role( $site_change );
+					//returns the updated role for the site ID. 
+				}
+			}
 			
 		}
+
+
+		
+		
+	/*
+
+		Name: update_network_role
+		Description: Receives an array with a site id, role to update, and a priority level.
+
+	*/	
 			
+		
+		public function update_network_role( $change ){
+			
+			switch_to_blog( $change[0] );
+			//If no value set, drop patron from site. 	
+			if( !empty( $change[1] ) ){
+				
+				drop_user_from_site
+				
+			//Otherwise	add new user role to site.
+			} else {
+				
+			}
+			restore_current_blog();
+		}
+				
+		
 			
 	/*
 
@@ -210,7 +473,6 @@ if( !class_exists( 'NNRole' ) ){
 			return ( $this->change )? 'The role was changed to '. $this->status .'.' :  'No change to patron role.' ;
 			
 		}
-		
 		
 		
 	/*
@@ -293,7 +555,93 @@ function process_role_cbl( $role ){
 add_action( 'NNAction_Do_Role', 'process_role_cbl', 10, 1 );
 
 
-//*** NEED TO DO ONE FOR PEOPLE CRM
+
+//FOR USE IN THE PEOPLE CRM 
+function process_role_people_crm( $role ){
+		
+	//$role is an object of the NNRole class. 
+	$current_role = $role->role; 
+	
+	$site_roles = $role->site_roles();
+	
+	//new role is based on whether the status of the service is active or not. 	
+	$new_role = ( strpos( 'active',  $role->service->status ) == 0 )? 'reader' : 'inactive';	
+	
+	//Three base options: learner (paying), reader (non-paying), inactive (requested).
+
+	//If new role is reader, and current role is higher than reader, then ignore user update. 
+	if( $new_role = 'reader' ){
+		
+		//INCOMPLETE
+		
+	}elseif( $new_role = 'inactive' ){
+		
+		//INCOMPLETE
+		
+	}
+		
+	
+	
+	//If role is greater than inquirer (?), then abort. 
+	
+	//Check permissions for user first. If current user role is above a certain level, ignore the need to update. 
+	//What level? 
+	
+	//What happens if a user requests to be moved to inactive status? 
+	//Then anyone from inquirer on down can be knocked down, but if any student or alumni status, this needs to be processed differently. Status at the network level needs to be assessed first. A user cannot request to go inactive and have an active or inactive sudent account, or be an alumni. 
+	
+	
+	//This should be loaded from options table? 
+	
+	
+	$crm_roles = array(
+		'administrator',
+		'trainer',
+		'resource',
+		'alumnus_active',
+		'alumnus',
+		'student_active',
+		'student',
+		'inquirer',
+		'birther',
+		'supporter',
+		'mother',
+		'learner',
+		'reader',
+		'inactive',
+	);
+	
+	
+	
+	//A patron may have a service established in the PEOPLE CRM, like a newsletter subscription or some other campaign. These will not be the primary influencer services for PEOPLE CRM, but this function only get's triggered if they subscribe to one of these services. 
+	
+	
+	//This retrieves all status from all services associated with the patron in question. 
+	$services = $role->service->get_all_status();	
+	
+	
+	
+
+			
+	//CODE FOR CERTS LMS
+	foreach( $persmissions as $role ){	
+		if( in_array( $srvc_status, $services ) ){
+			$new_role = $role;
+			continue;
+		}	 	
+	}
+	
+	//if role is different, set new role.
+	if( $role->is_diff( $new_role ) )
+		$role_set = $role->set( $new_role );
+	
+	//if new role is set, update the network. 
+	if( $role_set )
+		$role->update_network();
+}
+
+add_action( 'NNAction_Do_Role', 'process_role_people_crm', 10, 1 );
+
 	
 	
 	//Current user role is already set at this point
@@ -314,6 +662,9 @@ add_action( 'NNAction_Do_Role', 'process_role_cbl', 10, 1 );
 			'(service_id)' => '(service_status)', 
 			'(service_id)' => '(service_status)', 
 		 ] */
+		 
+		 
+		 
 		
 		/*
 		
@@ -408,11 +759,10 @@ add_action( 'NNAction_Do_Role', 'process_role_cbl', 10, 1 );
 		array (
 		  0 => 'administrator',
 		  1 => 'alumnus_active',
-		  2 => 'alumnus_inactive',
-		  3 => 'student_full_active',
-		  4 => 'student_full_inactive',
-		  5 => 'student_partial_active',
-		  6 => 'student_partial_inactive',
+		  2 => 'alumnus',
+		  3 => 'student_active',
+		  4 => 'student',
+		 
 		)
 		
 		*/
