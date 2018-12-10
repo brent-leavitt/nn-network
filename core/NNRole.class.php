@@ -424,23 +424,34 @@ if( !class_exists( 'NNRole' ) ){
 
 		Name: update_network_role
 		Description: Receives an array with a site id, role to update, and a priority level.
-
+		params: $change = array( 0(site_id), '(role_name)', 0(priority) )
 	*/	
 			
 		
 		public function update_network_role( $change ){
 			
-			switch_to_blog( $change[0] );
-			//If no value set, drop patron from site. 	
-			if( !empty( $change[1] ) ){
+			if( $this->is_priority( $change ) ){
 				
-				drop_user_from_site
+				list( $site_id, $role,  ) = $change;
+				$patron_id = $this->patron;
 				
-			//Otherwise	add new user role to site.
-			} else {
+				//If no value set, drop patron from site. 	
+				if( !empty( $change[1] ) ){
+					
+					remove_user_from_blog( $patron_id, $site_id );
+					
+				//Otherwise	add new user role to site.
+				} else {
+					
+					add_user_to_blog( $site_id, $patron_id, $role );
+				}
 				
-			}
-			restore_current_blog();
+				return $role;
+			}	
+				
+			
+			return false; 
+			
 		}
 				
 		
@@ -473,6 +484,29 @@ if( !class_exists( 'NNRole' ) ){
 			return ( $this->change )? 'The role was changed to '. $this->status .'.' :  'No change to patron role.' ;
 			
 		}
+		
+		
+	/*
+
+		Name: is_priority
+		Description: 
+		
+		returns: true or false; 
+
+	*/	
+			
+		
+		public function is_priority( $change ){
+			
+			list( $site_id, $new_role, $priority ) = $change;
+			
+			switch_to_blog( $site_id );
+			
+			
+			
+			restore_current_blog();
+			
+		}		
 		
 		
 	/*
