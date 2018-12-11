@@ -90,29 +90,6 @@ if( !class_exists( 'NNRole' ) ){
 						
 		}
 		
-		
-			
-			
-	/*
-
-		Name: 
-		Description: 
-
-	*/	
-			
-		
-		public function __(){
-			
-			//Find Service ID
-			
-			
-			$service_id = $this->service->find();
-			
-			$service_status = get_post_status( $service_id );
-				
-			
-		}	
-			
 			
 	/*
 
@@ -144,24 +121,29 @@ if( !class_exists( 'NNRole' ) ){
 
 		Name: set
 		Description: this sets the role when an updated role is determined to be needed. 
-
+		parameters: $role, $priority 
 	*/	
 			
 		
-		public function set( $role ){
+		public function set( $role, $priority = 0 ){
 			
 			$patron = new WP_User( $this->patron );
 			
+			//if database role is different than this object's role, set the role. 
 			if( strpos( $role, $patron->roles[0] ) != 0 ){
 				$this->old_role = $this->role;
 				$patron->set_role( $role );
+				
+				//How to get priority for current site? ?
+				$site_id = get_current_blog_id();
+				$this->set_priority( $site_id, $priority );
 			}
 			
 			
-			
+			//This is a checking mechinism that says the role has been updated. if updated, update the object->role and object->change values to reflect change. 
 			if( strpos( $role, $patron->roles[0] ) == 0 ){
 				$this->role = $role;
-				$this->change = true; 
+				$this->change = true; //
 				return true;
 			}
 			return false;
@@ -387,7 +369,7 @@ if( !class_exists( 'NNRole' ) ){
 				)
 			];			
 			
-
+		params: uses $this->old_role, and $this->role to assess what changes need to be made to the network. 
 	*/
 			
 		
@@ -401,15 +383,17 @@ if( !class_exists( 'NNRole' ) ){
 			
 			//Assess what role change is being performed to know what network change need be accessed. 
 			foreach( $role_change as $change ){
-				if( strpos( $change[0], $this->old_role ) == 0 && strpos( $change[1], $this->role ) == 0 )
-					$change_id = $change[2];
+				
+				list( $old_role, $new_role, $network_role_change ) = $change;
+				if( strpos( $old_role, $this->old_role ) == 0 && strpos( $new_role, $this->role ) == 0 )
+					$change_id = $network_role_change;
 			}
 			
 			if( isset( $change_id ) ){
 				
-				
 				foreach( $network_role_changes[ $change_id ] as $site_change ){
 					
+					//$site_change = array( 0(site_id) , '(role)', 0(priority) );
 					$network_updated[ $site_change[0] ] = update_network_role( $site_change );
 					//returns the updated role for the site ID. 
 				}
@@ -436,7 +420,7 @@ if( !class_exists( 'NNRole' ) ){
 				$patron_id = $this->patron;
 				
 				//If no value set, drop patron from site. 	
-				if( !empty( $change[1] ) ){
+				if( empty( $role ) ){
 					
 					remove_user_from_blog( $patron_id, $site_id );
 					
@@ -498,15 +482,50 @@ if( !class_exists( 'NNRole' ) ){
 		
 		public function is_priority( $change ){
 			
+			$role_priority_key = 'nn_role_priority';
+			$role_priority = get_user_meta($this->patron, $role_priority_key, true );
+			
+			//If no priority is set, this will override, and thus is true. 
+			if( empty( $role_priority ) )				
+				return true;
+
 			list( $site_id, $new_role, $priority ) = $change;
 			
-			switch_to_blog( $site_id );
+			$current_priority = $role_priority[ $site_id ];
 			
+			//If current role prioirity is higher than the requesting priority, return false, no action needed. 
+			if( $current_priority > $priority )				
+				return false;
 			
+			//But if not false, update the prioirty and send it back to the user databse as well. 
+			$role_priority[ $site_id ] = $priority;
+			update_user_meta( $this->patron, $role_priority_key, $role_priority ); 
+
+			return true ;
+				
+		}		
+		
+		
+	/*
+
+		Name: set_priority
+		Description: This sets a role's priority so that it can be upheld or overriden across the network. ranges from 0(lowest) - 9(highest).
+
+	*/	
 			
-			restore_current_blog();
+		
+		public function set_priority( $site_id, $priority ){
+			
+			$role_priority_key = 'nn_role_priority';
+			
+			$role_priority = get_user_meta($this->patron, $role_priority_key, true );
+			
+			$role_priority[ $site_id ] = $priority;
+			
+			update_user_meta( $this->patron, $role_priority_key, $role_priority, $prev_value ); 
 			
 		}		
+		
 		
 		
 	/*
@@ -557,9 +576,11 @@ function process_role_certs_lms( $role ){
 		}	 	
 	}
 	
+	//Priority? 
+	
 	//if role is different, set new role.
 	if( $role->is_diff( $new_role ) )
-		$role_set = $role->set( $new_role );
+		$role_set = $role->set( $new_role /*, $priority*/ );
 	
 	//if new role is set, update the network. 
 	if( $role_set )
@@ -577,9 +598,11 @@ function process_role_cbl( $role ){
 	//new role is based on whether the status of the service is active or not. 	
 	$new_role = ( strpos( 'active',  $role->service->status ) == 0 )? 'subscriber' : 'visitor';	
 	
+	//priority? 
+	
 	//if role is different, set new role.
 	if( $role->is_diff( $new_role ) )
-		$role_set = $role->set( $new_role );
+		$role_set = $role->set( $new_role /*, $priority*/ );
 	
 	//if new role is set, update the network. 
 	if( $role_set )
@@ -614,7 +637,7 @@ function process_role_people_crm( $role ){
 		
 	}
 		
-	
+	//Priority? 
 	
 	//If role is greater than inquirer (?), then abort. 
 	
