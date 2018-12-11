@@ -32,9 +32,6 @@ Description: Dependent upon the Notice Core Class, This houses actions that are 
 		//set_message
 		//set_address
 		//
-
-
-
 */
 
 
@@ -54,9 +51,6 @@ class NNEmail{
 		$html = true,
 		$error = false;
 		
-	
-	
-
 	//Methods
 	
 	

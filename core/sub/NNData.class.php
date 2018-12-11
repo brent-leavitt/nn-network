@@ -230,18 +230,12 @@ class NNData{
 						$this->data_set[ $key ] = $sub_val;
 
 				}
-				
-			
-				
-				
 			}
 		}	
 		//The final data set is specific to the action being performed 
 		//$this->data_set = $this->$action();
 		
-		
 		return true;
-		
 	}
 	
 
