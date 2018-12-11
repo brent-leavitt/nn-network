@@ -23,15 +23,17 @@ class NNTransaction extends NNPostData{
 	//What properties are universal to both receipts and invoices?
 	public 
 		$NNTransaction_data_map = array(
-			'TransID' 	=> 'post_name',
-			'Type'		=> 'post_type',
+			'TransID' 		=> 'post_name',
+			'Type'			=> 'post_type',
 			'CreateDate'	=> 'post_date_gmt',
 			'Status'		=> 'post_status',
 			'SourceTxn'		=> 'post_parent',
-			'Amount'		=> (meta) 'NNTransAmount', 
-			'TPName'		=> (meta) 'NN3PID',
-			'TPID'			=> (meta) 'NN3PTransID',
-			'Flags'			=> (meta) 'NNTransFlags',
+			'Amount'		=> 'NNTransAmount', 	//(meta)
+			'TPName'		=> 'NN3PID', 		//(meta)
+			'TPID'			=> 'NN3PTransID', 	//(meta)
+			'Flags'			=> 'NNTransFlags', 	//(meta)
+				
+				
 				$flags = array(
 					payee_different = false,
 					?
@@ -60,6 +62,7 @@ class NNTransaction extends NNPostData{
 			$__ = ''; //
 		
 	
+	private $actions = [];
 	//Methods
 	
 	
@@ -88,15 +91,30 @@ class NNTransaction extends NNPostData{
 	}	
 			
 	
+/*
+
+	Name: get_actions
+	Description: this makes the additional needed actions accessible to the NNAction.class.php
+	
+*/	
+		
+	
+	public function get_actions(){
+		
+		return ( !empty( $this->actions ) )? $this->actions : false ;
+		
+	}	
 				
 /*
-	Name: 
-	Description: 
+	Name: set_actions
+	Description: This allows child objects to send actions to the private $actions array. 
 */	
 			
 	
-	public function __(){
-		
+	public function set_actions( $actions ){
+
+		foreach( $actions as $action )
+			$this->actions[] = $action;
 		
 	}	
 			

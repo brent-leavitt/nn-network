@@ -19,14 +19,15 @@ class NNReceipt extends NNTransaction{
 	//Properties
 
 	public 
-		$__ = '', //
+		$ = '', //
 		$__ = ''; //
 	
 	
 	//Methods
 	
 	
-/*
+/*  MAY NOT BE NEEDED IF IT IS THE SAME AS PARENT CLASS
+
 	Name: __construct
 	Description: 
 */	
@@ -38,31 +39,42 @@ class NNReceipt extends NNTransaction{
 	}	
 			
 	
-/*
+/*  
 	Name: init
 	Description: 
 */	
 			
-	
+	//Is this needed, or does the parent class cover the setup. 
 	public function init( $data ){
-		
+		//copy from parent class. 
 		$this->set_data( $data );
 		
+		
+		//Unique to NNReceipt class.
+		$this->post_type = 'NNReceipt';
 	}	
 			
 	
 				
 /*
-	Name: 
-	Description: 
+	Name: issue
+	Description: This generated a Receipt CPT for storage in the database as a receipt. What is unique to Receipts from Invoices? 
+	
 */	
 			
 	
-	public function __(){
+	public function issue(){
 		
+		$result = $this->insert();
+		//Necessary?
+		
+		//add action from parent class. 
+		$this->set_actions( [ 'do_role', 'do_notice' ] );
 		
 	}	
-			
+	
+
+	
 /*
 	Name: 
 	Description: 

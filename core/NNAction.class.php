@@ -299,16 +299,19 @@ if( !class_exists( 'NNAction' ) ){
 		Name: Check Data
 		Description: Validates the data being passed. This requires that the data array being sent has 'action' key as first element. If this element is not set, data is seen as invalid. 
 		
+		That data that is being "returned" to the '->data' property is a flattened array of data for the specfic action to be taken. At this point, we are not preparing the data to insert to the database, not yet. Got to make it uniform first. 
+		
 		//Do we want to do a real filter/sanitize? 
 	*/	
 		
 		private function check_data( $data ){
 			
+			//Data is set and is made uniform.
 			$data_set = new NNData( $data );
 
 			if( $check = $data_set->valid )
 				$this->data = $data_set->get();//Returns an array (not object)
-
+					
 			return $check;
 
 		}	
