@@ -22,7 +22,17 @@ class NNReceipt extends NNTransaction{
 		$ = '', //
 		$__ = ''; //
 	
-	
+	public $NNReceipt_data_map = array(
+		'SourceTxn'		=> 'post_parent',
+		'AmountPaid'	=> 'NNAmountPaid', 	//(meta)
+		'ProcessingFee'	=> 'NNTransFee', 	//(meta)
+		'TPName'		=> 'NN3PID', 		//(meta) Third-Party ID
+		'TPID'			=> 'NN3PTransID', 	//(meta) Third-Party Transaction ID
+		''			=> '', 	//(meta) 
+		''			=> '', 	//(meta) 
+		''			=> '', 	//(meta) 
+		
+	);
 	//Methods
 	
 	

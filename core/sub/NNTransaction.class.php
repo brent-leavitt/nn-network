@@ -27,10 +27,6 @@ class NNTransaction extends NNPostData{
 			'Type'			=> 'post_type',
 			'CreateDate'	=> 'post_date_gmt',
 			'Status'		=> 'post_status',
-			'SourceTxn'		=> 'post_parent',
-			'Amount'		=> 'NNTransAmount', 	//(meta)
-			'TPName'		=> 'NN3PID', 		//(meta)
-			'TPID'			=> 'NN3PTransID', 	//(meta)
 			'Flags'			=> 'NNTransFlags', 	//(meta)
 				
 				
