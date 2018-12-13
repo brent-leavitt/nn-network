@@ -87,6 +87,7 @@ if( !class_exists( 'NNAction' ) ){
 					//Is this a registration?
 					if( strpos( 'register', $super ) === 0 ){
 						
+						
 						$this->register();
 						return; 
 				
@@ -94,7 +95,11 @@ if( !class_exists( 'NNAction' ) ){
 					//If not registration, get patron from submitted data. 	
 					} elseif( $this->do_patron( 'find' ) ){
 						
-						$this->$super();
+						//Set the primary action to be taken. 
+						$this->actions[] = 'do_'.$super;
+						
+						//Process the actions. 
+						$this->actions();
 						return;
 					} 
 				} 
@@ -107,93 +112,11 @@ if( !class_exists( 'NNAction' ) ){
 		
 
 
-
-		
-	// SUPER ACTIONS 
-		
-
 	/*
-		Name: enrollment
-		Description: 
-	*/	
+		Name: actions
+		Description: This is a very powerful step. This loops through all set actions in the action paramater, and processes each accordingly. This replaced 4 functions that had parallel code within it. 
 		
-		public function enrollment(){
-				
-			$record = array();
-						
-			//Do Enrollment Action first
-			//Do enrollment must set any data that is needed for 'do_service', 'do_role'
-			$record[ 'do_enrollment' ] = $this->do_enrollment();
-			
-			//Do Service
-			//Should something else be checked. Like a actions array. 
-			if( in_array( 'do_service', $this->actions ) )
-				$record[ 'do_service' ] = $this->do_service();
-			
-			//Is User Action Needed?
-				//If Yes Do User Action.
-			if( in_array( 'do_role', $this->actions ) )
-				$record[ 'do_role' ] = $this->do_role();
-				
-			//Do notice	
-			if( in_array( 'do_notice', $this->actions ) )
-				$record[ 'do_notice' ] = $this->do_notice();
-			
-			$this->record_step( __METHOD__ , $record);
-			
-			
-		}			
-		
-		
-	/*
-		Name: invoice
-		Description: 
-	*/	
-		
-		public function invoice(){
-					
-			$record = array();		
-					
-			//Do Invoice
-			$record[ 'do_invoice' ] = $this->do_invoice();
-					
-			//Do notice 
-			if( in_array( 'do_notice', $this->actions ) )
-				$record[ 'do_notice' ] = $this->do_notice();
-			
-			
-			$this->record_step( __METHOD__ , $record );
-			
-		}	
-			
-
-
-	/*
-		Name: notice
-		Description: 
-	*/	
-		
-		public function notice(){
-				
-			//do notice	
-			$record[ 'do_notice' ] = $this->do_notice();
-			
-			$this->record_step( __METHOD__ , $record );
-		}
-		
-		
-		
-	/*
-		Name: payment
-		Description: This receives information about payments made and then takes appropriate action.
-	*/	
-		
-		public function payment(){
-			
-			$record = array();
-			
-			//User is alreay set
-			
+		This set of processes was replaced with the code below it: 
 			//Do Receipt
 			$record['do_receipt'] = $this->do_receipt();
 			
@@ -214,28 +137,24 @@ if( !class_exists( 'NNAction' ) ){
 			//Do notice
 			if( in_array( 'do_notice', $this->actions ) )
 				$record['do_notice'] = $this->do_notice();
-			
-
-			$this->record_step( __METHOD__ , $record );
-		}
-		
-
-		
-	/*
-		Name: patron
-		Description: Not sure what this does, yet.
-		
 	*/	
 		
-/* 		public function patron(){
+		public function actions(){
 			
+			$actions = [ 'invoice', 'receipt', 'enrollment', 'service', 'role', 'notice' ];
+			$record = array();
 			
-		
+			foreach( $actions as $action ){
+				
+				$do = 'do_'.$action;
+				
+				if( in_array( $do, $this->actions ) )	
+					$record[ $do ] = $this->$do();		
+			}			
 			
+			$this->record_step( __METHOD__ , $record);
 			
-			$this->record_step( __METHOD__ , $record );
-		}	 */
-		
+		}	
 			
 	/*
 		Name: register
@@ -246,54 +165,15 @@ if( !class_exists( 'NNAction' ) ){
 			
 			$record = array();
 			
-			$record[ 'do_patron' ] = $this->do_patron( 'register' );
 			//do register
+			$record[ 'do_patron' ] = $this->do_patron( 'register' );
 			
+			//do notice
 			if( in_array( 'do_notice', $this->actions ) )
 				$record['do_notice'] = $this->do_notice();
-			//do notice
 			
 			$this->record_step( __METHOD__ , $record );
 		}
-		
-
-	// END SUPER Actions
-		
-		
-		
-	// INTERMEDIATE ACTIONS
-		
-	/*
-		Name: Record Step
-		Description: 
-	*/	
-		
-		public function record_step( $func , $data = array() ){
-			
-			//This could end up being quite bloated. 
-			$this->record[] = array( $func => $data ); 
-		}	
-		
-		
-		
-		
-		
-	/*
-		Name: clean_up
-		Description: Ever do_(action) had two clean_up steps at the end of the function: record action taken, and add additional actions. We are doing these things here. 
-	*/	
-		
-		public function clean_up( $func , $record = array(), $obj ){
-			
-			//Possibly add a timestamp here or in "do_record"
-			
-			//Store actions taken and their results. 
-			$this->record_step( $func , $record );
-			
-			//What additional actions need to be taken? Ask the object if they have anything else to do. Then merge with existing list of to dos. 
-			if( method_exists( $obj, 'get_action' ) )
-				$this->actions = array_unique( array_merge( $this->actions, $obj->get_actions() ) );
-		}	
 		
 	/*
 		Name: Check Data
@@ -315,7 +195,40 @@ if( !class_exists( 'NNAction' ) ){
 			return $check;
 
 		}	
+	
+		
+		
+		
+	/*
+		Name: clean_up
+		Description: Ever do_(action) had two clean_up steps at the end of the function: record action taken, and add additional actions. We are doing these things here. 
+	*/	
+		
+		public function clean_up( $func , $record = array(), $obj ){
+			
+			//Possibly add a timestamp here or in "do_record"
+			
+			//Store actions taken and their results. 
+			$this->record_step( $func , $record );
+			
+			//What additional actions need to be taken? Ask the object if they have anything else to do. Then merge with existing list of to dos. 
+			if( method_exists( $obj, 'get_action' ) )
+				$this->actions = array_unique( array_merge( $this->actions, $obj->get_actions() ) );
+		}	
+		
 
+	/*
+		Name: Record Step
+		Description: This is separate from clean_up function because it is also called elsewhere. 
+	*/	
+		
+		public function record_step( $func , $data = array() ){
+			
+			//This could end up being quite bloated. 
+			$this->record[] = array( $func => $data ); 
+		}	
+		
+	
 				
 	/*
 		Name: 
@@ -330,26 +243,9 @@ if( !class_exists( 'NNAction' ) ){
 		
 		
 	// CORE ACTIONS	
-		
-	/*
-		//NOT SURE IF this needs to be separate?
-		Name: Do Action
-		Description: 
-	*/	
-		
-		public function do_action(){
-			//NEEDED FUNCTION?
-			
-			/*
-			- do_patron_action
-			- do_role_action
-			- do_service_action
-			*/
-			
-		}
 
 	/*
-		Name: Do Patron
+		Name: do_patron
 		Description: Process a patron action and then return the patron ID. 
 		param: $action = 'find', 'register', 'reglite'
 		//THIS NEEDS WORK.
@@ -384,45 +280,57 @@ if( !class_exists( 'NNAction' ) ){
 		
 			return ( $this->patron > 0 )? true : false ;
 		}	
-
 		
-	/*	
-		Name: Do Role
+		
+	/*
+		Name: do_invoice
+		Description: This takes in invoice data and processes it accordingly. It needs to assess whether this is a create, update, delete, or remind. 
+	*/	
+		
+		public function do_invoice(){
+		
+			$record = array();
+			
+			//Let's make a data handler object. 
+			//This may not be needed now. This is preprocssed. 
+			/* $data = new NNData( $this->data );
+			$invoice_data = $data->get_invoice_data(); */
+			
+			$invoice = new NNInvoice( $this->data );
+					
+			//Check that action is set?
+			if( !empty( $invoice->action ) )
+				$record[ 'invoice_process' ] = $invoice->process();
+		
+			$this->clean_up( __METHOD__ , $record, $invoice );
+			
+			return ( !empty( $record ) )? true : false;
+		}	
+		
+	/*
+		Name: do_receipt
 		Description: 
 	*/	
 		
-		public function do_role(){
+		public function do_receipt(){
 			
 			$record = array();
 			
-			$role = new NNRole( $this->data );
+			$receipt = new NNReceipt( $this->data );
 			
-			//Send the role object to the the respective service to adjust rules according to each service. 
-			do_action( 'NNAction_Do_Role', $role );
+			$record['receipt_issue'] = $receipt->issue(); //Returns a post ID for the receipt generated. 
 			
+			//if( !empty( $record[ 'receipt_id' ] ) )
+				//$record[] = $this->do_notice( $record[ 'receipt_id' ] );
 			
-			/* 	
-			
-			/Available Role Actions: add, remove, set
-			$actions_arr = [ 'add', 'remove', 'set' ];
-			
-			if( in_array( $action, $actions_arr ) ){
-				
-				$role_action = $action. '_role';
-				$record[ 'role_action' ] = $patron->$role_action( $role );
-			} */
-			
-			//After individual sites have used Role object to update patron roles, post a report to the record.
-			$record[ 'do_role_report' ] = $role->report();
-			
-			$this->clean_up( __METHOD__ , $record, $role );
+			$this->clean_up( __METHOD__ , $record, $receipt );
 			
 			return ( !empty( $record ) )? true : false;
 		}	
 
 		
 	/*
-		Name: Do Enrollment
+		Name: do_enrollment
 		Description: Sets or updates an enrollment token. 
 	*/	
 		
@@ -472,50 +380,38 @@ if( !class_exists( 'NNAction' ) ){
 				
 			return ( !empty( $record ) )? true : false;
 		}	
+
 		
-		
-	/*
-		Name: Do Invoice
-		Description: This takes in invoice data and processes it accordingly. It needs to assess whether this is a create, update, delete, or remind. 
-	*/	
-		
-		public function do_invoice(){
-		
-			$record = array();
-			
-			//Let's make a data handler object. 
-			//This may not be needed now. This is preprocssed. 
-			/* $data = new NNData( $this->data );
-			$invoice_data = $data->get_invoice_data(); */
-			
-			$invoice = new NNInvoice( $this->data );
-					
-			//Check that action is set?
-			if( !empty( $invoice->action ) )
-				$record[ 'invoice_process' ] = $invoice->process();
-		
-			$this->clean_up( __METHOD__ , $record, $invoice );
-			
-			return ( !empty( $record ) )? true : false;
-		}	
-		
-	/*
-		Name: Do Receipt
+	/*	
+		Name: do_role
 		Description: 
 	*/	
 		
-		public function do_receipt(){
+		public function do_role(){
 			
 			$record = array();
 			
-			$receipt = new NNReceipt( $this->data );
+			$role = new NNRole( $this->data );
 			
-			$record['receipt_issue'] = $receipt->issue(); //Returns a post ID for the receipt generated. 
+			//Send the role object to the the respective service to adjust rules according to each service. 
+			do_action( 'NNAction_Do_Role', $role );
 			
-			//if( !empty( $record[ 'receipt_id' ] ) )
-				//$record[] = $this->do_notice( $record[ 'receipt_id' ] );
 			
-			$this->clean_up( __METHOD__ , $record, $receipt );
+			/* 	
+			
+			/Available Role Actions: add, remove, set
+			$actions_arr = [ 'add', 'remove', 'set' ];
+			
+			if( in_array( $action, $actions_arr ) ){
+				
+				$role_action = $action. '_role';
+				$record[ 'role_action' ] = $patron->$role_action( $role );
+			} */
+			
+			//After individual sites have used Role object to update patron roles, post a report to the record.
+			$record[ 'do_role_report' ] = $role->report();
+			
+			$this->clean_up( __METHOD__ , $record, $role );
 			
 			return ( !empty( $record ) )? true : false;
 		}	

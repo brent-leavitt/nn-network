@@ -40,16 +40,18 @@ class NNPostData{
 			'post_excerpt' => '',
 			'post_status' => 'draft',
 			'post_type' => 'post',
-			'comment_status' => '',
+			'post_parent' => 0,
+			
+			/* 'comment_status' => '',
 			'ping_status' => '',
 			'post_password' => '',
 			'to_ping' =>  '',
 			'pinged' => '',
-			'post_parent' => 0,
 			'menu_order' => 0,
 			'guid' => '',
 			'import_id' => 0,
-			'context' => '',
+			'context' => '', */
+			
 			'meta_input' => array(), //this can also be added to send meta data
 		);
 		
@@ -149,21 +151,8 @@ class NNPostData{
 			restore_current_blog();
 			
 			//Clean up and condense meta data returned from WPDB. 
-			foreach( $meta as $mkey => $mval ){
-				$meta_count = count( $mval );
-				
-				//if not more than one value is set, remove from array wrapper
-				if( $meta_count < 1 )
-					unset( $meta[ $mkey ] );
-				elseif( $meta_count == 1 )
-					$meta[ $mkey ] = $mval[0];
-				
-				//if value is empty remove from array. 
-				if( empty( $meta[ $mkey ] ) )
-					unset( $meta[ $mkey ] );
-				
-			}
-				
+			$meta = $this->clean_retreived_meta( $meta );
+							
 			//Tuck in the cleaned up meta data into the meta_input space in the post data. 
 			$post = array_merge( $post, ['meta_input' => $meta] );
 
@@ -377,16 +366,30 @@ class NNPostData{
 	
 	
 /*
-	Name: destroy
-	Description: 
-
-			
+	Name: clean_retreived_meta
+	Description: This cleans metadata that has been retrieved from the WPDB into a simpler format to work with. This removes unnecessary array groupings with only 1 or 0 arrays. Where multiple values are returned for a single meta_key, the nested array remains in tack. 
+*/			
 	
-	public function destroy(){
+	private function clean_retreived_meta( $meta ){
 		
-		
+		foreach( $meta as $mkey => $mval ){
+				$meta_count = count( $mval );
+				
+				//if not more than one value is set, remove from array wrapper
+				if( $meta_count < 1 )
+					unset( $meta[ $mkey ] );
+				elseif( $meta_count == 1 )
+					$meta[ $mkey ] = $mval[0];
+				
+				//if value is empty remove from array. 
+				if( empty( $meta[ $mkey ] ) )
+					unset( $meta[ $mkey ] );
+				
+			}
+			
+		return $meta;
 	}	
-*/		
+		
 	
 	
 /*

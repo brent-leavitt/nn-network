@@ -27,35 +27,13 @@ class NNTransaction extends NNPostData{
 			'Type'			=> 'post_type',
 			'CreateDate'	=> 'post_date_gmt',
 			'Status'		=> 'post_status',
-			'Flags'			=> 'NNTransFlags', 	//(meta)
-				
-				
-				$flags = array(
-					payee_different = false,
-					?
-				),
-				
-			'WebHookData'	=> 'post_excerpt', // (JSON String)
-			'ProcessedData' => 'post_content', // (JSON String)
-				$data = array(
-					//line items
-						//Item ID
-						//Description
-						//Qty
-						//Unit Price
-						//Discout
-						//Account
-						//Amount
-					//Subtotal
-					//Reference
-					//Sales Tax
-					//Gross Total
-					//Transaction Fee
-					//Net Amount
-						
-				)
-			), //
-			$__ = ''; //
+		); //
+	public $post_meta = array(
+		'NNTransData' => []
+		// 'meta_key' => 'meta_value'
+		
+	);
+		$__ = ''; //
 		
 	
 	private $actions = [];
@@ -64,15 +42,15 @@ class NNTransaction extends NNPostData{
 	
 /*
 	Name: __construct
-	Description: 
-*/	
+	Description: Commented out because this is the same as the parent class. 
+
 			
 	
 	public function __construct( $data ){
 		
 		$this->init( $data );
 	}	
-			
+*/				
 	
 /*
 	Name: init
@@ -82,8 +60,17 @@ class NNTransaction extends NNPostData{
 	
 	public function init( $data ){
 		
+		//Adds the transaction data map to the postData data map. 
+		$this->extend_data_map();
+		//Assign incoming data to the data property for access. 
+		$this->data = $data; 
+		//Asssign incoming data to respective and available properties. 
 		$this->set_data( $data );
 		
+		//If a post ID is set, retrieve the post. 
+		if( !empty( $this->ID ) ){
+			$this->retrieve();
+		}
 	}	
 			
 	
