@@ -47,47 +47,61 @@ Is there an action hook that I could setup here to
 
 namespace init;
 
+use misc\NNDoPayment as NNDoPayment;
+use misc\NNPayForm as NNPayForm;
+
 // Exit if accessed directly
 if ( !defined('ABSPATH')) exit;
 	
 if( !class_exists( 'NNShortCodes' ) ){
 	class NNShortCodes{
 		
+		//properties
 		
-		//properties: 
-		$shortcodes = array(
-			'payment',
-			'register',
-			'login',
-			'account'
-			
-		);
+		public $shortcodes =[ 'payment', 'register', 'login', 'account' ];
+		
+
 		
 		
+		
+		//Methods
+	/*
+		Name: __construct
+		Description: 
+	*/	
+	
 		public function __construct(){			
-			
-			//Add shortcode
-			add_shortcode('nb-payment', array( $this, 'collect_payment' ) );
-			
-			//loop through shortcode array and create callback foreach: 
-			
-			foreach( $this->shortcodes as $sc ){
 				
-				add_shortcode( 'nb-'.$sc , array( $this, 'load_'.$sc.'_cb' ) ); 
-			
-			}
+			$this->init();
 			
 		}
 		
-		public function collect_payment( $atts ){
+	/*
+		Name: init
+		Description: Setting up available shortcode handlers 
+	*/	
+	
+		public function init(){		
+		
+			//loop through shortcode array and create callback foreach: 
+			foreach( $this->shortcodes as $sc )
+				add_shortcode( 'nb-'.$sc , array( $this, 'load_'.$sc.'_cb' ) ); 
+		
+		}
+		
+
+	/*
+		Name: load_payment_cb
+		Description: 
+	*/			
+		public function load_payment_cb( $atts ){
 			
 			$atts_arr = shortcode_atts( array(
-									'service_id' => '',	//Three Uppercase letter code that represents a company service (ie. BDC = 'birth doula certification')`
-									'enrollment' => '', //see enrollment token types for full list of available types
-								), $atts );
+					'service_id' => '',	//Three Uppercase letter code that represents a company service (ie. BDC = 'birth doula certification')`
+					'enrollment' => '', //see enrollment token types for full list of available types
+				), $atts );
 			
 			//Run User Checks here to determine what type of payment action is needed. 	
-			
 			if( is_user_logged_in() ) {
 				
 				$patron_id = get_current_user_id();
@@ -97,7 +111,7 @@ if( !class_exists( 'NNShortCodes' ) ){
 				
 				if( !empty( $stripe_cus_id ) ){//If Yes, get stripe info about patron.
 				
-					$payment = new nbcs_net_do_payment( array() ); //Should be sending post data... 
+					$payment = new NNDoPayment( array() ); //Should be sending post data... 
 					$customer = $payment->get_customer( $stripe_cus_id );
 					
 					if( is_object( $customer )  && !empty( $customer ) ){
@@ -112,38 +126,24 @@ if( !class_exists( 'NNShortCodes' ) ){
 			}
 			
 			return $this->get_payment_form( $atts_arr );	
+		}
+		
+
+	/*
+		Name: 
+		Description: 
+	*/			
+		public function load_register_cb( $atts ){
+			
 			
 		}
 		
-		public function get_payment_form( $atts ){
-			
-			$pay_form = new nbcs_net_pay_form( $atts );
-		
-			$form = $pay_form->get_pay_form();
-			
-			return $form;		
-			
-		}
-		
-		
-		public function get_charge_button( $pid, $atts ){			
-							
-			$pay_form = new nbcs_net_pay_form( $atts );
-			
-			$form = $pay_form->get_pay_form( $pid );
-			
-			return $form;			
-			
-		}
-		
-		
-		function load_payment_cb(){}
-		
-		
-		function load_register_cb(){}
-		
-		
-		function load_login_cb(){
+
+	/*
+		Name: 
+		Description: 
+	*/			
+		public function load_login_cb( $atts ){
 		
 		// Lifted from PIPPIN
 		
@@ -168,6 +168,39 @@ if( !class_exists( 'NNShortCodes' ) ){
 			
 		
 		}
+
+
+	/*
+		Name: 
+		Description: 
+	*/	
+	
+		public function get_payment_form( $atts ){
+			
+			$pay_form = new NNPayForm( $atts );
+			$form = $pay_form->get_pay_form();
+			
+			return $form;		
+			
+		}
+		
+
+	/*
+		Name: 
+		Description: 
+	*/		
+		public function get_charge_button( $pid, $atts ){			
+							
+			$pay_form = new NNPayForm( $atts );
+			
+			$form = $pay_form->get_pay_form( $pid );
+			
+			return $form;			
+			
+		}
+		
+
+
 		
 		
 		//ETC...

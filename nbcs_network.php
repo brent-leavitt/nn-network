@@ -58,9 +58,9 @@ if( !class_exists( 'NBCS_Network' ) ){
 				$dev = new misc\NNDev();
 			
 		 	
-		/*	$listener = new init\NNListener();		//Add Query Vars Listeners
-			$shortcodes = 		new init\NNShortCodes();	//Shortcodes	
-			$email_settings = 	new init\NNEmail();			//Email Settings
+			$listener	 = new init\NNListener();		//Add Query Vars Listeners
+			$shortcodes	 = new init\NNShortCodes();		//Shortcodes	
+		/*	$email_settings = new init\NNEmail();		//Email Settings
 			 */
 			//setup Custom Post Types
 			

@@ -22,6 +22,10 @@ Description: This is the Listener Object for Payments being Processed through St
 
 namespace proc;
 
+use misc\NNDoPayment as NNDoPayment;
+
+
+
 if( !class_exists( 'NNCollect' ) ){
 	class NNCollect{
 			
@@ -31,64 +35,55 @@ if( !class_exists( 'NNCollect' ) ){
 		
 		
 		//Methods
-		
+
+	/*
+		Name: __construct
+		Description: 
+	*/		
 		public function __construct(){
-			
-			$POST = $this->init();
-			
-			$this->process( $POST );
-			
-			
+			$this->init();
 		}
 		
-		
-/*
-*	name: init
-*	description: 
-*
-*/		
-		
+
+	/*
+		Name: init
+		Description: 
+	*/		
 		private function init(){
 			
 			//This class shoudl only fire if there is form data to be processed. 
 			if( !isset( $_POST ) || empty( $_POST ) ){
-				
 				print( 'Form data is not set or is empty!' );
 				exit;
 			}  
 			
 			//Sanitize incoming POST data. 
-			$POST = filter_var_array( $_POST, FILTER_SANITIZE_STRING );
+			$post = filter_var_array( $_POST, FILTER_SANITIZE_STRING );
 
 			//Check if Nonce is set. 
-			if ( ! isset( $POST['_nb_payment_nonce'] )  || ! wp_verify_nonce( $POST['_nb_payment_nonce'], 'nbcs_pay_'.$POST[ 'enrollment_type' ] ) 
+			if ( ! isset( $post['_nb_payment_nonce'] )  || ! wp_verify_nonce( $post['_nb_payment_nonce'], 'nbcs_pay_'.$post[ 'enrollment_type' ] ) 
 			) {
-
 			   print 'Sorry, your nonce did not verify.';
 			   exit;
-
 			} 
 			
-			return $POST; 
-			
+			$this->process( $post );
 		}
 		
-		
-		
-/*
-*
-*
-*/		
-			
+
+	/*
+		Name: process
+		Description: 
+	*/	
 		public function process( $post ){
 				
 			$response = NULL;
 			
 			//This is from old code which class is presently found on NBCS_Network plugin on the cbldev server. 
-			$t_action = new nbcs_net_do_transaction( $post );
+			$t_action = new NNDoTransaction( $post );
 			
 			$type = $t_action->type;
-			
+			print_pre( $t_action );
 			echo "TYPE is $type . <br />"; 
 			//If no type set. Stop all action. 
 			if( $type == false )				
@@ -96,7 +91,7 @@ if( !class_exists( 'NNCollect' ) ){
 			
 			if( $type !== 'no_pay' ){
 				
-				$payment = new nbcs_net_do_payment( $post );
+				$payment = new NNDoPayment( $post );
 				
 				switch( $type ){
 					
@@ -137,12 +132,11 @@ if( !class_exists( 'NNCollect' ) ){
 			
 		}		
 				
-		
-		
-/*
-*
-*
-*/		
+	
+	/*
+		Name: 
+		Description: 
+	*/		
 					
 		
 		
@@ -150,7 +144,7 @@ if( !class_exists( 'NNCollect' ) ){
 	}
 }	
 
-$collector = new nbcs_net_collect();
+//$collector = new nbcs_net_collect();
 
 	
 	
