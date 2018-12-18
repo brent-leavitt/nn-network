@@ -27,8 +27,8 @@ To Do:
 */
 namespace init;	
 
-use misc\NNWebHooks as NNWebHooks;
-use proc\NNCollect as NNCollect;
+use misc\NNStripeWebHooks as StripeWebHooks;
+use proc\NNStripeCollect as StripeCollect;
 
 // Exit if accessed directly
 if ( !defined('ABSPATH')) exit;
@@ -101,9 +101,7 @@ if( !class_exists( 'NNListener' ) ){
 			//For Payment Collections. 
 			if (isset($_GET['collect']) && $_GET['collect'] == 'payment'){//Check that the query var is set and is the correct value.
 				
-				$collect = new NNCollect();
-				//require_once( NBCS_NET_PATH . ( 'func/collect.php' ) );
-				//Stop WordPress entirely
+				$collect = new StripeCollect();
 				exit;
 			}
 			
@@ -111,9 +109,7 @@ if( !class_exists( 'NNListener' ) ){
 			//For Webhook Processing
 			if (isset($_GET['baah']) && $_GET['baah'] == '694'){//Check that the query var is set and is the correct value.
 				
-				$webhook = new NNWebHooks();
-				//require_once( NBCS_NET_PATH . ( 'func/webhook.php' ) );
-				//Stop WordPress entirely
+				$webhook = new StripeWebHooks();
 				exit;
 			}
 			

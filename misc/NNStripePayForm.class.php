@@ -15,8 +15,8 @@ namespace misc;
 // Exit if accessed directly
 if ( !defined('ABSPATH')) exit;
 	
-if( !class_exists( 'NNPayForm' ) ){
-	class NNPayForm{
+if( !class_exists( 'NNStripePayForm' ) ){
+	class NNStripePayForm{
 		
 		//Properties
 		

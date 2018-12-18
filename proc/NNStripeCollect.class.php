@@ -6,28 +6,23 @@ Collect //Functionality Class
 
 ---
 
-Description: This is the Listener Object for Payments being Processed through Stripe via the QueryVar Handler. 
+Description: This is the Listener Object for Payments being Processed through ***Stripe*** via the QueryVar Handler. 
 	- Collect is responsible for the front end of all payment processing. 
 
-	
-	
 	- Not sure if other transactions will need to pass through here or not. 
 
-
-
-
-
+	
 // Collection Page
 */
 
 namespace proc;
 
-use misc\NNDoPayment as NNDoPayment;
+use misc\NNStripeDoPayment as DoPayment;
 
 
 
-if( !class_exists( 'NNCollect' ) ){
-	class NNCollect{
+if( !class_exists( 'NNStripeCollect' ) ){
+	class NNStripeCollect{
 			
 		//Properties
 		
@@ -67,13 +62,20 @@ if( !class_exists( 'NNCollect' ) ){
 			   exit;
 			} 
 			
-			$this->process( $post );
+			//If response is not false...
+			if( ( $response = $this->process( $post ) ) != false ){
+				
+				$data = NN_format_data( $resonse, $type );
+				//format data
+			}
+			
+			
 		}
 		
 
 	/*
 		Name: process
-		Description: 
+		Description: The reponse that comes out of this method is where we finally get workable data to begin to process. 
 	*/	
 		public function process( $post ){
 				
@@ -83,7 +85,7 @@ if( !class_exists( 'NNCollect' ) ){
 			$t_action = new NNDoTransaction( $post );
 			
 			$type = $t_action->type;
-			print_pre( $t_action );
+			//print_pre( $t_action );
 			echo "TYPE is $type . <br />"; 
 			//If no type set. Stop all action. 
 			if( $type == false )				
@@ -91,7 +93,7 @@ if( !class_exists( 'NNCollect' ) ){
 			
 			if( $type !== 'no_pay' ){
 				
-				$payment = new NNDoPayment( $post );
+				$payment = new DoPayment( $post );
 				
 				switch( $type ){
 					
@@ -116,6 +118,12 @@ if( !class_exists( 'NNCollect' ) ){
 				//If response comes out being NULL here, process as failed and redirect to failed paid attempt... maybe. 
 			} 
 			
+			//If response is not empty, send response data. If empty, return false. 
+			return ( !empty( $response ) )? $response : false ;
+			
+			
+			/* 
+			
 			print_pre( $response );
 			
 			//Post Reponse to Transaction Class
@@ -129,7 +137,7 @@ if( !class_exists( 'NNCollect' ) ){
 			//$recorded = $t_action->record( $user, $response );
 			
 			//
-			
+			 */
 		}		
 				
 	

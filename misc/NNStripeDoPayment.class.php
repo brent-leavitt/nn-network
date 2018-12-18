@@ -10,8 +10,8 @@ namespace misc;
 if ( !defined('ABSPATH')) exit;
 	
 	
-if( !class_exists( 'NNDoPayment' ) ){
-	class NNDoPayment{
+if( !class_exists( 'NNStripeDoPayment' ) ){
+	class NNStripeDoPayment{
 
 	
 		public $credentials = array( 

@@ -47,8 +47,8 @@ Is there an action hook that I could setup here to
 
 namespace init;
 
-use misc\NNDoPayment as NNDoPayment;
-use misc\NNPayForm as NNPayForm;
+use misc\NNStripeDoPayment as DoPayment;
+use misc\NNStripePayForm as PayForm;
 
 // Exit if accessed directly
 if ( !defined('ABSPATH')) exit;
@@ -111,7 +111,7 @@ if( !class_exists( 'NNShortCodes' ) ){
 				
 				if( !empty( $stripe_cus_id ) ){//If Yes, get stripe info about patron.
 				
-					$payment = new NNDoPayment( array() ); //Should be sending post data... 
+					$payment = new DoPayment( array() ); //Should be sending post data... 
 					$customer = $payment->get_customer( $stripe_cus_id );
 					
 					if( is_object( $customer )  && !empty( $customer ) ){
@@ -177,7 +177,7 @@ if( !class_exists( 'NNShortCodes' ) ){
 	
 		public function get_payment_form( $atts ){
 			
-			$pay_form = new NNPayForm( $atts );
+			$pay_form = new PayForm( $atts );
 			$form = $pay_form->get_pay_form();
 			
 			return $form;		
@@ -191,7 +191,7 @@ if( !class_exists( 'NNShortCodes' ) ){
 	*/		
 		public function get_charge_button( $pid, $atts ){			
 							
-			$pay_form = new NNPayForm( $atts );
+			$pay_form = new PayForm( $atts );
 			
 			$form = $pay_form->get_pay_form( $pid );
 			
