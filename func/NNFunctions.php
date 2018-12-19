@@ -17,11 +17,11 @@ Description: class independent list of functions
 	
 function nn_format_data( $data, $source = '' ){
 	
-	$formatter = new misc\NNDataFormat();
+	$formatter = new misc\NNDataFormat( $data );
 	
 	//Assigns a third-party source for incoming data. If empty, assume that the data is from in-house. 
 	$formatter->set_source( $source );
 	
-	return $formatter->format( $data );
+	return $formatter->format();
 	
 }
