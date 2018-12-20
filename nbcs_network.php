@@ -174,6 +174,9 @@ if( !class_exists( 'NBCS_Network' ) ){
 include_once('func/NNDevTools.php');
 
 
+//Network Functions 
+require_once('func/NNFunctions.php');
+
 //Setup Cron Jobs for Network
 //require_once('func/nbcs_net_crons.php');
 

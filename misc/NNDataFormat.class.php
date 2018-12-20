@@ -152,7 +152,7 @@ if( !class_exists( 'NNDataFormat' ) ){
 				//All Source Class Names will be formated with first letter cap, all else lower case: ex. Paypal. 
 				$source = ucfirst( strtolower( $source ) );
 				
-				$src_class = 'NNData'.$source;
+				$src_class = 'pymt\\'.$source.'\\NNData'.$source;
 				
 				$this->source = new $src_class( $this->in );
 				
@@ -253,7 +253,7 @@ if( !class_exists( 'NNDataFormat' ) ){
 				
 				//look for method by $o_key name; 
 				if( method_exists( $this, $set_key ) ){ 
-					$output[ $o_key ] = $this->$set_key( $data, $data_map );
+					$output[ $o_key ] = $this->$set_key();
 					continue;
 				}
 				
@@ -336,7 +336,22 @@ if( !class_exists( 'NNDataFormat' ) ){
 			
 			return $token;
 		}		
-				
+	
+
+		
+		
+	/*
+		Name: set_src_data
+		Description: This sets the inbound code to the end of the formatted array. 
+	*/	
+		
+		public function set_src_data(){
+			
+			return $this->in;
+			
+		}
+
+	
 		
 	/*
 		Name: set_

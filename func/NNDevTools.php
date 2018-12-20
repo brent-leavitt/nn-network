@@ -68,3 +68,12 @@ function nn_random_id( $lenght = 13, $prefix = NN_PREFIX ) {
 			return $prefix . substr( bin2hex( $bytes ), 0, $lenght );
 		}
 	
+	
+//Use: dump( __LINE__, __METHOD__, $arr );
+	
+function dump( $line, $method, $arr ){
+	
+	ep( "Line ".$line." form ". $method );
+	print_pre( $arr );
+	
+}

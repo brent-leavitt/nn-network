@@ -47,8 +47,8 @@ Is there an action hook that I could setup here to
 
 namespace init;
 
-use misc\NNStripeDoPayment as DoPayment;
-use misc\NNStripePayForm as PayForm;
+use pymt\Stripe\NNStripeDoPayment as DoPayment;
+use pymt\Stripe\NNStripePayForm as PayForm;
 
 // Exit if accessed directly
 if ( !defined('ABSPATH')) exit;
