@@ -78,11 +78,11 @@ if( !class_exists( 'NNAction' ) ){
 				
 				//Set super action: 
 				//Is the action that is being called set?
-				if( isset( $data[ "action" ] ) && is_callable( array( $this, $data[ "action" ] ) ) ){
-					
+				if( isset( $data[ "action" ] ) /* && is_callable( array( $this, $data[ "action" ] )  ) */){
 					$super = $data[ "action" ];
 					
 					//A lite registration must be processed before any payments can be accepted on our website? 
+					
 					
 					//Is this a registration?
 					if( strpos( 'register', $super ) === 0 ){
@@ -187,7 +187,7 @@ if( !class_exists( 'NNAction' ) ){
 		private function check_data( $data ){
 			
 			//Data is set and is made uniform.
-			$data_set = new NNData( $data );
+			$data_set = new sub\NNData( $data );
 
 			if( $check = $data_set->valid )
 				$this->data = $data_set->get();//Returns an array (not object)
@@ -228,18 +228,6 @@ if( !class_exists( 'NNAction' ) ){
 			$this->record[] = array( $func => $data ); 
 		}	
 		
-	
-				
-	/*
-		Name: 
-		Description: 
-	*/	
-		
-		public function __(){
-			
-			
-		}	
-		
 		
 		
 	// CORE ACTIONS	
@@ -258,7 +246,7 @@ if( !class_exists( 'NNAction' ) ){
 			
 			$patron = new NNPatron( $this->data );
 			
-			if( ( $patron_id = $patron->$action() ) != false ){
+			if( ( $patron->$action() ) != false ){
 				
 				$this->patron = $patron->id;
 				
@@ -269,16 +257,12 @@ if( !class_exists( 'NNAction' ) ){
 				
 			}
 			
-			/* 
-			$patron = new NNPatron();
-			$this->patron = $patron->$action( $this->data ); */
-			
 			$record = 'The patron ID is: '. $this->patron . ', and the action performed was '. $action ;
 			
-
 			$this->clean_up( __METHOD__ , $record, $patron );
 		
 			return ( $this->patron > 0 )? true : false ;
+			
 		}	
 		
 		
@@ -480,13 +464,13 @@ if( !class_exists( 'NNAction' ) ){
 
 	/*
 		Name: do_admin_warning
-		Description: 
+		Description: This will only print to screen when in development mode. 
 	*/	
 		
 		public function do_admin_warning( $msg ){
 			
 			//Add DevTool for sending admin notices.
-			
+			nn_admin_notice( $msg );
 		}
 		
 

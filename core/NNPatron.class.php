@@ -92,8 +92,17 @@ class NNPatron /*  extends WP_User */{
 	public function find(){
 		
 		//What kind of input?
+		if( !empty( $this->id = $this->data['patron'] ) ){
+			
+			$this->id = $this->data['patron'] ;
+			return true;
+			
+		}
+			
+		
+		
 		//get user by email
-		if( isset( $user = get_user_by( 'email', $this->data[ 'email' ] ) ) ){
+		if( null !== ( $user = get_user_by( 'email', $this->data[ 'email' ] ) ) ){
 			$this->id = $user->ID;	
 			
 		}else{
@@ -119,7 +128,7 @@ class NNPatron /*  extends WP_User */{
 		
 		//returns user ID. 
 		
-		return ( !empty( $this->id ) )? $this->id : false ;
+		return ( !empty( $this->id ) )? true : false ;
 	}	
 			
 /*

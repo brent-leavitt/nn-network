@@ -13,7 +13,7 @@ The NNPostData class performs fundamental functions that are useful for the CPTs
 
 */
 
-namespace core/sub;
+namespace core\sub;
 
 class NNPostData{
 	
@@ -184,12 +184,14 @@ class NNPostData{
 		$this->post_arr = array_filter( $this->post_arr /*,$callback_function missing*/ );
 		
 		//This information is stored in the CRM/MasterSite
-		switch_to_blog( $this->master_site );
+		if( is_multisite() )
+			switch_to_blog( $this->master_site );
 		
 		$result = wp_insert_post(  $this->post_arr );
 		
 		//Return back to current space. 
-		restore_current_blog();
+		if( is_multisite() )
+			restore_current_blog();
 		
 		if( !is_wp_error( $result ) ){
 			
@@ -236,7 +238,7 @@ class NNPostData{
 		
 		$t_data_map = $t_class.'_data_map';
 		
-		$this->data_map =  array_merge( $this->data_map, this->$t_data_map );
+		$this->data_map =  array_merge( $this->data_map, $this->$t_data_map );
 		
 	}		
 	

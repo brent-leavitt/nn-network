@@ -13,7 +13,7 @@ Namespace: /core/sub_core/
 
 */
 
-namespace core/sub;
+namespace core\sub;
 
 class NNTransaction extends NNPostData{
 	
@@ -33,7 +33,7 @@ class NNTransaction extends NNPostData{
 		// 'meta_key' => 'meta_value'
 		
 	);
-		$__ = ''; //
+	
 		
 	
 	private $actions = [];

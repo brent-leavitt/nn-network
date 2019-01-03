@@ -296,18 +296,30 @@ if( !class_exists( 'NNDataFormat' ) ){
 		
 	/*
 		Name: set_patron
-		Description: 
+		Description: How to get PATRON for whom this transaction is set? 
+		Send the user ID as a part of the processing data. That the surest way to do this. 
+		- How to get that? 
+		- On the Cashier Page that you are proposing, the user ID needs to be set, 
+			- so login required? 
+			- Guest Payments? No, because you only pay when you are receiving account access to something. 
+			- Pay on behalf of someone else, yes! Via Email address. 
+		- Is it better to pass a system-unique ID or an email address (which is more of a universal identifier)?
+			- SYSTEM ID-> Some How Encrypted. 
 	*/	
 		
 		public function set_patron(){
 			
-			//Is on_behalf_of set in the source data? 
 			
-			//Get 
-			$patron = $this->source->get_patron();
+			$p_value = $this->source->get_patron();
+			
+			$patron_id = nn_crypt( $p_value, 'd' );
+			
+			//Check if user exists? 
+			$patron = get_user_by( 'id', $patron_id );
 			
 			//what is the payee email? 
-			return $patron;
+				
+			return ( is_object( $patron ) )$patron_id : NULL;
 		}		
 				
 		

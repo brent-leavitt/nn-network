@@ -11,16 +11,16 @@ Description: - Receipt issuing is controlled here. Extends Transaction Sub Class
 
 namespace core;
 
-use core/sub/NNTransaction;
+use core\sub\NNTransaction;
 
 class NNReceipt extends NNTransaction{
 	
 	
 	//Properties
 
-	public 
+	/* public 
 		$ = '', //
-		$__ = ''; //
+		$__ = ''; // */
 	
 	public $NNReceipt_data_map = array(
 		'SourceTxn'		=> 'post_parent',

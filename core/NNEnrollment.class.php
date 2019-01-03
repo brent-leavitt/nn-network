@@ -378,7 +378,7 @@ if( !class_exists( 'NNEnrollment' ) ){
 		
 		public function get_actions(){
 			
-			return ( !empty( $this->actions ) ) $this->actions : false ;
+			return ( !empty( $this->actions ) )? $this->actions : false ;
 			
 		}	
 		

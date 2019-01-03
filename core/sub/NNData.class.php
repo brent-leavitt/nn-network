@@ -13,7 +13,7 @@ Description: This takes all data send to the backend and send back only that par
 
 */
 
-namespace core/sub;
+namespace core\sub;
 
 class NNData{
 	
@@ -86,7 +86,7 @@ class NNData{
 		);
 
 		
-	private $payment_set = array(
+	private $receipt_set = array(
 			'action',
 			'service',
 			'patron',
@@ -200,24 +200,31 @@ class NNData{
 */	
 	
 	public function set(){
-				
-		$action = $this->action. '_set';
-		
+		//Get incoming data		
 		$data = $this->data;
 		
-		$keys = $this->$action;
+		//what action are we taking?
+		$action = $this->action;
 		
+		//What data set are we taking action on. 
+		$action_set = $this->action. '_set';
+		
+		//load keys from that data set. 
+		$keys = $this->$action_set;
+		//dump( __LINE__, __METHOD__, $data );
+		
+		//Now we start to build. 
 		foreach( $keys as $key ){
 			if( !empty( $data[ $key ] ) )
 				$this->data_set[ $key ] = $data[ $key ];
-			elseif( !empty { $data[ $action ] } ){
+			elseif( !empty( $data[ $action ] ) ){
 				//looking deeper into the source arrays for data that matches the requesting field.
-				
+	
 				//first check if field is available in top level of nested array. 
 				if( !empty( $data[ $action ][ $key ] ) ){
-					$this->data_set[ $key ] = $data[ $action ][ $key ] 
+					$this->data_set[ $key ] = $data[ $action ][ $key ];
 					
-				} else{
+				} else {
 					
 					//else look deeper by referencing the first word of the key to find it's associated array.  
 					$pos = strpos( $key, '_'  );

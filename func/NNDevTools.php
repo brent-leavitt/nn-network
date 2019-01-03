@@ -40,7 +40,7 @@ function nn_dev_notice( $msg ){
 function nn_admin_notice( $msg ){
 	
 	//If admin settings are set to send email, send email to admin. 
-	
+	if( NBCS_NET_DEV ) ep( $msg );
 	
 	//Otherwise log message. 
 	

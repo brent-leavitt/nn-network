@@ -19,9 +19,12 @@ if( !class_exists( 'NNDataStripe' ) ){
 	class NNDataStripe{
 
 	// PROPERTIES
+		public $in; 			//This is the source JSON string of info.
+		public $data = [];		//This is the converted array of incoming JSON data. 
 		
-			//https://stripe.com/docs/api
-		private $stripe_data_map = [ //'nn_value' => '3rd_party_value'
+		
+		//https://stripe.com/docs/api
+		private $data_map = [ //'nn_value' => '3rd_party_value'
 			'create_date' => 'created',
 			'trans_type' => 'object',
 			'trans_status' => 'status',
@@ -130,7 +133,7 @@ if( !class_exists( 'NNDataStripe' ) ){
 			
 			//$action = $this->data[ 'custom' ];
 			
-			return 1;
+			return $this->get_meta( 'action' );
 		}		
 				
 		
@@ -141,6 +144,7 @@ if( !class_exists( 'NNDataStripe' ) ){
 		
 		public function get_patron(){
 			
+			
 			//Is on_behalf_of set in the source data? 
 			
 			//Get 
@@ -149,7 +153,7 @@ if( !class_exists( 'NNDataStripe' ) ){
 			//$patron = get_user_by( 'email', $p_email );
 			
 			//what is the payee email? 
-			return 2;
+			return $this->get_meta( 'patron' );
 		}		
 				
 		
@@ -163,7 +167,7 @@ if( !class_exists( 'NNDataStripe' ) ){
 			//$service = $this->source->get_service();
 			
 			
-			return 3;
+			return $this->get_meta( 'service' );
 		}		
 				
 		
@@ -176,8 +180,23 @@ if( !class_exists( 'NNDataStripe' ) ){
 			
 			//$token = $this->source->get_token();
 			
-			return 4;
+			return $this->get_meta( 'token' );
 		}		
+				
+		
+	/*
+		Name: get_meta
+		Description:
+	*/	
+		
+		public function get_meta( $value ){
+			
+			$result = $this->data[ 'metadata' ][ $value ];
+			
+			return ( !empty( $result ) )? $result : false ;
+		}		
+		
+
 				
 		
 	/*

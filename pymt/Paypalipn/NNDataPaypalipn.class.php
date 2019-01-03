@@ -18,8 +18,8 @@ if( !class_exists( 'NNDataPaypalipn' ) ){
 
 	// PROPERTIES
 		
-		public $in; 
-		public $data = [];
+		public $in; 			//This is the source IPN string of key=value& sets. 
+		public $data = [];		//This is the converted array of incoming data. 
 		/* public $out = []; */
 		
 		//https://developer.paypal.com/docs/classic/ipn/integration-guide/IPNandPDTVariables/#

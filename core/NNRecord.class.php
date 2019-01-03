@@ -1,6 +1,6 @@
 <?PHP
 
-/*
+/* UNCOMMENT LINE 101 when ready to go live. 
 
 Record Automation - Code Plan for NBCS
 Last Updated 2 Oct 2018
@@ -29,6 +29,12 @@ Desription: This is the record keeping class.
 ---
 
 */
+	
+namespace core;
+
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
+
 if( !class_exists( 'NNRecord' ) ){
 	class NNRecord{
 
@@ -83,18 +89,18 @@ if( !class_exists( 'NNRecord' ) ){
 				'post_title' => $this->record_title(),
 				'post_author' => $this->patron,
 				'post_content' => $this->pre_format(),
-				'post_excerpt' => serialize( $this->record );
+				'post_excerpt' => serialize( $this->record ),
 				'post_type' => 'NNRecord',
 				
 			);
 				
 			//Save only to the BASE SITE if set.  
-			if( defined( 'NN_BASESITE' ) )
+			if( defined( 'NN_BASESITE' ) && is_multisite() )
 				switch_to_blog( NN_BASESITE );
 
-			$result = wp_insert_post( $post_record );
+			//$result = wp_insert_post( $post_record );
 			
-			if( defined( 'NN_BASESITE' ) )
+			if( defined( 'NN_BASESITE' ) && is_multisite() )
 				restore_current_blog();
 			
 			return $result;
@@ -127,8 +133,16 @@ if( !class_exists( 'NNRecord' ) ){
 			$date = date( 'y-m-d' );
 			$patron = $this->patron;
 			$record = $this->record;
+			
+			//A little traversing to find the initiating method. 
 			end( $record );
-			$method = ucfirst( key( $record ) ); //get the key of the last array which is the initiating method. 
+			$last_key =  key( $record );
+			$nested_last_key = key( $record[ $last_key ] );
+			$first_method = key( $record[ $last_key ][ $nested_last_key ] );
+			//Then a little clean up. 			
+			$first_method = (  'do_' === substr( $first_method , 0 , 3)  )? substr( $first_method , 3 ): $first_method ;
+
+			$method = ucfirst( $first_method ); //get the key of the last array which is the initiating method. 
 			$title = "$method Record, Patron $patron on $date ";
 			
 			return $title;
