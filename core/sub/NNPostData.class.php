@@ -22,21 +22,22 @@ class NNPostData{
 
 	public 
 		$ID = 0,
-		$patron_id = 0,
+		$patron = 0,
 		$post_type = '', //
-		$master_site = 2, //This should be stored as an option on the network and retrieved dynamically. But for now...
 		$data = array(),
 		$data_map = array(
-			'patron_id' => 'post_author'
+			'patron' => 'post_author'
 		); //
 	
 	//This is what get's sent to WordPress
 	public $post_arr = array( 
 			//'ID' => 0, //add if this an update. 
 			'post_author' => 0,
+			'post_date' => '',
 			'post_content' => '',
 			'post_content_filtered' => '',
 			'post_title' => '',
+			'post_name' => '',
 			'post_excerpt' => '',
 			'post_status' => 'draft',
 			'post_type' => 'post',
@@ -55,11 +56,10 @@ class NNPostData{
 			'meta_input' => array(), //this can also be added to send meta data
 		);
 		
-	public $post_meta = array(
-		// 'meta_key' => 'meta_value'
-		
-	);
+	protected $meta_key = 'NNPostData';
 
+	protected $actions = []; //actions to be taken as a result of enrollments
+		//Methods? 
 
 	//Methods
 	
@@ -106,11 +106,14 @@ class NNPostData{
 	
 	public function set_data( $data ){
 		
+		
 		foreach ( get_object_vars( $this ) as $key => $value ){
 			if( isset( $data[ $key ] ) && !empty( $data[ $key ] ) ){
 				$this->$key = $data[ $key ];
 			}
 		}	
+		
+		//dump( __LINE__, __METHOD__, get_object_vars( $this ) );
 	}	
 	
 	
@@ -141,14 +144,16 @@ class NNPostData{
 		if( isset( $this->ID ) ){
 			
 			//This information is stored in the CRM/MasterSite
-			switch_to_blog( $this->master_site );
+			if( defined( 'NN_BASESITE' ) && is_multisite() )
+				switch_to_blog( NN_BASESITE );
 			
-				$post = get_post(  $this->ID, 'ARRAY_A'  );
-				//This only returns post data, not meta. 
-				$meta = get_post_meta( $this->ID, '', true);
+			$post = get_post(  $this->ID, 'ARRAY_A'  );
+			//This only returns post data, not meta. 
+			$meta = get_post_meta( $this->ID, '', true);
 				
 			//Return back to current space. 
-			restore_current_blog();
+			if( defined( 'NN_BASESITE' ) && is_multisite() )
+				restore_current_blog();
 			
 			//Clean up and condense meta data returned from WPDB. 
 			$meta = $this->clean_retreived_meta( $meta );
@@ -183,15 +188,17 @@ class NNPostData{
 		//Array_filter drops empty fields if no callback function is provided. 
 		$this->post_arr = array_filter( $this->post_arr /*,$callback_function missing*/ );
 		
+		//dump( __LINE__, __METHOD__, $this->post_arr );
+
 		//This information is stored in the CRM/MasterSite
-		if( is_multisite() )
-			switch_to_blog( $this->master_site );
+		if( defined( 'NN_BASESITE' ) && is_multisite() )
+				switch_to_blog( NN_BASESITE );
 		
 		$result = wp_insert_post(  $this->post_arr );
 		
 		//Return back to current space. 
-		if( is_multisite() )
-			restore_current_blog();
+		if( defined( 'NN_BASESITE' ) && is_multisite() )
+				restore_current_blog();
 		
 		if( !is_wp_error( $result ) ){
 			
@@ -229,84 +236,81 @@ class NNPostData{
 /*
 	Name: extend_data_map
 	Description: This takes the data_map of the extending class and adds it to the core data map. 
+	params: $str;
 
 */			
 	
-	public function extend_data_map(){
+	public function extend_data_map( $str ){
+		 
+				
+		$class_name = $this->class_name_only( $str );
 		
-		$t_class = $this->get_current_class();
-		
-		$t_data_map = $t_class.'_data_map';
+		$t_data_map = $class_name.'_data_map';
 		
 		$this->data_map =  array_merge( $this->data_map, $this->$t_data_map );
 		
+		//dump( __LINE__, __METHOD__, $this->data_map );
+		
 	}		
 	
 		
 	
 /*
-	Name: get_current_class
-	Description: Isolates the top-level data class from it's name space. 
-*/	
-			
+	Name: class_name_only
+	Description: Isolates the class from its namespace. 
+*/			
 	
-	public function get_current_class(){
+	public function class_name_only( $str ){
 		
-		$class = urlencode( get_class( $this ) );
+		$name = urlencode( $str );
 		
-		$t_class = substr( $class , strrpos( $class, '%5C' ) +3 );
+		$class_name = substr( $name , strrpos( $name, '%5C' ) +3 );
 		
-		return $t_class;
-		
-	}		
-	
-	
-	
-/*
-	Name: map_data
-	Description: (INACTIVE) 
-	
-			
-	
-	public function map_data(){
-		
-		$this->post_arr = array_map( $this->map(), $this->post_arr, $this->data_map );
+		return $class_name;
 		
 	}		
 	
-*/		
 	
 /*
 	Name: map
 	Description: This takes all data that is sent in via the $data array var, and maps it to the respective field for insertion in the WPDB. 
-*/	
-			
+*/				
 	
 	public function map() {
 		
 		$post = $this->post_arr;
 		$map = $this->data_map;
 		
+		//dump( __LINE__, __METHOD__, $post );
+		//dump( __LINE__, __METHOD__, $this->data );
+		
 		$mapped = array();
 		$meta = array();
 		
 		foreach( $map as $key => $val ){
 			
+			
 			//checking if this class has the requesting property set. 
 			if( !empty( $this->data[ $key ] ) ){ //This is going through the properties of the class to connect them to the post_arr value. 
-			
+				//ep( "The key is $key and the data for this key is: ".$this->data[ $key ]. " The value is $val. " );
+				
 				//Now we're checking if the post_arr has the requesting key set.
 				if( array_key_exists( $val, $post ) ){
+					//ep( "Array Key exists for $val in POST." );
 					$mapped[ $val ] =  $this->data[ $key ];
 					
 				//If not, add val to meta array that we'll tack on at the end.
 				} else {
-					$meta[ $val ] = $this->$key;
+					$meta[ $key ] = $this->data[ $key ];
 				}	
 			}
-		}
 		
-		$mapped[ 'meta_input' ] = $meta; //Add the meta data to the array.
+		}
+		//Put uncategorized data into the post_content field. 
+		$mapped[ 'post_content' ] = json_encode( $meta ); //Add the meta data to the array.
+		
+		//put source data, if it exists, into the post_excerpt field. 
+		if( property_exists( $this, 'src_data' ) ) $mapped[ 'post_excerpt' ] = $this->src_data;
 		
 		//Checking if any properties are matched to the actual post_arr keys.
 		foreach( $post as $key => $val ){
@@ -317,6 +321,8 @@ class NNPostData{
 		//This will merge any duplicate keys with the later vallues of mapped overriding the existing. 
 		$this->post_arr = array_merge( $this->post_arr, $mapped );
 		
+		
+		dump( __LINE__, __METHOD__, $this->post_arr );
 		//needed? 
 		return $mapped;
 	}
@@ -393,7 +399,33 @@ class NNPostData{
 	}	
 		
 	
+/*
+	Name: get_actions
+	Description: This is called in the NNAction::clean_up method. 
+*/	
+				
+		
+		public function get_actions(){
+			
+			return ( !empty( $this->actions ) )? $this->actions : false ;
+			
+		}	
+		
+				
+/*
+	Name: set_actions
+	Description: This allows child objects to send actions to the private $actions array. 
+*/	
+			
 	
+	public function set_actions( $actions ){
+
+		foreach( $actions as $action )
+			$this->actions[] = $action;
+		
+	}	
+				
+		
 /*
 	Name: 
 	Description: 

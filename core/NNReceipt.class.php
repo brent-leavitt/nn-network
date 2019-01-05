@@ -16,23 +16,33 @@ use core\sub\NNTransaction;
 class NNReceipt extends NNTransaction{
 	
 	
-	//Properties
-
-	/* public 
-		$ = '', //
-		$__ = ''; // */
+	//Properties	
+	
+	public $post_type = 'nnreceipt';
 	
 	public $NNReceipt_data_map = array(
-		'SourceTxn'		=> 'post_parent',
-		'AmountPaid'	=> 'NNAmountPaid', 	//(meta)
-		'ProcessingFee'	=> 'NNTransFee', 	//(meta)
-		'TPName'		=> 'NN3PID', 		//(meta) Third-Party ID
-		'TPID'			=> 'NN3PTransID', 	//(meta) Third-Party Transaction ID
-		''			=> '', 	//(meta) 
-		''			=> '', 	//(meta) 
-		''			=> '', 	//(meta) 
-		
+		'reference_ID'		=> 'post_parent',
+		'trans_fee' 		=> '', 
+		'reference_type' 	=> '',
+		'tp_name' 			=> '',
+		'tp_id' 			=> '',
+		'payee_first_name' 	=> '',
+		'payee_last_name' 	=> '',
+		'payee_address' 	=> '',
+		'payee_address1' 	=> '',
+		'payee_city' 		=> '',
+		'payee_state' 		=> '',
+		'payee_zip' 		=> '',
+		'payee_country' 	=> '',
+		'payee_email' 		=> '',
+		'payee_phone' 		=> '',
+		'payee_type' 		=> '',
+		'payee_card' 		=> '',
+		'payee_exp' 		=> '',	
 	);
+	
+	public $src_data; 
+	
 	//Methods
 	
 	
@@ -40,7 +50,7 @@ class NNReceipt extends NNTransaction{
 
 	Name: __construct
 	Description: 
-*/	
+	
 			
 	
 	public function __construct( $data ){
@@ -48,11 +58,11 @@ class NNReceipt extends NNTransaction{
 		$this->init( $data );
 	}	
 			
-	
+*/	
 /*  
 	Name: init
 	Description: 
-*/	
+	
 			
 	//Is this needed, or does the parent class cover the setup. 
 	public function init( $data ){
@@ -64,7 +74,7 @@ class NNReceipt extends NNTransaction{
 		$this->post_type = 'NNReceipt';
 	}	
 			
-	
+*/	
 				
 /*
 	Name: issue
@@ -79,10 +89,25 @@ class NNReceipt extends NNTransaction{
 		//Necessary?
 		
 		//add action from parent class. 
-		$this->set_actions( [ 'do_role', 'do_notice' ] );
+		$this->set_actions( [ 'do_enrollment', 'do_role', 'do_notice' ] );
 		
 	}	
 	
+
+	
+/*
+	Name: set_src_data
+	Description: 
+*/	
+			
+	
+	public function set_src_data(){
+		
+		$this->src_data = $this->data[ 'src_data' ] ;
+		unset($this->data[ 'src_data' ]);
+		dump( __LINE__, __METHOD__, $this->src_data );
+	}	
+			
 
 	
 /*

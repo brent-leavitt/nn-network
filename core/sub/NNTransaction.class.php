@@ -6,8 +6,9 @@ Last Updated 2 Oct 2018
 
 Desription: Service the similar interests of the Invoice and Receipt Classes
 
-Namespace: /core/sub_core/
-
+To Do: Store Transactions for printing purposes. 
+Maybe move the source data to the post_exceprt field. 
+Maybe move all other data from post_meta to post_content as JSON String? 
 
 ---
 
@@ -20,23 +21,23 @@ class NNTransaction extends NNPostData{
 	
 	//Properties
 
-	//What properties are universal to both receipts and invoices?
+	//What properties are universal to both receipts and invoices, only map those items that have a direct correlation to a post field. Everything else goes to meta, with same key name as the property name. 
 	public 
 		$NNTransaction_data_map = array(
-			'TransID' 		=> 'post_name',
-			'Type'			=> 'post_type',
-			'CreateDate'	=> 'post_date_gmt',
-			'Status'		=> 'post_status',
-		); //
-	public $post_meta = array(
-		'NNTransData' => []
-		// 'meta_key' => 'meta_value'
+			'trans_id' 		=> 'post_name',
+			'trans_date'	=> 'post_date',
+			'trans_status'	=> 'post_status',
+			'trans_type'	=> '', 
+			'amount' 		=> '',
+			'currency' 		=> '',
+			'sales_tax' 	=> '',
+			'subtotal' 		=> '',
+			'net_amount' 	=> '',
+			'src_data' 		=> '',
+		); 
 		
-	);
-	
+	protected $meta_key = 'NNTransData';
 		
-	
-	private $actions = [];
 	//Methods
 	
 	
@@ -61,11 +62,19 @@ class NNTransaction extends NNPostData{
 	public function init( $data ){
 		
 		//Adds the transaction data map to the postData data map. 
-		$this->extend_data_map();
+		//We just need the next parent class. 
+		$this->extend_data_map( key( class_parents( $this ) ) );
+		//Then the current class (which will be Receipt or invoice)
+		$this->extend_data_map( get_class( $this ) );
+		
+		
+		
 		//Assign incoming data to the data property for access. 
 		$this->data = $data; 
 		//Asssign incoming data to respective and available properties. 
 		$this->set_data( $data );
+		
+		if( method_exists( $this, 'set_src_data' ) ) $this->set_src_data();
 		
 		//If a post ID is set, retrieve the post. 
 		if( !empty( $this->ID ) ){
@@ -74,33 +83,7 @@ class NNTransaction extends NNPostData{
 	}	
 			
 	
-/*
 
-	Name: get_actions
-	Description: this makes the additional needed actions accessible to the NNAction.class.php
-	
-*/	
-		
-	
-	public function get_actions(){
-		
-		return ( !empty( $this->actions ) )? $this->actions : false ;
-		
-	}	
-				
-/*
-	Name: set_actions
-	Description: This allows child objects to send actions to the private $actions array. 
-*/	
-			
-	
-	public function set_actions( $actions ){
-
-		foreach( $actions as $action )
-			$this->actions[] = $action;
-		
-	}	
-			
 /*
 	Name: 
 	Description: 

@@ -73,7 +73,7 @@ function nn_random_id( $lenght = 13, $prefix = NN_PREFIX ) {
 	
 function dump( $line, $method, $arr ){
 	
-	ep( "Line ".$line." form ". $method );
+	ep( "Line ".$line." from ". $method );
 	print_pre( $arr );
 	
 }
