@@ -212,8 +212,10 @@ if( !class_exists( 'NNAction' ) ){
 			$this->record_step( $func , $record );
 			
 			//What additional actions need to be taken? Ask the object if they have anything else to do. Then merge with existing list of to dos. 
-			if( method_exists( $obj, 'get_action' ) )
+			if( method_exists( $obj, 'get_actions' ) )
 				$this->actions = array_unique( array_merge( $this->actions, $obj->get_actions() ) );
+			
+			dump( __LINE__, __METHOD__, $this->actions );
 		}	
 		
 
@@ -306,6 +308,7 @@ if( !class_exists( 'NNAction' ) ){
 			
 			//if( !empty( $record[ 'receipt_id' ] ) )
 				//$record[] = $this->do_notice( $record[ 'receipt_id' ] );
+			dump( __LINE__, __METHOD__, $record );
 			
 			$this->clean_up( __METHOD__ , $record, $receipt );
 			
@@ -322,7 +325,7 @@ if( !class_exists( 'NNAction' ) ){
 			
 			$record = array();
 			
-			$enrollment = new Enrollment( $this->patron );			
+			$enrollment = new NNEnrollment( $this->patron );			
 			
 			//add, expire, annul, or retire enrollment token. Anything else? 
 			$record[ 'do_enrollment_process' ] = $enrollment->process( $this->data );

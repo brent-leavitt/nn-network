@@ -141,7 +141,7 @@ class NNService{
 		$this->service = $data[ 'service' ];
 		
 		//Set CPT Handler
-		$this->cpt_handler = this->get_cpt_handler();
+		$this->cpt_handler = $this->get_cpt_handler();
 		
 		//Set process (do action)
 		$this->process = ( strpos( $data[ 'action' ], 'enrollment' )  == 0  )? $data[ 'enrollment' ]['type'] : 'add' ;
@@ -202,10 +202,10 @@ class NNService{
 		
 		$find_query =  "author=$author&post_type=$post_type&post_status=$post_status&meta_key=$meta_key&meta_value=$meta_value&fields=ids";
 		
-		$find_query = apply_filter( 'NNService_Find_Query', $find_query );	
+		$find_query = apply_filters( 'NNService_Find_Query', $find_query );	
 		
 		//What is the format of the returned value? An array of numbers. We want the first result, so key = 0. 
-		$found_id = new WP_Query( $find_query );
+		$found_id = get_posts( $find_query );
 		
 		//Hard query to perform because it is dependent upon the database which is site specific.
 	
@@ -267,7 +267,7 @@ class NNService{
 			'post_author' => $this->patron,
 			'post_title' => $post_title,
 			'post_name' => $post_slug,
-			'post_content' => log_action( $change, $typed ),
+			'post_content' => $this->log_action( $change, $typed ),
 			'post_status' => $status,
 			'post_type' => $this->cpt_handler,
 			'meta_input' => array(
@@ -283,11 +283,11 @@ class NNService{
 		
 		//If this is a certificate (vs. access) add more meta_input vars. 
 		
-		$post_arr = apply_filter( 'NNService_Create_Pre_Insert', $post_arr );
+		$post_arr = apply_filters( 'NNService_Create_Pre_Insert', $post_arr );
 		
 		$this->service_id = $service_id = wp_insert_post( $post_arr );
 		
-		//$result = apply_filter( 'NNService_Create_Result', $this->service );
+		//$result = apply_filters( 'NNService_Create_Result', $this->service );
 		
 		do_action( 'NNService_Create',  $service_id );
 		
@@ -371,7 +371,7 @@ class NNService{
 		if(  in_array( $status, $status_arr ) && !check_status( $status ) ){
 			$post_arr = array(
 				'ID' => $this->service_id,
-				'post_content' => $this->log_action( $status, 'updated' );
+				'post_content' => $this->log_action( $status, 'updated' ),
 				'post_status' => $status	
 			);
 
@@ -484,6 +484,8 @@ class NNService{
 		$service_cpts = get_option( 'service_cpt' );
 		$service = $this->service;
 		
+		
+		//dump( __LINE__, __METHOD__, $service_cpts );
 		foreach( $service_cpts as $cpt => $srvc_arr ){
 			if( in_array( $service, $srvc_arr ) )
 				return $cpt;
@@ -542,7 +544,7 @@ class NNService{
 		
 		do_action( 'NNService_Expire', $service_id );
 		
-		//$result = apply_filter( 'NNService_Expire', $result );
+		//$result = apply_filters( 'NNService_Expire', $result );
 		
 		return; //Was the suspension successful? True or False. 
 	}

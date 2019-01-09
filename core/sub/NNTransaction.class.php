@@ -37,6 +37,18 @@ class NNTransaction extends NNPostData{
 		); 
 		
 	protected $meta_key = 'NNTransData';
+				
+	public $trans_id,
+		$trans_date,
+		$trans_status,
+		$trans_type, 
+		$amount,
+		$currency,
+		$sales_tax,
+		$subtotal,
+		$net_amount,
+		$src_data;
+		
 		
 	//Methods
 	
@@ -80,7 +92,11 @@ class NNTransaction extends NNPostData{
 		if( !empty( $this->ID ) ){
 			$this->retrieve();
 		}
+		
+		//dump( __LINE__, __METHOD__, get_object_vars( $this ) );
 	}	
+	
+	 
 			
 	
 

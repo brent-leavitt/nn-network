@@ -322,7 +322,7 @@ class NNPostData{
 		$this->post_arr = array_merge( $this->post_arr, $mapped );
 		
 		
-		dump( __LINE__, __METHOD__, $this->post_arr );
+		//dump( __LINE__, __METHOD__, $this->post_arr );
 		//needed? 
 		return $mapped;
 	}
@@ -423,6 +423,8 @@ class NNPostData{
 		foreach( $actions as $action )
 			$this->actions[] = $action;
 		
+		
+		//dump( __LINE__, __METHOD__, $this->actions );
 	}	
 				
 		

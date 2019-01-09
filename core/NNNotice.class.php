@@ -168,8 +168,8 @@ Class Notice
 
 namespace core;
 
-use sub/NNNoticeTemplate as Template;
-use sub/NNEmail as Email;
+use core\sub\NNNoticeTemplate as Template;
+use core\sub\NNEmail as Email;
 
 class NNNotice{
 	
@@ -223,7 +223,7 @@ class NNNotice{
 */	
 			
 	
-	public function send( $message_type ){
+	public function send( $message_type = 'receipt' ){
 		
 		$result = [];
 		
@@ -403,50 +403,7 @@ class NNNotice{
 		
 	}	
 			
-/*
-	Name: 
-	Description: 
-*/	
-			
-	
-	public function __(){
-		
-		
-	}	
-			
-/*
-	Name: 
-	Description: 
-*/	
-			
-	
-	public function __(){
-		
-		
-	}	
-			
-/*
-	Name: 
-	Description: 
-*/	
-			
-	
-	public function __(){
-		
-		
-	}	
-			
-	
-/*
-	Name: 
-	Description: 
-*/	
-			
-	
-	public function __(){
-		
-		
-	}	
+
 	
 	
 	

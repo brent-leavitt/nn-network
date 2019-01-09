@@ -41,9 +41,15 @@ class NNReceipt extends NNTransaction{
 		'payee_exp' 		=> '',	
 	);
 	
-	public $src_data; 
-	
-	//Methods
+	public $src_data,
+		$reference_ID,		$trans_fee,		$reference_type, 	
+		$tp_name,		$tp_id,		$payee_first_name, 	
+		$payee_last_name, 	
+		$payee_address, 	
+		$payee_address1, 	
+		$payee_city,		$payee_state,		$payee_zip,		$payee_country,	
+		$payee_email,		$payee_phone,		$payee_type,		$payee_card,		$payee_exp;
+		//Methods
 	
 	
 /*  MAY NOT BE NEEDED IF IT IS THE SAME AS PARENT CLASS
@@ -86,11 +92,12 @@ class NNReceipt extends NNTransaction{
 	public function issue(){
 		
 		$result = $this->insert();
-		//Necessary?
+		//Necessary? Yes. 
 		
 		//add action from parent class. 
 		$this->set_actions( [ 'do_enrollment', 'do_role', 'do_notice' ] );
 		
+		return ( $result )? $this->ID : false ; //Returns the receipt CPT ID. 
 	}	
 	
 
@@ -103,9 +110,9 @@ class NNReceipt extends NNTransaction{
 	
 	public function set_src_data(){
 		
-		$this->src_data = $this->data[ 'src_data' ] ;
+		$this->src_data = $this->data[ 'src_data' ];
 		unset($this->data[ 'src_data' ]);
-		dump( __LINE__, __METHOD__, $this->src_data );
+		//dump( __LINE__, __METHOD__, $this->src_data );
 	}	
 			
 

@@ -587,7 +587,7 @@ function process_role_certs_lms( $role ){
 		$role->update_network();
 }
 
-add_action( 'NNAction_Do_Role', 'process_role_certs_lms', 10, 1 );
+//add_action( 'NNAction_Do_Role', 'process_role_certs_lms', 10, 1 );
 
 
 
@@ -609,7 +609,7 @@ function process_role_cbl( $role ){
 		$role->update_network();
 }
 
-add_action( 'NNAction_Do_Role', 'process_role_cbl', 10, 1 );
+//add_action( 'NNAction_Do_Role', 'process_role_cbl', 10, 1 );
 
 
 
@@ -697,7 +697,7 @@ function process_role_people_crm( $role ){
 		$role->update_network();
 }
 
-add_action( 'NNAction_Do_Role', 'process_role_people_crm', 10, 1 );
+//add_action( 'NNAction_Do_Role', 'process_role_people_crm', 10, 1 );
 
 	
 	
