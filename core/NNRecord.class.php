@@ -73,7 +73,7 @@ if( !class_exists( 'NNRecord' ) ){
 				if( empty( $prop ))
 					return false;
 			}
-			
+			dump( __LINE__, __METHOD__, get_object_vars( $this ) );
 			return $this->save();
 			
 		}
@@ -98,7 +98,7 @@ if( !class_exists( 'NNRecord' ) ){
 			if( defined( 'NN_BASESITE' ) && is_multisite() )
 				switch_to_blog( NN_BASESITE );
 
-			//$result = wp_insert_post( $post_record );
+			$result = wp_insert_post( $post_record );
 			
 			if( defined( 'NN_BASESITE' ) && is_multisite() )
 				restore_current_blog();

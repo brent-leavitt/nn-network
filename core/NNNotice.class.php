@@ -248,7 +248,7 @@ class NNNotice{
 					
 			}
 			
-			$result[] = $this->save_message();
+			$result[] = $this->save_notice();
 			
 		}
 		

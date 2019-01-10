@@ -393,10 +393,10 @@ if( !class_exists( 'NNEnrollment' ) ){
 			//Quick check of data. 
 			if( empty( $data ) ) return false;
 			
-			dump( __LINE__, __METHOD__, $data );
+			//dump( __LINE__, __METHOD__, $data );
 			//DO = add, expire, retire, annul, add is default
 			$do_action = ( strpos( $data[ 'action' ], 'enrollment' )  === 0  )? $data[ 'enrollment' ]['type'] : 'add' ;
-			ep( "The value of DO_ACTION is: ".$do_action );
+			//ep( "The value of DO_ACTION is: ".$do_action );
 
 			$result = $this->$do_action( $data[ 'token' ], $data[ 'service' ] );
 			

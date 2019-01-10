@@ -212,10 +212,15 @@ if( !class_exists( 'NNAction' ) ){
 			$this->record_step( $func , $record );
 			
 			//What additional actions need to be taken? Ask the object if they have anything else to do. Then merge with existing list of to dos. 
-			if( method_exists( $obj, 'get_actions' ) )
-				$this->actions = array_unique( array_merge( $this->actions, $obj->get_actions() ) );
+			if( method_exists( $obj, 'get_actions' ) ){
+				if( ( $obj_actions = $obj->get_actions()  ) !== false ){
+					$this->actions = array_unique( array_merge( $this->actions, $obj_actions ) );
+				}
+				
+			}
+				
 			
-			dump( __LINE__, __METHOD__, $this->actions );
+			//dump( __LINE__, __METHOD__, $this->actions );
 		}	
 		
 
@@ -228,6 +233,8 @@ if( !class_exists( 'NNAction' ) ){
 			
 			//This could end up being quite bloated. 
 			$this->record[] = array( $func => $data ); 
+			
+			//dump( __LINE__, __METHOD__, $this->record );
 		}	
 		
 		

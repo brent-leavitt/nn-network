@@ -271,7 +271,7 @@ class NNService{
 			'post_status' => $status,
 			'post_type' => $this->cpt_handler,
 			'meta_input' => array(
-				'nn_service' => $this->service,
+				'nnservice' => $this->service,
 				//'(key)' => '(value)',
 			),
 			/* 
@@ -485,10 +485,14 @@ class NNService{
 		$service = $this->service;
 		
 		
-		//dump( __LINE__, __METHOD__, $service_cpts );
+		dump( __LINE__, __METHOD__, $service );
 		foreach( $service_cpts as $cpt => $srvc_arr ){
-			if( in_array( $service, $srvc_arr ) )
+			dump( __LINE__, __METHOD__, $srvc_arr );
+			
+			if( in_array( $service, $srvc_arr ) ){
+				ep( "The CPT is: ". $cpt );
 				return $cpt;
+			}
 		}
 	}		
 			
