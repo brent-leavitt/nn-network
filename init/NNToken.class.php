@@ -1,5 +1,4 @@
 <?php
-
 /*
 Enrollment Token Class - Initial Class Psuedo Code for NBCS Network Plugin
 Last Updated 8 Nov 2018
@@ -27,9 +26,7 @@ Last Updated 8 Nov 2018
 
 
 */
-
 namespace init;
-
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -106,7 +103,7 @@ if( !class_exists( 'NNToken' ) ){
 			
 			foreach( $sites as $site_id ){
 				
-				add_tokens_to_site( $site_id );
+				$this->add_tokens_to_site( $site_id );
 			}
 			
 			

@@ -95,13 +95,11 @@ if( !class_exists( 'NNRecord' ) ){
 			);
 				
 			//Save only to the BASE SITE if set.  
-			if( defined( 'NN_BASESITE' ) && is_multisite() )
-				switch_to_blog( NN_BASESITE );
+			nn_switch_to_base_blog();
 
 			$result = wp_insert_post( $post_record );
 			
-			if( defined( 'NN_BASESITE' ) && is_multisite() )
-				restore_current_blog();
+			nn_return_from_base_blog();
 			
 			return $result;
 			

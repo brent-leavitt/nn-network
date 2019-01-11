@@ -204,8 +204,10 @@ class NNService{
 		
 		$find_query = apply_filters( 'NNService_Find_Query', $find_query );	
 		
+		//ep( "The value of FIND_QUERY in the find function in the Service class is: <br> $find_query " );
 		//What is the format of the returned value? An array of numbers. We want the first result, so key = 0. 
 		$found_id = get_posts( $find_query );
+		
 		
 		//Hard query to perform because it is dependent upon the database which is site specific.
 	
@@ -215,6 +217,8 @@ class NNService{
 		
 		$this->service_id = ( !empty( $found_id[ 0 ] ) )? $found_id[ 0 ] : 0 ;
 		$this->status = get_post_status( $this->service_id );
+		
+		dump( __LINE__, __METHOD__, get_object_vars( $this ) );
 		
 		return ( !empty( $this->service_id ) )? true : false;
 		
@@ -485,12 +489,12 @@ class NNService{
 		$service = $this->service;
 		
 		
-		dump( __LINE__, __METHOD__, $service );
+		//dump( __LINE__, __METHOD__, $service );
 		foreach( $service_cpts as $cpt => $srvc_arr ){
-			dump( __LINE__, __METHOD__, $srvc_arr );
+			//dump( __LINE__, __METHOD__, $srvc_arr );
 			
 			if( in_array( $service, $srvc_arr ) ){
-				ep( "The CPT is: ". $cpt );
+				//ep( "The CPT is: ". $cpt );
 				return $cpt;
 			}
 		}

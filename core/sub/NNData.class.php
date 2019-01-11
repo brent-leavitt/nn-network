@@ -238,7 +238,7 @@ class NNData{
 				}
 			}
 		}	
-		//The final data set is specific to the action being performed 
+		//The final data set is specific to the initiating action being performed 
 		//$this->data_set = $this->$action();
 		
 		return true;

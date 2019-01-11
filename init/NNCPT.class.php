@@ -25,7 +25,7 @@ class NNCPT{
 	
 	public function __construct( ){
 		
-		
+		$this->setup();
 	}
 	
 	public function setup(){

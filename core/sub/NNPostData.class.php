@@ -188,25 +188,35 @@ class NNPostData{
 		//Array_filter drops empty fields if no callback function is provided. 
 		$this->post_arr = array_filter( $this->post_arr /*,$callback_function missing*/ );
 		
-		//dump( __LINE__, __METHOD__, $this->post_arr );
+		//Has this post already been inserted? 
+		//Setup to assess if post exists:
+		foreach( [ 'title', 'content', 'date' ] as $exists )
+			$$exists = $this->post_arr[ "post_$exists" ];
+		
+		//Now we're checking if post exists. 
+		if( post_exists( $title, $content, $date ) === 0 ){//It doesn't exists
+		
+			//dump( __LINE__, __METHOD__, $this->post_arr );
 
-		//This information is stored in the CRM/MasterSite
-		if( defined( 'NN_BASESITE' ) && is_multisite() )
-				switch_to_blog( NN_BASESITE );
-		
-		$result = wp_insert_post(  $this->post_arr );
-		
-		//Return back to current space. 
-		if( defined( 'NN_BASESITE' ) && is_multisite() )
-				restore_current_blog();
-		
-		if( !is_wp_error( $result ) ){
+			//This information is stored in the CRM/MasterSite
+			nn_switch_to_base_blog();
 			
-			$this->ID = $result;
-			return true;
+			$result = wp_insert_post(  $this->post_arr );
+			
+			//Return back to current space. 
+			nn_return_from_base_blog();
+		
+			if( !is_wp_error( $result ) ){
+				
+				$this->ID = $result;
+				return true;
+			}
+			
+			return $result;
+			
 		}
 		
-		return $result;
+		return false;
 	}
 
 	

@@ -151,7 +151,7 @@ if( !class_exists( 'NBCS_Network' ) ){
 			flush_rewrite_rules();	// clear the permalinks to remove our post type's rules from the database
 			
 			//Remove tokens from all sites. 
-			$tokens = new init/NNToken();
+			$tokens = new init\NNToken();
 			$tokens->remove();
 			
 			

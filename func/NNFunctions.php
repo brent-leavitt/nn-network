@@ -26,6 +26,32 @@ function nn_format_data( $data, $source = '' ){
 	
 }
 
+
+
+/*
+	Name: nn_switch_to_base_blog
+	Description: This checks if a base site value is set and switches to it if 
+*/
+
+function nn_switch_to_base_blog(){
+	
+	if( defined( 'NN_BASESITE' ) && is_multisite() )
+				switch_to_blog( NN_BASESITE );
+}
+
+/*
+	Name: nn_return_from_base_blog
+	Description: This checks if a base site value is set and switches back to the source blog. 
+*/
+
+function nn_return_from_base_blog(){
+	
+	if( defined( 'NN_BASESITE' ) && is_multisite() )
+				restore_current_blog();
+			
+}
+
+
 //Credit: https://wppeople.net/blog/a-simple-two-way-function-to-encrypt-or-decrypt-a-string/
 function nn_crypt( $string, $action = 'e' ) {
     
