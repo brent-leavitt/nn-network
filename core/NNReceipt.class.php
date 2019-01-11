@@ -21,34 +21,18 @@ class NNReceipt extends NNTransaction{
 	public $post_type = 'nnreceipt';
 	
 	public $NNReceipt_data_map = array(
-		'reference_ID'		=> 'post_parent',
+		'invoice_id'		=> 'post_parent',
 		'trans_fee' 		=> '', 
 		'reference_type' 	=> '',
 		'tp_name' 			=> '',
 		'tp_id' 			=> '',
-		'payee_first_name' 	=> '',
-		'payee_last_name' 	=> '',
-		'payee_address' 	=> '',
-		'payee_address1' 	=> '',
-		'payee_city' 		=> '',
-		'payee_state' 		=> '',
-		'payee_zip' 		=> '',
-		'payee_country' 	=> '',
-		'payee_email' 		=> '',
-		'payee_phone' 		=> '',
 		'payee_type' 		=> '',
 		'payee_card' 		=> '',
 		'payee_exp' 		=> '',	
 	);
 	
-	public $src_data,
-		$reference_ID,		$trans_fee,		$reference_type, 	
-		$tp_name,		$tp_id,		$payee_first_name, 	
-		$payee_last_name, 	
-		$payee_address, 	
-		$payee_address1, 	
-		$payee_city,		$payee_state,		$payee_zip,		$payee_country,	
-		$payee_email,		$payee_phone,		$payee_type,		$payee_card,		$payee_exp;
+	public $invoice_id,		$trans_fee,		$reference_type, 	
+		$tp_name,		$tp_id,		$payee_type,		$payee_card,		$payee_exp;
 		//Methods
 	
 	

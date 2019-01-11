@@ -20,7 +20,7 @@ use \modl\NNCPT as CPT;
 class NNCPT{
 	
 	public $post_types = array(
-		'guide',
+		'nnguide',
 	);
 	
 	public function __construct( ){

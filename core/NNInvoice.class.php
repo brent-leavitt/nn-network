@@ -8,28 +8,44 @@ Description: - Invoice issuing is controlled here. Extends Transaction Sub Class
 
 
 */
-
 namespace core;
 
-use core/sub/NNTransaction;
+use core\sub\NNTransaction;
 
 class NNInvoice extends NNTransaction{
 	
 	
-	//Properties
-
-	public 
-		$__ = '', //
-		$__ = ''; //
+	//Properties	
 	
+	public $post_type = 'nninvoice';
 	
+	public $NNInvoice_data_map = array(
+		'due_date' 		=> '', 
+		'amount_due' 		=> '', 
+		'amount_remaining' 		=> '', 
+		'paid' 		=> '', 
+		'receipt_id' 		=> 'post_parent', 
+		'' 		=> '', 
+		'' 		=> '', 
+		'' 		=> '', 
+	);
+	
+	public $due_date,
+		$amount_due,
+		$amount_remaining,
+		$paid, //true or false
+		$receipt_id,
+		$,
+		$,
+		$,
+		$;
 	//Methods
 	
 	
 /*
 	Name: __construct
-	Description: 
-*/	
+	Description: NOT NEEDED, COVERED BY PARENT CLASS
+	
 			
 	
 	public function __construct( $data ){
@@ -37,11 +53,11 @@ class NNInvoice extends NNTransaction{
 		$this->init( $data );
 	}	
 			
-	
+*/	
 /*
 	Name: init
-	Description: 
-*/	
+	Description: NOT NEEDED, COVERED BY PARENT CLASS
+	
 			
 	
 	public function init( $data ){
@@ -49,19 +65,26 @@ class NNInvoice extends NNTransaction{
 		$this->set_data( $data );
 		
 	}	
-			
-	
-				
+*/			
+
 /*
-	Name: 
-	Description: 
+	Name: issue
+	Description: This generated a Invoice CPT for storage in the database as a receipt. What is unique to Receipts from Invoices? 
+	
 */	
 			
 	
-	public function __(){
+	public function issue(){
 		
+		$result = $this->insert();
+		//Necessary? Yes. 
 		
+		//add action from parent class. 
+		$this->set_actions( [ 'do_notice' ] );
+		
+		return ( $result )? $this->ID : false ; //Returns the invoice CPT ID. 
 	}	
+	
 			
 /*
 	Name: 

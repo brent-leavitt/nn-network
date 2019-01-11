@@ -176,13 +176,14 @@ class NNNotice{
 	//Properties
 	public 
 		$notice_id = 0, //0 until saved in database. 
-		$type = '',
-		$user_type = '',
-		$patron_id = 0,
+		$type = '', //email, notice (dashboard)
+		$user_type = '', //user, admin, rep
+		$patron = 0,
 		$user_id = 0, //0 is for system
-		$status = '',
+		$status = 'draft',
 		$template_slug = '',
 		$message_vars = array(),
+		$subject = '',
 		$content = '',
 		$error = false;
 		
@@ -212,7 +213,43 @@ class NNNotice{
 	
 	public function init( $data ){
 		
+		//What is the primary action of the incoming data? 
+		//Set basic incoming data
 		$this->set_data( $data );
+		
+		//if not NOTICE type of data, will need extra work. 
+		if( $data[ 'action' ] !== 'notice' ){
+			
+			//So if action = receicpt, invoice, or registration. 			
+			if( in_array( $data[ 'action' ], [ 'receipt', 'invoice', 'register' ] ) ){
+
+				$this->type = 'email';
+				$this->user_type = 'user';
+				$this->user_id = $this->patron; //Patron should already be set. 
+				$this->template_slug = $data[ 'action' ];
+				$this->message_vars = $data[ $data[ 'action' ] ];
+				
+			}
+			
+		}
+		
+		
+		
+		
+		//What type of data is being received. Different for different 
+		
+			//If receipt, send receipt
+			
+			//If Invoice, Send invoice
+			
+			//If registration, send confirmation of registration
+			
+			//if Newsletter, send newsletter
+			
+			//if 
+			
+		
+		
 		
 	}	
 			
@@ -223,13 +260,11 @@ class NNNotice{
 */	
 			
 	
-	public function send( $message_type = 'receipt' ){
+	public function send( ){
 		
 		$result = [];
 		
-		$this->template_slug = $message_type;
-		
-		$result[] = $this->build_message();
+		$result[ 'build_message' ] = $this->build_message();
 		
 		if( !( $this->error ) ){
 			
@@ -237,18 +272,18 @@ class NNNotice{
 				
 				case( 'email' ):
 						
-					$result[] = $this->send_email();	
+					$result[ 'send_email' ] = $this->send_email();	
 					break;
 				
 				case( 'notice' ):
 				default:
 				
-					$result[] = $this->send_notice(); 
+					$result[ 'send_notice' ] = $this->send_notice(); 
 					break;
 					
 			}
 			
-			$result[] = $this->save_notice();
+			$result[ 'save_notice' ] = $this->save_notice();
 			
 		}
 		
@@ -264,6 +299,15 @@ class NNNotice{
 			
 	
 	public function set_data( $data ){
+		
+		foreach ( get_object_vars( $this ) as $key => $value ){
+			if( isset( $data[ $key ] ) && !empty( $data[ $key ] ) ){
+				$this->$key = $data[ $key ];
+			} elseif( isset( $data[ 'notice' ][ $key ] ) && !empty( $data[ 'notice' ][ $key ] )  ){
+				$this->$key = $data[ 'notice' ][ $key ];
+			}
+		}	
+		
 		
 		
 			/*
@@ -304,7 +348,7 @@ class NNNotice{
 		$email = new Email( $data );
 		
 		if( !$email->error )
-			$result[ 'send_email' ] = $email->send();
+			$result[ __METHOD__ ] = $email->send();
 		
 		return $result; //
 		
@@ -322,7 +366,10 @@ class NNNotice{
 	
 	public function send_notice(){
 		
+		//What settings need to be set to make this visble in the system?
 		
+		
+		return true;
 	}	
 			
 
@@ -336,13 +383,13 @@ class NNNotice{
 	
 	public function build_message(){
 		
-		
 		$template = new Template( $this->template_slug );
 		
 		if( !$tempalte->error ){
 			
+			$this->subject = $template->get_subject();
 			//
-			$this->content = $template->build( $source );
+			$this->content = $template->get_content( $this->message_vars );
 			
 		} else {
 			
@@ -378,6 +425,51 @@ class NNNotice{
 	public function save_notice(){
 		
 		//Waht needs to be set for a save_post?
+		$post_arr = [
+			'post_author' => $this->patron,
+			'post_date' => '',
+			'post_content' => $this->content,
+			'post_title' => $this->subject,
+			'post_status' => $this->status,
+			'post_type' => 'nnnotice',
+			'post_parent' => //incomplete try get_page_by_path() ,
+		];
+		
+		
+		
+		//Array_filter drops empty fields if no callback function is provided. 
+		$post_arr = array_filter( $post_arr /*,$callback_function missing*/ );
+		
+		//Has this post already been inserted? 
+		//Setup to assess if post exists:
+		foreach( [ 'title', 'content', 'date' ] as $exists )
+			$$exists = $this->post_arr[ "post_$exists" ];
+		
+		//Now we're checking if post exists. 
+		if( post_exists( $title, $content, $date ) === 0 ){//It doesn't exists
+		
+			//dump( __LINE__, __METHOD__, $this->post_arr );
+
+			//This information is stored in the CRM/MasterSite
+			nn_switch_to_base_blog();
+			
+			$result = wp_insert_post(  $this->post_arr );
+			
+			//Return back to current space. 
+			nn_return_from_base_blog();
+		
+			if( !is_wp_error( $result ) ){
+				
+				$this->ID = $result;
+				return true;
+			}
+			
+			return $result;
+			
+		}
+		
+		return false;
+		
 		
 	}	
 			
