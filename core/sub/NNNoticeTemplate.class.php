@@ -38,6 +38,7 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 			$vars = array(),
 			$source = array(),
 			$data = array(),
+			$subject = '',
 			$content = '',
 			$error = false;
 		
@@ -58,7 +59,7 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 		
 	/*
 		Name: init
-		Description: We need to know if the template. Sets Error to true if no template is found. 
+		Description: We need to know if the template exists. Sets Error to true if no template is found. 
 	*/	
 		
 		private function init( $slug ){
@@ -78,7 +79,7 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 		public function retrieve( $slug ){
 			
 			//Retrieve Post Type by Slug
-			if ( $post = get_page_by_path( $slug , OBJECT, 'NBNoticeTempalte' ) )
+			if ( $post = get_page_by_path( $slug , OBJECT, 'nnnoticetempalte' ) )
 				$this->content = $post->post_content;
 
 			return ( !empty( $this->content ) )? true : false; //true or false; 
@@ -100,7 +101,7 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 
 		
 	/*
-		Name: 
+		Name: get_template_vars
 		Description: 
 	*/	
 				
@@ -155,7 +156,44 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 			return $data_set; //array with data paired to needed template vars.  
 		}	
 		
+					
+	/*
+		Name: get_subject 
+		Description: Get the notice template Subject
+	*/	
+				
 		
+		public function get_subject(){
+			
+			
+			return "Filler Subject Line Goes Here - New Beginnings Doula Training";
+		}	
+							
+	/*
+		Name: get_content
+		Description: Gets the content of the subject. 
+		
+	*/	
+				
+		
+		public function get_content(){
+			
+			
+			
+			return "Filler content goes here. I'm getting tired of this code, or just tired in general.";
+		}	
+							
+	/*
+		Name: 
+		Description: 
+	*/	
+				
+		
+		public function __(){
+			
+			
+		}	
+			
 		
 		
 		

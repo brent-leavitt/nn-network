@@ -171,334 +171,353 @@ namespace core;
 use core\sub\NNNoticeTemplate as Template;
 use core\sub\NNEmail as Email;
 
-class NNNotice{
-	
-	//Properties
-	public 
-		$notice_id = 0, //0 until saved in database. 
-		$type = '', //email, notice (dashboard)
-		$user_type = '', //user, admin, rep
-		$patron = 0,
-		$user_id = 0, //0 is for system
-		$status = 'draft',
-		$template_slug = '',
-		$message_vars = array(),
-		$subject = '',
-		$content = '',
-		$error = false;
-		
-	
-	
-	//Methods
-	
-		
-	
-/*
-	Name: __construct
-	Description: 
-*/	
-			
-	
-	public function __construct( $notice_data ){
-		
-		$this->init( $notice_data );
-	}	
-			
-	
-/*
-	Name: init
-	Description: 
-*/	
-			
-	
-	public function init( $data ){
-		
-		//What is the primary action of the incoming data? 
-		//Set basic incoming data
-		$this->set_data( $data );
-		
-		//if not NOTICE type of data, will need extra work. 
-		if( $data[ 'action' ] !== 'notice' ){
-			
-			//So if action = receicpt, invoice, or registration. 			
-			if( in_array( $data[ 'action' ], [ 'receipt', 'invoice', 'register' ] ) ){
+if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-				$this->type = 'email';
-				$this->user_type = 'user';
-				$this->user_id = $this->patron; //Patron should already be set. 
-				$this->template_slug = $data[ 'action' ];
-				$this->message_vars = $data[ $data[ 'action' ] ];
+if( !class_exists( 'NNNotice' ) ){
+	class NNNotice{
+		
+		//Properties
+		public 
+			$notice_id = 0, //0 until saved in database. 
+			$type = '', //email, notice (dashboard)
+			$user_type = '', //user, admin, rep
+			$patron = 0,
+			$user_id = 0, //0 is for system
+			$status = 'draft',
+			$template_slug = '',
+			$message_vars = array(),
+			$subject = '',
+			$content = '',
+			$error = false;
+			
+		
+		
+		//Methods
+		
+			
+		
+	/*
+		Name: __construct
+		Description: 
+	*/	
 				
-			}
+		
+		public function __construct( $notice_data ){
 			
-		}
-		
-		
-		
-		
-		//What type of data is being received. Different for different 
-		
-			//If receipt, send receipt
-			
-			//If Invoice, Send invoice
-			
-			//If registration, send confirmation of registration
-			
-			//if Newsletter, send newsletter
-			
-			//if 
-			
-		
-		
-		
-	}	
-			
-	
-/*
-	Name: send
-	Description: This is the initiating action for a message being sent from the notice class. 
-*/	
-			
-	
-	public function send( ){
-		
-		$result = [];
-		
-		$result[ 'build_message' ] = $this->build_message();
-		
-		if( !( $this->error ) ){
-			
-			switch( $this->type ){
+			$this->init( $notice_data );
+		}	
 				
-				case( 'email' ):
-						
-					$result[ 'send_email' ] = $this->send_email();	
-					break;
+		
+	/*
+		Name: init
+		Description: 
+	*/	
 				
-				case( 'notice' ):
-				default:
+		
+		public function init( $data ){
+			
+			//What is the primary action of the incoming data? 
+			//Set basic incoming data
+			$this->set_data( $data );
+			
+			//if not NOTICE type of data, will need extra work. 
+			if( $data[ 'action' ] !== 'notice' ){
 				
-					$result[ 'send_notice' ] = $this->send_notice(); 
-					break;
+				//So if action = receicpt, invoice, or registration. 			
+				if( in_array( $data[ 'action' ], [ 'receipt', 'invoice', 'register' ] ) ){
+
+					$this->type = 'email';
+					$this->user_type = 'user';
+					$this->user_id = $this->patron; //Patron should already be set. 
+					$this->template_slug = $data[ 'action' ];
+					$this->message_vars = $data[ $data[ 'action' ] ];
 					
+				}
+				
 			}
 			
-			$result[ 'save_notice' ] = $this->save_notice();
 			
-		}
-		
-		return $result;//result of the message send. Be verbose; this get's recorded for reference purposes. 	
-	}	
-		
-	
-/*
-	Name: set_data
-	Description: This receives initiating data so that a message can be successfully sent. Recieves only that data which is necessary for sending messages. 
-	
-*/	
 			
-	
-	public function set_data( $data ){
+			
+			//What type of data is being received. Different for different 
+			
+				//If receipt, send receipt
+				
+				//If Invoice, Send invoice
+				
+				//If registration, send confirmation of registration
+				
+				//if Newsletter, send newsletter
+				
+				//if 
+				
+			
+			
+			
+		}	
+				
 		
-		foreach ( get_object_vars( $this ) as $key => $value ){
-			if( isset( $data[ $key ] ) && !empty( $data[ $key ] ) ){
-				$this->$key = $data[ $key ];
-			} elseif( isset( $data[ 'notice' ][ $key ] ) && !empty( $data[ 'notice' ][ $key ] )  ){
-				$this->$key = $data[ 'notice' ][ $key ];
+	/*
+		Name: send
+		Description: This is the initiating action for a message being sent from the notice class. 
+	*/	
+				
+		
+		public function send( ){
+			
+			$result = [];
+			
+			$result[ 'build_message' ] = $this->build_message();
+			
+			if( !( $this->error ) ){
+				
+				switch( $this->type ){
+					
+					case( 'email' ):
+							
+						$result[ 'send_email' ] = $this->send_email();	
+						break;
+					
+					case( 'notice' ):
+					default:
+					
+						$result[ 'send_notice' ] = $this->send_notice(); 
+						break;
+						
+				}
+				
+				$result[ 'save_notice' ] = $this->save_notice();
+				
 			}
+			
+			return $result;//result of the message send. Be verbose; this get's recorded for reference purposes. 	
+		}	
+			
+		
+	/*
+		Name: set_data
+		Description: This receives initiating data so that a message can be successfully sent. Recieves only that data which is necessary for sending messages. 
+		
+	*/	
+				
+		
+		public function set_data( $data ){
+			
+			foreach ( get_object_vars( $this ) as $key => $value ){
+				if( isset( $data[ $key ] ) && !empty( $data[ $key ] ) ){
+					$this->$key = $data[ $key ];
+				} elseif( isset( $data[ 'notice' ][ $key ] ) && !empty( $data[ 'notice' ][ $key ] )  ){
+					$this->$key = $data[ 'notice' ][ $key ];
+				}
+			}	
+			
+			
+			
+				/*
+			$type = '',
+			$user_type = '',
+			$patron_id = 0,
+			$user_id = 0, //0 is for system
+			$status = '',
+			$message_tmplt_id = '',
+			$message_vars = array(),
+			$content = '';
+				
+				*/
+			
+			
+		}	
+				
+		
+	/*
+		Name: send_email
+		Description: This takes the finalized content and sends it to the requested recipient. 
+	*/	
+				
+		
+		public function send_email(){
+			
+			$data = array(
+			
+				'user_id' => $this->user_id, //who is the recipient?
+				//'from' => '', 
+				'subject' => $this->subject,
+				'message' => $this->content,
+				'html' => true,
+				'headers' => [] //does anyone need a cc or bcc?
+				
+			);
+			
+			$email = new Email( $data );
+			
+			if( !$email->error )
+				$result[ __METHOD__ ] = $email->send();
+			
+			return $result; //
+			
+		}	
+				
+		
+	/*
+		Name: send_notice
+		Description: This is nothing more than a reference to the Notice CPT in the CRM. But this will toggle a setting that marks it as an active read. 
+		
+		Maybe or this is a notice's default state based on the user_id. If user_id remains 0, and an email is not sent. then it only get's posted to the system. 
+		
+	*/	
+				
+		
+		public function send_notice(){
+			
+			//What settings need to be set to make this visble in the system?
+			
+			
+			return true;
+		}	
+				
+
+				
+		
+	/*
+		Name: build_message
+		Description: 
+	*/	
+				
+		
+		public function build_message(){
+			
+			ep( "The template slug is: ".$this->template_slug  );
+			$template = new Template( $this->template_slug );
+			
+			dump( __LINE__, __METHOD__, $template );
+			
+			if( !$template->error ){
+				
+				$this->subject = $template->get_subject();
+				//
+				$this->content = $template->get_content( $this->message_vars );
+				
+			} else {
+				
+				//template not found. 
+				$error = new \WP_Error( 'message template not found.' );
+				dump( __LINE__, __METHOD__, $error );
+				
+				return $error;
+			}
+			
+			return true; 
+		}	
+
+		
+	/*
+		Name: get_notice
+		Description: This calls notice from database. Not sure how this is referenced for such a call. YOu would need a notice ID.
+	*/	
+				
+		
+		public function get_notice(){
+			
+			
+			
 		}	
 		
-		
-		
-			/*
-		$type = '',
-		$user_type = '',
-		$patron_id = 0,
-		$user_id = 0, //0 is for system
-		$status = '',
-		$message_tmplt_id = '',
-		$message_vars = array(),
-		$content = '';
-			
-			*/
-		
-		
-	}	
-			
-	
-/*
-	Name: send_email
-	Description: This takes the finalized content and sends it to the requested recipient. 
-*/	
-			
-	
-	public function send_email(){
-		
-		$data = array(
-		
-			'user_id' => $this->user_id, //who is the recipient?
-			//'from' => '', 
-			'subject' => $this->subject,
-			'message' => $this->content,
-			'html' => true,
-			'headers' => [] //does anyone need a cc or bcc?
-			
-		);
-		
-		$email = new Email( $data );
-		
-		if( !$email->error )
-			$result[ __METHOD__ ] = $email->send();
-		
-		return $result; //
-		
-	}	
-			
-	
-/*
-	Name: send_notice
-	Description: This is nothing more than a reference to the Notice CPT in the CRM. But this will toggle a setting that marks it as an active read. 
-	
-	Maybe or this is a notice's default state based on the user_id. If user_id remains 0, and an email is not sent. then it only get's posted to the system. 
-	
-*/	
-			
-	
-	public function send_notice(){
-		
-		//What settings need to be set to make this visble in the system?
-		
-		
-		return true;
-	}	
-			
 
-			
-	
-/*
-	Name: build_message
-	Description: 
-*/	
-			
-	
-	public function build_message(){
 		
-		$template = new Template( $this->template_slug );
-		
-		if( !$tempalte->error ){
-			
-			$this->subject = $template->get_subject();
-			//
-			$this->content = $template->get_content( $this->message_vars );
-			
-		} else {
-			
-			//template not found. 
-			$error = new WP_Error( 'message template not found.' );
-			return $error;
-		}
-		
-		return true; 
-	}	
-
-	
-/*
-	Name: get_notice
-	Description: This calls notice from database. Not sure how this is referenced for such a call. YOu would need a notice ID.
-*/	
-			
-	
-	public function get_notice(){
-		
-		
-		
-	}	
-	
-
-	
-/*
-	Name: save_notice
-	Description: Save notice to CPT for CRM. 
-*/	
-			
-	
-	public function save_notice(){
-		
-		//Waht needs to be set for a save_post?
-		$post_arr = [
-			'post_author' => $this->patron,
-			'post_date' => '',
-			'post_content' => $this->content,
-			'post_title' => $this->subject,
-			'post_status' => $this->status,
-			'post_type' => 'nnnotice',
-			'post_parent' => //incomplete try get_page_by_path() ,
-		];
-		
-		
-		
-		//Array_filter drops empty fields if no callback function is provided. 
-		$post_arr = array_filter( $post_arr /*,$callback_function missing*/ );
-		
-		//Has this post already been inserted? 
-		//Setup to assess if post exists:
-		foreach( [ 'title', 'content', 'date' ] as $exists )
-			$$exists = $this->post_arr[ "post_$exists" ];
-		
-		//Now we're checking if post exists. 
-		if( post_exists( $title, $content, $date ) === 0 ){//It doesn't exists
-		
-			//dump( __LINE__, __METHOD__, $this->post_arr );
-
-			//This information is stored in the CRM/MasterSite
-			nn_switch_to_base_blog();
-			
-			$result = wp_insert_post(  $this->post_arr );
-			
-			//Return back to current space. 
-			nn_return_from_base_blog();
-		
-			if( !is_wp_error( $result ) ){
+	/*
+		Name: save_notice
+		Description: Save notice to CPT for CRM. 
+	*/	
 				
-				$this->ID = $result;
-				return true;
+		
+		public function save_notice(){		
+			
+			//Waht needs to be set for a save_post?
+			$post_arr = [
+				'post_author' => $this->patron,
+				'post_date' => '',
+				'post_content' => $this->content,
+				'post_title' => $this->subject,
+				'post_status' => $this->status,
+				'post_type' => 'nnnotice',
+				'post_parent' => $this->get_tempalte_id(), //incomplete try get_page_by_path() ,
+			];
+			
+			
+			
+			//Array_filter drops empty fields if no callback function is provided. 
+			$post_arr = array_filter( $post_arr /*,$callback_function missing*/ );
+			
+			//Has this post already been inserted? 
+			//Setup to assess if post exists:
+			foreach( [ 'title', 'content', 'date' ] as $exists ) 
+				$$exists = $post_arr[ "post_$exists" ];
+			
+			//Now we're checking if post exists. 
+			if( post_exists( $title, $content, $date ) === 0 ){//It doesn't exists
+			
+				//dump( __LINE__, __METHOD__, $this->post_arr );
+
+				//This information is stored in the CRM/MasterSite
+				nn_switch_to_base_blog();
+				
+				$result = wp_insert_post( $post_arr );
+				
+				//Return back to current space. 
+				nn_return_from_base_blog();
+			
+				if( !is_wp_error( $result ) ){
+					
+					$this->ID = $result;
+					return true;
+				}
+				
+				return $result;
+				
 			}
 			
-			return $result;
+			return false;
 			
-		}
-		
-		return false;
-		
-		
-	}	
 			
-/*
-	Name: update_notice
-	Description: 
-*/	
-			
-	
-	public function update_notice(){
+		}	
+				
+	/*
+		Name: update_notice
+		Description: 
+	*/	
+				
 		
-		
-	}	
+		public function update_notice(){
 			
-/*
-	Name: 
-	Description: 
-*/	
 			
-	
-	public function __(){
+		}	
+				
+	/*
+		Name: get_tempalte_id
+		Description: Get the ID of the email template used to create the message. This will be assigned as the 'post_parent' ID. 
+	*/	
+				
 		
-		
-	}	
+		public function get_tempalte_id(){
 			
-
-	
-	
-	
+			$template = get_page_by_path( $this->tempalte_slug, OBJECT, 'nnnoticetemplate' );
+			
+			return ( $template )? $template->ID : 0 ;
+			
+		}		
+				
+	/*
+		Name: 
+		Description: 
+	*/	
+				
+		
+		public function __(){
+			
+			
+		}	
+		
+	}
 }
 	
 	

@@ -35,7 +35,7 @@ Description: Dependent upon the Notice Core Class, This houses actions that are 
 */
 
 
-namespace core/sub;
+namespace core\sub;
 
 class NNEmail{
 	
