@@ -35,9 +35,9 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 		//Properties
 		public 
 			$slug = '',
-			$vars = array(),
-			$source = array(),
-			$data = array(),
+			$subject_vars = array(), //Varable extracted from subject
+			$content_vars = array(), //Varable extracted from content
+			$source, //source data
 			$subject = '',
 			$content = '',
 			$error = false;
@@ -67,6 +67,7 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 			$this->slug = ( $this->retrieve( $slug ) )? $slug : '' ;
 			
 			$this->error = ( !empty( $this->slug ) && !empty( $this->content ) )? false : true ; 
+		
 		}	
 		
 		
@@ -79,12 +80,43 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 		public function retrieve( $slug ){
 			
 			//Retrieve Post Type by Slug
-			if ( $post = get_page_by_path( $slug , OBJECT, 'nnnoticetempalte' ) )
+			if ( $post = get_page_by_path( $slug , OBJECT, 'nnnoticetemplate' ) ){
 				$this->content = $post->post_content;
-
+				$this->subject = $post->post_title;
+			}
 			return ( !empty( $this->content ) )? true : false; //true or false; 
 			
 		}		
+
+							
+	/*
+		Name: prepare
+		Description: This prepares the Notice Template by extracting available template variables from the content of the template and storing them in the 
+	*/	
+				
+		
+		public function prepare( $data ){
+			
+			//dump( __LINE__, __METHOD__, $data );
+			$this->source = $data;
+			
+			
+			//Extract Subject Variables
+			$this->subject_vars = $this->get_template_vars( $this->subject );
+			
+			//Build Subject Line
+			$this->build( 'subject' );
+			
+			
+			//Extract Content Variables
+			$this->content_vars = $this->get_template_vars( $this->content );
+			
+			
+			//Build Content with sent data
+			$this->build( 'content' );
+			
+			dump( __LINE__, __METHOD__, get_object_vars( $this ) );
+		}	
 		
 		
 	/*
@@ -93,11 +125,31 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 	*/	
 				
 		
-		public function build( $source ){
+		public function build( $what ){
 			
-			//
+			$out = $this->$what;
+			
+			$vars = $this->get_template_vars( $this->$what );
+			
+			foreach( $vars as $value ){
+				$search = "[nn_m $value]"; 
+				$source = $this->source;
+				$replace = $source[ $value ]; //WHY DOESN'T THIS WORK. 
+				
+				ep( "The value of VALUE is: $value" );
+				ep( "The value of replace is: $replace" );
+				dump( __LINE__, __METHOD__, $source );
+				
+				$out = str_replace( $search, $replace, $out );
+				
+			}
+			
+			dump( __LINE__, __METHOD__, $out );
+			
+			$this->$what = $out;
 			
 		}	
+		
 
 		
 	/*
@@ -110,18 +162,21 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 			
 			$pattern = get_shortcode_regex();
 			
-			preg_match('/'.$pattern.'/s', $content, $matches);
-			/* NOT SURE WHAT THIS DOES TO HELP ME?
-			if (is_array($matches) && $matches[2] == 'the_shortcode_name') {
-			   // $shortcode = $matches[0];
-			   // echo do_shortcode($shortcode);
-			}	
-			*/
+			preg_match_all( '/' . get_shortcode_regex() . '/s', $content, $matches );
+
+			$out = array();
 			
-			// Are there default values assigned to the template? 
-				// There could be. 
+			if( isset( $matches[2] ) ){
+				foreach( $matches[2] as $key => $value ){
+					if( 'nn_m' === $value )
+						$out[] = $matches[3][$key];  
+				}
+			}
 			
-			return $vars; //a list of the template vars to be matched. 
+			//dump( __LINE__, __METHOD__, $out);
+			
+			return $out;
+			
 		}		
 		
 	/*
@@ -182,7 +237,10 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 			
 			return "Filler content goes here. I'm getting tired of this code, or just tired in general.";
 		}	
-							
+
+			
+		
+									
 	/*
 		Name: 
 		Description: 

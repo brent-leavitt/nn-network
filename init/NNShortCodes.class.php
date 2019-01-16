@@ -58,7 +58,7 @@ if( !class_exists( 'NNShortCodes' ) ){
 		
 		//properties
 		
-		public $shortcodes =[ 'payment', 'register', 'login', 'account' ];
+		public $shortcodes =[ 'payment', 'register', 'login', 'account', 'm' ];
 		
 
 		
@@ -85,7 +85,7 @@ if( !class_exists( 'NNShortCodes' ) ){
 		
 			//loop through shortcode array and create callback foreach: 
 			foreach( $this->shortcodes as $sc )
-				add_shortcode( 'nb-'.$sc , array( $this, 'load_'.$sc.'_cb' ) ); 
+				add_shortcode( 'nn_'.$sc , array( $this, 'load_'.$sc.'_cb' ) ); 
 		
 		}
 		

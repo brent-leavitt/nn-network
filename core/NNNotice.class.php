@@ -230,14 +230,12 @@ if( !class_exists( 'NNNotice' ) ){
 					$this->user_type = 'user';
 					$this->user_id = $this->patron; //Patron should already be set. 
 					$this->template_slug = $data[ 'action' ];
-					$this->message_vars = $data[ $data[ 'action' ] ];
+					$this->message_vars = $data;
 					
 				}
 				
 			}
-			
-			
-			
+
 			
 			//What type of data is being received. Different for different 
 			
@@ -386,16 +384,18 @@ if( !class_exists( 'NNNotice' ) ){
 		
 		public function build_message(){
 			
-			ep( "The template slug is: ".$this->template_slug  );
+			//ep( "The template slug is: ".$this->template_slug  );
 			$template = new Template( $this->template_slug );
 			
-			dump( __LINE__, __METHOD__, $template );
+			//dump( __LINE__, __METHOD__, $template );
 			
 			if( !$template->error ){
 				
+				$template->prepare( $this->message_vars );
+				
 				$this->subject = $template->get_subject();
 				//
-				$this->content = $template->get_content( $this->message_vars );
+				$this->content = $template->get_content();
 				
 			} else {
 				
