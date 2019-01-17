@@ -269,26 +269,20 @@ if( !class_exists( 'NNNotice' ) ){
 			
 			if( !( $this->error ) ){
 				
-				switch( $this->type ){
-					
-					case( 'email' ):
-							
-						$result[ 'send_email' ] = $this->send_email();	
-						break;
-					
-					case( 'notice' ):
-					default:
-					
-						$result[ 'send_notice' ] = $this->send_notice(); 
-						break;
-						
-				}
+				//If email, process this first. 
+				if( $this->type == 'email' )
+					$result[ 'send_email' ] = $this->send_email();
 				
+				//Save after an email has been sent. 
 				$result[ 'save_notice' ] = $this->save_notice();
 				
+				//if notice, point to the save notice which was processed first. 
+				if( $this->type == 'notice' )
+					$result[ 'send_notice' ] = $this->send_notice();				
 			}
 			
-			return $result;//result of the message send. Be verbose; this get's recorded for reference purposes. 	
+			return $result;
+			//result of the message send. Be verbose; this get's recorded for reference purposes. 	
 		}	
 			
 		
@@ -362,13 +356,28 @@ if( !class_exists( 'NNNotice' ) ){
 		
 		Maybe or this is a notice's default state based on the user_id. If user_id remains 0, and an email is not sent. then it only get's posted to the system. 
 		
+		params: 
+			message_id
+			patron_id
+		
 	*/	
 				
 		
 		public function send_notice(){
 			
 			//What settings need to be set to make this visble in the system?
+			//The notice is saved to the database automatically. 
 			
+			//It's a matter of flagging a users account. 
+			//Set a user_meta property_exists
+			
+			/*
+			add to user meta = nn_notices which simply holds a key/value set message_id => status
+			update_usermeta( recepient_id, message_id,  )
+			
+			or we flag the message as unread by admin in the post_meta. 
+			
+			*/
 			
 			return true;
 		}	
@@ -384,24 +393,22 @@ if( !class_exists( 'NNNotice' ) ){
 		
 		public function build_message(){
 			
-			//ep( "The template slug is: ".$this->template_slug  );
 			$template = new Template( $this->template_slug );
 			
-			//dump( __LINE__, __METHOD__, $template );
 			
 			if( !$template->error ){
 				
 				$template->prepare( $this->message_vars );
 				
 				$this->subject = $template->get_subject();
-				//
+				
 				$this->content = $template->get_content();
 				
 			} else {
 				
 				//template not found. 
 				$error = new \WP_Error( 'message template not found.' );
-				dump( __LINE__, __METHOD__, $error );
+				//dump( __LINE__, __METHOD__, $error );
 				
 				return $error;
 			}

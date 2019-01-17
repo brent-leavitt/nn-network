@@ -9,18 +9,24 @@ Desription: This handles the retrieving of notice templates, building them, and 
 
 	usage: 
 		
-		$template = new Template( '[template_slug]' );
-		
-		if( !$tempalte->error ){
+		$template = new Template( $this->template_slug );
 			
-			//
-			$content = $template->build( $source );
 			
-		} else {
-			
-			//template not found. 
-			
-		}
+			if( !$template->error ){
+				
+				$template->prepare( $this->message_vars );
+				
+				$this->subject = $template->get_subject();
+				
+				$this->content = $template->get_content();
+				
+			} else {
+				
+				//template not found. 
+				$error = new \WP_Error( 'message template not found.' );
+				
+				return $error;
+			}
 		
 ---
 */
@@ -35,8 +41,8 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 		//Properties
 		public 
 			$slug = '',
-			$subject_vars = array(), //Varable extracted from subject
-			$content_vars = array(), //Varable extracted from content
+			//$subject_vars = array(), //Varable extracted from subject
+			//$content_vars = array(), //Varable extracted from content
 			$source, //source data
 			$subject = '',
 			$content = '',
@@ -51,7 +57,7 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 		Description: 
 	*/	
 		
-		public function __construct( $slug ){
+		public function __construct( $slug ){ 
 			
 			$this->init( $slug );
 		}	
@@ -97,25 +103,14 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 		
 		public function prepare( $data ){
 			
-			//dump( __LINE__, __METHOD__, $data );
 			$this->source = $data;
-			
-			
-			//Extract Subject Variables
-			$this->subject_vars = $this->get_template_vars( $this->subject );
 			
 			//Build Subject Line
 			$this->build( 'subject' );
 			
-			
-			//Extract Content Variables
-			$this->content_vars = $this->get_template_vars( $this->content );
-			
-			
 			//Build Content with sent data
 			$this->build( 'content' );
 			
-			dump( __LINE__, __METHOD__, get_object_vars( $this ) );
 		}	
 		
 		
@@ -131,20 +126,9 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 			
 			$vars = $this->get_template_vars( $this->$what );
 			
-			foreach( $vars as $value ){
-				$search = "[nn_m $value]"; 
-				$source = $this->source;
-				$replace = $source[ $value ]; //WHY DOESN'T THIS WORK. 
-				
-				ep( "The value of VALUE is: $value" );
-				ep( "The value of replace is: $replace" );
-				dump( __LINE__, __METHOD__, $source );
-				
-				$out = str_replace( $search, $replace, $out );
-				
-			}
-			
-			dump( __LINE__, __METHOD__, $out );
+			//find and replace the short codes out of the template. (I actually think there is a better way to do this, back where things are first being parsed with regex.)
+			foreach( $vars as $value )				
+				$out = str_replace( "[nn_m $value]", $this->source[ $value ], $out );
 			
 			$this->$what = $out;
 			
@@ -169,48 +153,13 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 			if( isset( $matches[2] ) ){
 				foreach( $matches[2] as $key => $value ){
 					if( 'nn_m' === $value )
-						$out[] = $matches[3][$key];  
+						$out[] = trim( $matches[3][ $key ] );  
 				}
 			}
-			
-			//dump( __LINE__, __METHOD__, $out);
-			
 			return $out;
-			
 		}		
 		
-	/*
-		Name: pair_template_vars
-		Description: 
-	*/	
-				
-		
-		public function pair_template_vars( $vars, $data ){
-			
-			//Assign data to $vars. 
-			$data_set = [];
-			
-			foreach( $vars as $key => $var ){
-				
-				if( !empty( $data[ $key ] ) ){
-					//Set 
-					$data_set[ $key ] = $data[ $key ];				
-				} elseif( !empty( $vars[ $key ] ) ){
-					//if source not set, set the default value. 
-					$data_set[ $key ] = $vars[ $key ];
-				} else {
-					//No source, no default, send back empty. 
-					$data_set[ $key ] = '';
-				}
-				
-				//Do we return empty data or no data? 
-				//Are there default values? 
-				
-			}
-			
-			return $data_set; //array with data paired to needed template vars.  
-		}	
-		
+	
 					
 	/*
 		Name: get_subject 
@@ -220,8 +169,7 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 		
 		public function get_subject(){
 			
-			
-			return "Filler Subject Line Goes Here - New Beginnings Doula Training";
+			return $this->subject;
 		}	
 							
 	/*
@@ -233,9 +181,7 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 		
 		public function get_content(){
 			
-			
-			
-			return "Filler content goes here. I'm getting tired of this code, or just tired in general.";
+			return $this->content;
 		}	
 
 			
