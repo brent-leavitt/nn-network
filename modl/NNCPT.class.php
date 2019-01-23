@@ -35,6 +35,9 @@ class NNCPT{
 		//declare the custom post types here. 
 		$this->set_post_type_args( $args );
 		$this->register_cpt();
+		add_action( 'admin_init', array( $this, 'set_admin_caps' ) );
+		
+		//ep( "The NNCPT modl class has been called. The CPT being created is: ". $this->cpt_args['post_type']." It's name is: ".$this->cpt_args['post_name'] );
 	}
 	
 	
@@ -107,8 +110,9 @@ class NNCPT{
 		$args = $this->cpt_params();
 		$post_type = NN_PREFIX.$this->cpt_args[ 'post_type' ]; 
 		
-		register_post_type( $post_type, $args );
+		$result = register_post_type( $post_type, $args );
 		
+		//dump( __LINE__, __METHOD__, $result );
 	}
 	
 	
@@ -174,21 +178,49 @@ class NNCPT{
 		
 		$labels = $this->cpt_labels();
 		
+		$caps =  $this->set_caps(
+				array( 
+					'cap_posts' => $a[ 'cap_posts' ], 
+					'cap_post' => $a[ 'cap_post' ] )
+			);
+		
+		
 		$params = array(
 			'labels' => $labels,
+			'capabilities' => $caps, 
 			'description' => $a[ 'description' ],
 			'public' => true ,
 			'publicly_queryable' => true,
 			'query_var' => true,
 			'show_ui' => true,
-			'show_in_menu' => false, //Toggle here to hide from main menu. 
+			'show_in_menu' => true, //Toggle here to hide from main menu. 
 			'has_archive' => true, 
 			'hierarchical' => true,
 			'menu_position' => $a[ 'menu_pos' ],
 			'menu_icon' => 'dashicons-'. $a[ 'menu_icon' ],
 			'supports' => $a[ 'supports' ],  
 			'capability_type'=>'post',
-			'capabilities' => array(
+			'map_meta_cap'=> true, 
+			'rewrite' => array( 'slug' => $a[ 'rewrite' ] )
+		);
+		
+		return $params;
+		
+	}
+	
+	/*
+	*
+	*
+	* 	Params: $a(
+	*		'cap_post' => '(value)', 
+	*		'cap_posts' => '(value)', 
+	*	)
+	*	Returns: $caps (array) 	
+	*
+	*/	
+	public function set_caps( $a ){
+		
+		$caps = array(
 				'publish_posts' => 'publish_'.$a[ 'cap_posts' ],
 				'edit_posts' => 'edit_'.$a[ 'cap_posts' ],
 				'edit_others_posts' => 'edit_others_'.$a[ 'cap_posts' ],
@@ -203,13 +235,64 @@ class NNCPT{
 				'edit_published_posts' => 'edit_published_'.$a[ 'cap_posts' ],
 				'delete_published_posts' => 'delete_published_'.$a[ 'cap_posts' ],
 				'delete_private_posts' => 'delete_private_'.$a[ 'cap_posts' ]
-			), 
-			'map_meta_cap'=> true, 
-			'rewrite' => array( 'slug' => $a[ 'rewrite' ] )
-		);
-		
-		return $params;
-		
+			);
+			
+		return $caps;
 	}
 	
+		
+
+/*
+	Name: set_admin_caps
+	Description: 
+*/	
+			
+	
+	public function set_admin_caps(){
+		
+		$caps = $this->set_caps( $this->cpt_args );
+		
+		$admin = get_role( 'administrator' );
+
+		foreach( $caps as $cap ){
+            if( !$admin->has_cap( $cap ) )
+				$admin->add_cap( $cap );
+		}
+	}		
+
+/*
+	Name: set_status
+	Description: this receives an array of new status items to associate with the custom post type. 
+*/	
+			
+	
+	public function set_status( $arr ){
+		
+		$post_type = NN_PREFIX.$this->cpt_args[ 'post_type' ];
+		
+		foreach( $arr as $status ){
+			$u_status = ucfirst( $status );
+			register_post_status( $status, array(
+				'label'                     => _x( $u_status, $post_type ),
+				'public'                   	=> true,
+				'exclude_from_search'       => true,
+				'show_in_admin_all_list'    => true,
+				'show_in_admin_status_list' => true,
+				'label_count'               => _n_noop( $u_status.' <span class="count">(%s)</span>', $u_status.' <span class="count">(%s)</span>' ),
+			) );
+		}
+	}
+	
+	
+	
+/*
+	Name: 
+	Description: 
+*/	
+			
+	
+	public function __(){
+		
+		
+	}	
 }

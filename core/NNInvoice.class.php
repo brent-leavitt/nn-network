@@ -17,7 +17,7 @@ class NNInvoice extends NNTransaction{
 	
 	//Properties	
 	
-	public $post_type = 'nninvoice';
+	public $post_type = NN_PREFIX.'invoice';
 	
 	public $NNInvoice_data_map = array(
 		'due_date' 		=> '', 

@@ -89,8 +89,9 @@ if( !class_exists( 'NNRecord' ) ){
 				'post_title' => $this->record_title(),
 				'post_author' => $this->patron,
 				'post_content' => $this->pre_format(),
+				'post_status' => 'recorded',
 				'post_excerpt' => serialize( $this->record ),
-				'post_type' => 'NNRecord',
+				'post_type' => NN_PREFIX.'record',
 				
 			);
 				
@@ -128,7 +129,7 @@ if( !class_exists( 'NNRecord' ) ){
 			
 		public function record_title(){
 			
-			$date = date( 'y-m-d' );
+			$date = date( 'y-m-d H:i:s' );
 			$patron = $this->patron;
 			$record = $this->record;
 			

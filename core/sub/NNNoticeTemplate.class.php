@@ -86,7 +86,7 @@ if( !class_exists( 'NNNoticeTemplate' ) ){
 		public function retrieve( $slug ){
 			
 			//Retrieve Post Type by Slug
-			if ( $post = get_page_by_path( $slug , OBJECT, 'nnnoticetemplate' ) ){
+			if ( $post = get_page_by_path( $slug , OBJECT, NN_PREFIX.'noticetemplate' ) ){
 				$this->content = $post->post_content;
 				$this->subject = $post->post_title;
 			}

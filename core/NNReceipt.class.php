@@ -18,7 +18,7 @@ class NNReceipt extends NNTransaction{
 	
 	//Properties	
 	
-	public $post_type = 'nnreceipt';
+	public $post_type = NN_PREFIX.'receipt';
 	
 	public $NNReceipt_data_map = array(
 		'invoice_id'		=> 'post_parent',

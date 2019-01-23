@@ -45,8 +45,6 @@ if( !class_exists( 'NBCS_Network' ) ){
 		public function __construct(){			
 			
 			$this->autoload_classes();
-			//$this->init();
-			
 			add_action( 'init', array( $this, 'init' ) );
 			
 		}
@@ -60,10 +58,11 @@ if( !class_exists( 'NBCS_Network' ) ){
 		 	
 			$listener	 = new init\NNListener();		//Add Query Vars Listeners
 			$shortcodes	 = new init\NNShortCodes();		//Shortcodes	
-		/*	$email_settings = new init\NNEmail();		//Email Settings
-			 */
+			/*	$email_settings = new init\NNEmail();		//Email Settings
+				 */
+			 
 			//setup Custom Post Types
-			
+			$this->set_cpts();
 			
 			
 			//setup activation and deactivation hooks
@@ -79,6 +78,7 @@ if( !class_exists( 'NBCS_Network' ) ){
 			
 			$cpts = new init\NNCPT();
 			$cpts->setup();
+			
 		}
 
 		//Remove Custom Post Types
@@ -88,6 +88,13 @@ if( !class_exists( 'NBCS_Network' ) ){
 			$cpts->remove();
 		
 		}
+		
+		public function set_caps(){
+			$caps = new init\NNCPT();
+			$caps->set_caps();
+			
+		}
+		
 		
 		
 		private function autoload_classes( ){
@@ -119,8 +126,9 @@ if( !class_exists( 'NBCS_Network' ) ){
 			
 		public function activation(){
 		
-			//Add CPTs and Flush Rewrite Rules
-			$this->set_cpts();  	//Register the custom post type
+			$cpts = new init\NNCPT();
+			$cpts->setup();
+		
 			flush_rewrite_rules();	//Clear the permalinks after CPTs have been registered
 		
 		
@@ -139,7 +147,9 @@ if( !class_exists( 'NBCS_Network' ) ){
 			//https://wordpress.stackexchange.com/questions/108338/capabilities-and-custom-post-types
 			//Custom Caps need to be given to each user role for each CPT that has been added. 
 			//$this->set_caps();
-		
+			
+			
+			
 			//Setup a configuration process that explains how to use the plugin. 
 		}
 		
@@ -152,7 +162,7 @@ if( !class_exists( 'NBCS_Network' ) ){
 			
 			//Remove tokens from all sites. 
 			$tokens = new init\NNToken();
-			$tokens->remove();
+			//$tokens->remove();
 			
 			
 			/* //See Activiation: 

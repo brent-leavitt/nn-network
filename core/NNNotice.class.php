@@ -439,6 +439,10 @@ if( !class_exists( 'NNNotice' ) ){
 		
 		public function save_notice(){		
 			
+			if( $this->status == 'draft' )
+				$this->status = 'posted';
+			
+			
 			//Waht needs to be set for a save_post?
 			$post_arr = [
 				'post_author' => $this->patron,
@@ -446,7 +450,7 @@ if( !class_exists( 'NNNotice' ) ){
 				'post_content' => $this->content,
 				'post_title' => $this->subject,
 				'post_status' => $this->status,
-				'post_type' => 'nnnotice',
+				'post_type' => NN_PREFIX.'notice',
 				'post_parent' => $this->get_tempalte_id(), //incomplete try get_page_by_path() ,
 			];
 			

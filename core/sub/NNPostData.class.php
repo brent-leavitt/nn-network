@@ -188,6 +188,12 @@ class NNPostData{
 		//Array_filter drops empty fields if no callback function is provided. 
 		$this->post_arr = array_filter( $this->post_arr /*,$callback_function missing*/ );
 		
+		//dump( __LINE__, __METHOD__, get_object_vars( $this ) );
+		
+		//Prepare Data for Insertion
+		$this->prepare();
+		
+		
 		//Has this post already been inserted? 
 		//Setup to assess if post exists:
 		foreach( [ 'title', 'content', 'date' ] as $exists )
@@ -201,7 +207,7 @@ class NNPostData{
 			//This information is stored in the CRM/MasterSite
 			nn_switch_to_base_blog();
 			
-			$result = wp_insert_post(  $this->post_arr );
+			$result = wp_insert_post( $this->post_arr );
 			
 			//Return back to current space. 
 			nn_return_from_base_blog();
@@ -435,6 +441,44 @@ class NNPostData{
 		
 		
 		//dump( __LINE__, __METHOD__, $this->actions );
+	}	
+			
+
+
+	
+/*
+	Name: prepare
+	Description: Prepare data for insertion into database. 
+*/	
+			
+	
+	public function prepare(){
+		
+		//Check title 
+		if( empty( $this->post_arr[ 'post_title' ] ) ){
+			$trans = ucfirst( $this->data[ 'trans_type' ] );
+			$trans_id = ucfirst( $this->data[ 'tp_id' ] );
+			$tp = ucfirst( $this->data[ 'tp_name' ] );
+			$patron = $this->patron;
+			
+			$this->post_arr[ 'post_title' ] = "$trans #$trans_id from $tp for Account #$patron";
+		}
+		
+		//check name
+		
+		
+	}	
+
+	
+/*
+	Name: 
+	Description: 
+*/	
+			
+	
+	public function __(){
+		
+		
 	}	
 				
 		
