@@ -78,9 +78,10 @@ class NNInvoice extends NNTransaction{
 		
 		$result = $this->insert();
 		//Necessary? Yes. 
-		
-		//add action from parent class. 
-		$this->set_actions( [ 'do_notice' ] );
+		 
+		//set additional actions only if the receipt was successfully added. 
+		if( $result != false )
+			$this->set_actions( [ 'do_notice' ] );
 		
 		return ( $result )? $this->ID : false ; //Returns the invoice CPT ID. 
 	}	

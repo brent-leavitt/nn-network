@@ -1,7 +1,5 @@
 <?php 
-
 /*
-
 Enrollment  - Core Class Psuedo Code for NBCS Network Plugin
 Last Updated 15 Nov 2018
 -------------
@@ -66,7 +64,7 @@ if( !class_exists( 'NNEnrollment' ) ){
 		public $patron_id = 0; 
 		
 		public $active_enrollments = [];
-		
+	
 		public $inactive_enrollments = [];
 		
 		private $actions = []; //actions to be taken as a result of enrollments
@@ -169,25 +167,29 @@ if( !class_exists( 'NNEnrollment' ) ){
 	*/	
 			
 		
-		public function add( $type, $service ){
+		public function add( $type, $service, $tdate ){
 			
 			//Remove old tokens of the same type and service. 
-			$this->retire( $type, $service );			
+			//Also assessing if needs to be added or if it is the same. 
+			$retired = $this->retire( $type, $service, $tdate );			
 			
-			//what checks need to happen for this. 
-			if( $token = new Token() ){
+			//$retired can be 1 or -1, but not zero. If zero, it's the same as an existing token and is already set. 
+			if( $retired !== 0 ){
+				//what checks need to happen for this. 
+				if( $token = new Token() ){
+					
+					//build token
+					$token->build( $type, $service, $tdate );	
 				
-				//build token
-				$token->build( $type, $service );	
-			
-				$this->active_enrollments[] = $token;
+					$this->active_enrollments[] = $token;
+					
+					/* 
 				
-				/* 
-			
-				if( !empty( $this->active_enrollments  ) )
-					$this->set( NN_PREFIX.'active_enrollments' ); */
-				
-				return true; // Should we return true or the ojbect?
+					if( !empty( $this->active_enrollments  ) )
+						$this->set( NN_PREFIX.'active_enrollments' ); */
+					
+					return true; // Should we return true or the ojbect?
+				}
 			}
 			return false;
 			
@@ -197,38 +199,65 @@ if( !class_exists( 'NNEnrollment' ) ){
 	/*
 		Name: retire
 		Description: Move token from active to inactive status. 
+		
+		return: 
+			1 = retired successfully;
+			0 = same, not retired; 
+		   -1 = not set, not retired; 
 	*/
 			
 		
-		public function retire( $type, $service ){
+		public function retire( $type, $service, $tdate ){
+			
+			/* $set = array( 
+				'type' 		=> $type,
+				'service' 	=> $service,
+				'tdate' 	=> $tdate
+			);
+			 */
 			
 			//check if token is already set. 					
-			foreach( $this->active_enrollments as $key => $token ){ //token is an object
+			foreach( $this->active_enrollments as $tkey => $token ){ //token is an object
+				
+				/* 
+				foreach( $set as $skey => $sval )
+					$continue = ( strpos( $token->get( 'type' ), $type ) === 0 )? true : false; */
+				
+				
+				//if both are true token with the same type and service, exists. 
 				if( ( strpos( $token->get( 'type' ), $type ) === 0 ) && ( strpos( $token->get( 'service' ), $service ) === 0 ) ){
 					
-					//change status property to inactive
-					$token->set_status( 'archived' );
-					
-					if( $token->status_is_( 'archived' ) ){
+					//If date is not the same as the requesting token... then proceed, else return 0. 
+					if( strpos( $token->get( 'tdate' ), $tdate ) !== 0 ){
 						
-						//move to inactive enrollments. 
-						$this->inactive_enrollments[] = $token;
+						//change status property to inactive
+						$token->set_status( 'archived' );
 						
-						//check that it is there. 
-						if( $this->is_token_set( $this->inactive_enrollments, $token ) ){
+						if( $token->status_is_( 'archived' ) ){
 							
-							unset( $this->active_enrollments[ $key ] );
+							//move to inactive enrollments. 
+							$this->inactive_enrollments[] = $token;
 							
-							$this->retire( $type, $service );
+							//check that it is there. 
+							if( $this->is_token_set( $this->inactive_enrollments, $token ) ){
 								
-							return true;
-							
-						}	
+								unset( $this->active_enrollments[ $tkey ] );
+								
+								//Does this really need to be called again. Included just as a precautionary cleanup? 
+								$this->retire( $type, $service, $tdate );
+									
+								return 1; //retired successfully;
+								
+							}	
+						}
 					}
+					
+					return 0; //same, not retired (doesn't need to be added either).
+					
 				}
 			}//end foreach
 			
-			return false;
+			return -1; //not set, not retired
 		}
 	
 
@@ -236,10 +265,12 @@ if( !class_exists( 'NNEnrollment' ) ){
 	/*
 		Name: expire
 		Description: Set an active token to expired status. Expired tokens remain in active_enrolllments collection, until replaced with a new token. 
+		
+		Notes: not doing anyting to check the date for expiration purposes. May be helpful to do so. but would trans_date be the date of the original transaction or the expiration date. If expiration date, it would not match. 
 	*/	
 				
 		
-		public function expire( $type, $service ){
+		public function expire( $type, $service, $tdate ){
 			
 			
 			foreach( $this->active_enrollments as $key => $token ){ //token is an object
@@ -264,7 +295,7 @@ if( !class_exists( 'NNEnrollment' ) ){
 	*/	
 				
 		
-		public function annul( $type, $service ){
+		public function annul( $type, $service, $tdate ){
 			
 			foreach( $this->active_enrollments as $key => $token ){ //token is an object
 				if( ( strpos( $token->get( 'type' ), $type ) === 0 ) && ( strpos( $token->get( 'service' ), $service ) === 0 ) ){
@@ -398,7 +429,7 @@ if( !class_exists( 'NNEnrollment' ) ){
 			$do_action = ( strpos( $data[ 'action' ], 'enrollment' )  === 0  )? $data[ 'enrollment' ]['type'] : 'add' ;
 			//ep( "The value of DO_ACTION is: ".$do_action );
 
-			$result = $this->$do_action( $data[ 'token' ], $data[ 'service' ] );
+			$result = $this->$do_action( $data[ 'token' ], $data[ 'service' ], $data[ 'trans_date' ] );
 			
 			//After thourough consideration, the only instance where do_service should not be called after do_enrollment is when a token is being retired. All other enrollment actions should require an update of service.
 			if( ( $result != false ) && ( $do_action != 'retire' ) )

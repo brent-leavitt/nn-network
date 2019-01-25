@@ -195,7 +195,7 @@ class NNService{
 		
 		$author = $this->patron;
 		$post_type = $this->cpt_handler; //CPT
-		$meta_key = 'NNService'; //Metakey
+		$meta_key = NN_PREFIX.'service'; //Metakey
 		$meta_value = $this->service; //or whatever service we're checking
 		//Is post status required to be 'active'? Not so!
 		$post_status = $this->status;

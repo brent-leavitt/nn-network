@@ -193,7 +193,7 @@ if( !class_exists( 'NNToken' ) ){
 	*/	
 				
 		
-		public function build( $type, $service ){
+		public function build( $type, $service, $tdate ){
 			
 			//Set Type
 			$this->set( 'type', $type );
@@ -202,7 +202,8 @@ if( !class_exists( 'NNToken' ) ){
 			$this->set( 'service', $service );
 			
 			//set date
-			$this->tdate = microtime( true );
+			$this->set( 'tdate', $tdate );
+			//$this->tdate = microtime( true ); //old code as of 24 jan 2019
 			
 			//set status
 			$this->status = 'active';
