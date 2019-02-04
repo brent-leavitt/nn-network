@@ -11,6 +11,8 @@ Description:
 	
 namespace misc;
 
+use \core\NNAction as Action;
+
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 if( !class_exists( 'NNDataFormat' ) ){
@@ -103,9 +105,9 @@ if( !class_exists( 'NNDataFormat' ) ){
 		Description: 
 	*/	
 		
-		public function __construct( $data ){
+		public function __construct( $data, $source){
 			
-			$this->init( $data );
+			$this->init( $data, $source );
 			
 		}	
 		
@@ -120,20 +122,40 @@ if( !class_exists( 'NNDataFormat' ) ){
 			
 			
 		}	
-		
-
-
 
 	/*
 		Name: Init
 		Description: 
 	*/	
 		
-		private function init( $data ){
+		private function init( $data, $source ){
 			
 			$this->in = $data;
 			
+			if( $this->set_source( $source ) )				
+				$formatted = $this->set_format();
+			
+			//This sends formatted Data to the backend for processing. Do I need to do anything else? 
+			if( $formatted )
+				$action = new Action( $this->out );
+			
 		}	
+		
+	
+	/*
+		Name: set_format
+		Description: 
+	*/	
+		
+		public function set_format(){
+			
+			
+			$this->do_formatting();
+			
+			//final output is $out array. 	
+			return ( !empty( $this->out ) )? true : false; 
+			
+		}
 		
 		
 
@@ -158,24 +180,12 @@ if( !class_exists( 'NNDataFormat' ) ){
 				
 				/* //Convert incoming data to an array. This will vary according on where the data is coming from. 
 				$this->data = $this->source->to_array(); */	
+				
+				return true;
 			}
+			
+			return false;
 		}
-		
-		
-	/*
-		Name: format
-		Description: 
-	*/	
-		
-		public function format(){
-			
-			$this->do_formatting();
-			
-			//final output is $out array. 	
-			return ( !empty( $this->out ) )? $this->out : false; 
-			
-		}
-		
 		
 	/*
 		Name: do_formatting
@@ -265,7 +275,7 @@ if( !class_exists( 'NNDataFormat' ) ){
 				
 				//if no, run data_map on value
 				if( isset( $data_map[ $o_key ] ) ){		
-					if( ( $found = $this->find_in_source( $data_map[ $o_key ], $data ) ) != false )
+					if( ( $found = $this->find_in_source( $data_map[ $o_key ], $data ) ) !== false )
 						$output[ $o_key ] = $found;
 				} 
 			}
@@ -378,7 +388,11 @@ if( !class_exists( 'NNDataFormat' ) ){
 		
 	/*
 		Name: find_in_source
-		Description: looking in the source object for the requested value. 
+		Description: looking in the source object for the requested value.  (Brent Note: I don't think this is any longer relevant, because the data_map has nested arrays in it, instead of just a flat, one-layer array. 
+		params: 
+			- $key: the key name from the data_map that we're looking for. 
+			- $data: the source data in which the value is being searched for. 
+		
 	*/	
 		
 		public function find_in_source( $key, $data ){
@@ -397,7 +411,7 @@ if( !class_exists( 'NNDataFormat' ) ){
 		
 	/*
 		Name: clean
-		Description: 
+		Description: This cleans up the data and removes empty fields. 
 	*/	
 		
 		public function clean( $data ){

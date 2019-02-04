@@ -41,7 +41,7 @@ if( !class_exists( 'NNAction' ) ){
 
 	/*
 		Name: __Construct
-		Description: 
+		Description: Incoming data has been formated by the /misc/NNDataFormat class.
 	*/	
 		
 		public function __construct( $data ){
