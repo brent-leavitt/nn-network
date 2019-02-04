@@ -17,7 +17,7 @@ Desription: - Actions related to service are housed here.
 - Service Actions
 
 
-	- Services could be certification or subscription.
+	- Services could be certification or subscription. (One-time or recurring)
 		- Doula Certificates
 		- Library Subscriptions
 		- Newsletter, Email Subscriptions
@@ -52,7 +52,7 @@ Desription: - Actions related to service are housed here.
 	Should the incoming data expressly state what is needing to happen, or should it be implied by the context of data being sent? 
 	
 	Much of what happens in here is based on the status of the service. 
-	There are two types of services (lite or access-based services and training or certificate-based services)
+	There are two types of services (lite( or access-based services) and training or certificate-based services)
 	
 	Access Based
 		- Subscriptions
@@ -70,7 +70,7 @@ Desription: - Actions related to service are housed here.
 			- expired
 			- TBD (?)
 			
-	Hence, based on the nature of the service (access or certificate) more status actions could be performed if available. Should all be available here or only the simple ones? I think all, but still unsure. 
+	Hence, based on the nature of the service (access or certificate / recurring or one-time) more status actions could be performed if available. Should all be available here or only the simple ones? I think all, but still unsure. 
 	
 	
 	This class will also need to be able to perform a quick check to see if a service has already been registered for by the user. 
@@ -144,7 +144,7 @@ class NNService{
 		$this->cpt_handler = $this->get_cpt_handler();
 		
 		//Set process (do action)
-		$this->process = ( strpos( $data[ 'action' ], 'enrollment' )  == 0  )? $data[ 'enrollment' ]['type'] : 'add' ;
+		$this->process = ( strpos( $data[ 'action' ], 'enrollment' ) === 0  )? $data[ 'enrollment' ]['type'] : 'add' ;
 		
 		
 		//Set Token 
@@ -271,11 +271,11 @@ class NNService{
 			'post_author' => $this->patron,
 			'post_title' => $post_title,
 			'post_name' => $post_slug,
-			'post_content' => $this->log_action( $change, $typed ),
+			'post_content' => $this->log_action( $status, 'created' ),
 			'post_status' => $status,
 			'post_type' => $this->cpt_handler,
 			'meta_input' => array(
-				'nnservice' => $this->service,
+				NN_PREFIX.'service' => $this->service,
 				//'(key)' => '(value)',
 			),
 			/* 
@@ -308,15 +308,18 @@ class NNService{
 */	
 
 	public function update( $status = '' ){
-			
+		
+		//Service ID will be updated to reflect CPT ID if there has been an update to the service. 
+		$service_id = 0;
+		
 		//if status is not expressly set, look at available values. 
 		if( empty( $status ) ){
 			
 			//needed variables: current_status, enrollment_action = $this->process
 			$current_status = $this->status;
-			$do = $this->process;
+			$do_action = $this->process;
 			
-			switch( [ $current_status , $do ] ){
+			switch( [ $current_status , $do_action ] ){
 				//$current_status_arr = [ 'active', 'inactive', 'completed', 'issued', 'expired' ];
 				//$do_arr  = [ 'add', 'expire', 'retire', 'annul' ];
 				
@@ -347,17 +350,16 @@ class NNService{
 			}
 		}
 		
-		if( !empty( $status ) )
+		if( !empty( $status ) ){
 			$service_id = $this->update_status( $status );
-		
-		//If successful, we'll return the status that was updated, else return false. 
-		do_action( 'NNService_Update',  $service_id );
-		
-		if( isset( $service_id ) && $service_id != 0 ){
 			$this->status = $status;
-			return $status;
-		} 
-		return false;
+		}
+		
+		//Add additional functionality
+		do_action( 'NNService_Update',  $service_id );
+
+		//If successful, we'll return Service ID affected that was updated, else return false. 
+		return ( $service_id !== 0 )? $service_id : false;
 	}		
 			
 	
@@ -372,13 +374,14 @@ class NNService{
 		$status_arr = [ 'active', 'expired', 'training', 'inactive', 'completed', 'issued' ];
 		
 		//you may add a line to the post_content explaining the change. 
-		if(  in_array( $status, $status_arr ) && !check_status( $status ) ){
+		if(  in_array( $status, $status_arr ) && !$this->check_status( $status ) ){
+			
 			$post_arr = array(
 				'ID' => $this->service_id,
 				'post_content' => $this->log_action( $status, 'updated' ),
 				'post_status' => $status	
 			);
-
+			
 			$service_id = wp_update_post( $post_arr );
 			
 			$uc_status = ucfirst( $status );
@@ -393,13 +396,13 @@ class NNService{
 	
 /*
 	Name: check_status
-	Description: Checks the status of a service.
+	Description: Checks the status of a service. If submitted status is the same as status set in the DB then return true. Else false. 
 */	
 		
 	
 	public function check_status( $status ){
 		
-		return ( strpos( $status, get_post_status( $this->service_id ) ) == 0 )? true : false ; 
+		return ( strpos( $status, get_post_status( $this->service_id ) ) === 0 )? true : false ; 
 	}
 
 
@@ -423,18 +426,18 @@ class NNService{
 	Name: log_action
 	Description: This generates messages to be stored in the post_content field. This can be expanded to include multiple types of messages. 
 	params: 
-		$change	= //whatever available status. 
-		$typed 	= //created, updated
+		$status = //whatever available status. 
+		$action = //created, updated
 	
 */	
 		
 	
-	public function log_action( $change, $typed ){
+	public function log_action( $status, $action ){
 		
 		$content = ( $post = get_post( $this->service_id ) )? $post->post_content : '' ;
 		
 		$date = date( 'j-M-Y H:i:s' );
-		$change = "<p>The service has been $typed to '$change' on $date.</p>";
+		$change = "<p>The service has been $action, and its status is set to '$status' on $date.</p>";
 		
 		$new_content = $content . $change; 
 		
@@ -474,7 +477,7 @@ class NNService{
 /*
 
 	Name: get_cpt_handler
-	Description: This looks in the options table for a CPT associate with it, so the 'service_cpt' option must be set first. 
+	Description: This looks in the options table for a Custom Post Type (CPT) associate with the service being queried, so the 'service_cpt' option must be set first. 
 	
 	Option Table Var is 
 	'service_cpts' = array(
@@ -488,14 +491,10 @@ class NNService{
 		$service_cpts = get_option( 'service_cpt' );
 		$service = $this->service;
 		
-		
-		//dump( __LINE__, __METHOD__, $service );
 		foreach( $service_cpts as $cpt => $srvc_arr ){
-			//dump( __LINE__, __METHOD__, $srvc_arr );
 			
 			if( in_array( $service, $srvc_arr ) ){
-				//ep( "The CPT is: ". $cpt );
-				return $cpt;
+				return $cpt; //Return the CPT (Custom Post Type). 
 			}
 		}
 	}		
