@@ -47,8 +47,9 @@ Is there an action hook that I could setup here to
 
 namespace init;
 
-use pymt\Stripe\NNStripeDoPayment as DoPayment;
-use pymt\Stripe\NNStripePayForm as PayForm;
+use data\Stripe\NNStripeDoPayment as DoPayment;
+use data\Stripe\NNStripePayForm as PayForm;
+use proc\NNCashier as Cashier;
 
 // Exit if accessed directly
 if ( !defined('ABSPATH')) exit;
@@ -58,7 +59,7 @@ if( !class_exists( 'NNShortCodes' ) ){
 		
 		//properties
 		
-		public $shortcodes =[ 'payment', 'register', 'login', 'account', 'm' ];
+		public $shortcodes =[ 'payment', 'register', 'login', 'account', 'm', 'cashier' ];
 		
 
 		
@@ -134,6 +135,17 @@ if( !class_exists( 'NNShortCodes' ) ){
 		Description: 
 	*/			
 		public function load_register_cb( $atts ){
+			
+			
+		}
+			
+
+	/*
+		Name: load_cashier_cb
+		Description: 
+	*/			
+		public function load_cashier_cb( $atts ){
+			
 			
 			
 		}

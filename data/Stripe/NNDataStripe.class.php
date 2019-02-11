@@ -11,7 +11,7 @@ Description:
 		
 */
 	
-namespace pymt\Stripe;
+namespace data\Stripe;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 

@@ -4,7 +4,9 @@
 Last Updated 18 Dec 2018
 -------------
 
-Description: 
+Description: This takes all incoming data from internal and third party transactions and turns into a universal formatted data set for use in the backend processes. 
+
+Question: Shouldn't internal functions be correctly formatted before they get here? 
 
 		
 */
@@ -174,7 +176,7 @@ if( !class_exists( 'NNDataFormat' ) ){
 				//All Source Class Names will be formated with first letter cap, all else lower case: ex. Paypal. 
 				$source = ucfirst( strtolower( $source ) );
 				
-				$src_class = 'pymt\\'.$source.'\\NNData'.$source;
+				$src_class = 'data\\'.$source.'\\NNData'.$source;
 				
 				$this->source = new $src_class( $this->in );
 				

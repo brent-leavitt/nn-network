@@ -4,7 +4,7 @@
 *   Created 2018
 */
 
-namespace pymt\Stripe;
+namespace data\Stripe;
 
 // Exit if accessed directly
 if ( !defined('ABSPATH')) exit;

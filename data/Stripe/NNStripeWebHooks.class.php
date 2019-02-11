@@ -12,7 +12,7 @@ Last Updated 4 Oct 2018
 ---
 */
 
-namespace pymt\Stripe;
+namespace data\Stripe;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 

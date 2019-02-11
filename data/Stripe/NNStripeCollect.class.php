@@ -15,9 +15,9 @@ Description: This is the Listener Object for Payments being Processed through **
 // Collection Page
 */
 
-namespace pymt\Stripe;
+namespace data\Stripe;
 
-use pymt\Stripe\NNStripeDoPayment as DoPayment;
+use data\Stripe\NNStripeDoPayment as DoPayment;
 use proc\NNDoTransaction as DoTransaction;
 
 

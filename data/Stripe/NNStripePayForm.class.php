@@ -9,7 +9,7 @@
 		- Account Payoffs
 */
 
-namespace pymt\Stripe;
+namespace data\Stripe;
 
 // Exit if accessed directly
 if ( !defined('ABSPATH')) exit;
@@ -116,12 +116,14 @@ if( !class_exists( 'NNStripePayForm' ) ){
 				
 
 	/*
-		Name: 
-		Description: 
+		Name: set_args
+		Description: Args for a specific payment type are stored in the database's options table. 
 	*/				
 		public function set_args( $atts ){
 			
-			//
+			//Replace with an options table load to figure out what data to load from database. 
+			//We need a settings page that loads values from the Options Table and allows these to be modified in the backend. 
+			
 			$sets = array(
 				'library_preview' => array(
 					'payment_type' => 'payment',
