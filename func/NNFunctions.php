@@ -73,3 +73,18 @@ function nn_crypt( $string, $action = 'e' ) {
  
     return $output;
 }
+
+/*
+	Name: nn_sanitize_text_array
+	Description: This cleans out all incoming form that is exclusively string data to avoid anything malicious on the backend. 
+*/
+function nn_sanitize_text_array( $in ){
+	
+	$out = array();
+	foreach( $in as $in_key => $in_val ){
+		
+		$out[ $in_key ] = sanitize_text_field( $in_val );
+	}
+	
+	return ( !empty( $out ) )? $out : '';
+}

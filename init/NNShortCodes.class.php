@@ -47,8 +47,6 @@ Is there an action hook that I could setup here to
 
 namespace init;
 
-use data\Stripe\NNStripeDoPayment as DoPayment;
-use data\Stripe\NNStripePayForm as PayForm;
 use proc\NNCashier as Cashier;
 
 // Exit if accessed directly
@@ -102,29 +100,7 @@ if( !class_exists( 'NNShortCodes' ) ){
 					'enrollment' => '', //see enrollment token types for full list of available types
 				), $atts );
 			
-			//Run User Checks here to determine what type of payment action is needed. 	
-			if( is_user_logged_in() ) {
-				
-				$patron_id = get_current_user_id();
-				
-				if( !empty( $patron_id ) )
-					$stripe_cus_id = get_user_meta( $patron_id, 'stripe_cus_id', true );
-				
-				if( !empty( $stripe_cus_id ) ){//If Yes, get stripe info about patron.
-				
-					$payment = new DoPayment( array() ); //Should be sending post data... 
-					$customer = $payment->get_customer( $stripe_cus_id );
-					
-					if( is_object( $customer )  && !empty( $customer ) ){
-							//Reference --- https://stackoverflow.com/questions/31045606/retrieve-customers-default-and-active-card-from-stripe
-						
-						$src = $customer->default_source;
-						
-						if( !empty( $src ) /* && ( $payment->src_chargeable( $src ) )  */)
-							return $this->get_charge_button( $stripe_cus_id, $atts_arr );
-					}
-				} 
-			}
+			
 			
 			return $this->get_payment_form( $atts_arr );	
 		}
@@ -146,7 +122,12 @@ if( !class_exists( 'NNShortCodes' ) ){
 	*/			
 		public function load_cashier_cb( $atts ){
 			
+			//Get Cashier Class
+			$cashier = new Cashier();
 			
+			$display = $cashier->display();
+			
+			return $display;
 			
 		}
 		
@@ -183,34 +164,41 @@ if( !class_exists( 'NNShortCodes' ) ){
 
 
 	/*
-		Name: 
+		Name: get_payment_form
 		Description: 
 	*/	
 	
 		public function get_payment_form( $atts ){
 			
+			$enrollment = $atts[ 'enrollment' ];
+			$service = $atts[ 'service_id' ];
+			$action = 'nn_payment_'.$enrollment.'_'.$service;
+			//ep( $action );	
+			
+			$nonce = wp_nonce_field( $action, '_nn_nonce', true, false );
+			
+			$btn = "
+			<form method='post' action='/cashier/'>
+				<input type='hidden' name='enrollment' value='$enrollment' />	
+				<input type='hidden' name='patron' value='1' />	
+				<input type='hidden' name='service' value='$service' />	
+				$nonce		
+				<input type='submit' value='$enrollment for $service' />
+			</form>";
+			
+			return $btn;
+			
+			
+			/* 
 			$pay_form = new PayForm( $atts );
 			$form = $pay_form->get_pay_form();
 			
-			return $form;		
+			return $form;	 */	
 			
 		}
 		
 
-	/*
-		Name: 
-		Description: 
-	*/		
-		public function get_charge_button( $pid, $atts ){			
-							
-			$pay_form = new PayForm( $atts );
-			
-			$form = $pay_form->get_pay_form( $pid );
-			
-			return $form;			
-			
-		}
-		
+
 
 
 		
