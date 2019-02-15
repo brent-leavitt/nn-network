@@ -18,7 +18,8 @@ if( !class_exists( 'NNDoTransaction' ) ){
 			'payment', 
 			'subscription', 
 			'manual',
-			'invoice' 
+			'invoice',
+			'refund'
 		),
 		$type = NULL,
 		$post = [];

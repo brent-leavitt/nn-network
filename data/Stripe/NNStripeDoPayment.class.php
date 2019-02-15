@@ -15,6 +15,7 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 
 	
 		public $credentials = array( 
+			//This must be moved to the options table and set dynamically. 
 			'test' => 'sk_test_o4TdZr2hwSlbbbgzC5SMAdUS',
 			'live' => ''
 		),
@@ -47,6 +48,7 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 			$this->set_data( $post );
 			$this->init();
 			
+			dump( __LINE__, __METHOD__, $this );
 		}
 		
 	/*
@@ -72,6 +74,8 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 	*
 	*/
 		public function set_data( $post ){
+			
+			//dump( __LINE__, __METHOD__, $post );
 			
 			$data = $this->data;
 			
@@ -188,9 +192,27 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 		public function manual(){
 			
 			
+			$args = [
+						'amount' => $this->data[ 'price' ],
+						'currency' => 'usd',
+						'description' => $this->data[ 'service_id' ].' - '.$this->data[ 'enrollment_type' ],
+					];
+			
+			//Must have either a valid Token or a strike Customer ID. 
+			if( !empty( $this->token )  ){
+				
+				$args[ 'source' ] = $this->token;
+				
+			} elseif( !empty( $this->customer ) ){
+				
+				$args[ 'customer' ] = $this->customer;
+			
+			}
+			
+			
 			//Step 1: Create customer from Token.
 			
-			$customer = $this->get_customer();
+			$customer = $this->get_customer( $args );
 			
 			//Step 2: Create charge from Customer_ID and Source_ID
 			
@@ -231,8 +253,7 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 					$this->handle_error( $e, 'manual' );
 					
 				}
-				
-				print_pre( $charge );
+
 			}
 			
 			

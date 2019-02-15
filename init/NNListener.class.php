@@ -27,8 +27,8 @@ To Do:
 */
 namespace init;	
 
-use pymt\Stripe\NNStripeWebHooks as StripeWebHooks;
-use pymt\Stripe\NNStripeCollect as StripeCollect;
+use data\Stripe\NNStripeWebHooks as StripeWebHooks;
+use data\Stripe\NNStripeCollect as StripeCollect;
 
 // Exit if accessed directly
 if ( !defined('ABSPATH')) exit;

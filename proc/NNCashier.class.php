@@ -216,9 +216,6 @@ if( !class_exists( 'NNCashier' ) ){
 			);
 			
 			
-			//This is important in determining the service we are billing for. 
-			if( isset( $this->in[ 'service' ] ) && !empty( $this->in[ 'service' ] ) )
-				$service_id = $this->in[ 'service' ];
 			
 			//This help us determine the type of payment being processed. 
 			if( isset( $this->in[ 'enrollment' ] ) && !empty( $this->in[ 'enrollment' ] ) )
@@ -232,6 +229,13 @@ if( !class_exists( 'NNCashier' ) ){
 				if( isset( $att_set[ $key ] )  && !empty( $att_set[ $key ] ) )
 					$this->vars[ $key ] = $att_set[ $key ];			
 			}
+			
+			//This is important in determining the service we are billing for. 
+			if( isset( $this->in[ 'service' ] ) && !empty( $this->in[ 'service' ] ) )
+				$this->vars[ 'service_id' ] = $service_id = $this->in[ 'service' ];
+			
+			$this->vars[ 'enrollment' ] = $enrollment;
+			
 		}
 		
 	/*
@@ -241,6 +245,7 @@ if( !class_exists( 'NNCashier' ) ){
 		
 		public function load_stripe(){
 			
+			$stripe_cus_id = null ;
 			
 			//Run User Checks here to determine what type of payment action is needed. 	
 			if( !empty( $this->in[ 'patron' ] ) ){
@@ -255,7 +260,7 @@ if( !class_exists( 'NNCashier' ) ){
 			
 			if( !empty( $patron_id ) )
 				$stripe_cus_id = get_user_meta( $patron_id, 'stripe_cus_id', true );
-				ep( "stripe CuS ID is $stripe_cus_id." );
+				
 			if( !empty( $stripe_cus_id ) ){//If Yes, get stripe info about patron.
 			
 				$payment = new DoPayment( array() ); //Should be sending post data... 
@@ -266,11 +271,11 @@ if( !class_exists( 'NNCashier' ) ){
 					
 					$src = $customer->default_source;
 					
-					if( !empty( $src ) /* && ( $payment->src_chargeable( $src ) )  */)
-						return $this->get_charge_button( $stripe_cus_id, $this->vars );
-				}
+					//if( !empty( $src ) /* && ( $payment->src_chargeable( $src ) )  */)
+				}			
 			} 
 			
+			return $this->get_charge_button( $stripe_cus_id, $this->vars );
 			
 			
 		}
@@ -297,6 +302,8 @@ if( !class_exists( 'NNCashier' ) ){
 		Description: 
 	*/		
 		public function get_charge_button( $pid, $atts ){			
+							
+			//dump( __LINE__, __METHOD__, $atts );
 							
 			$pay_form = new PayForm( $atts );
 			

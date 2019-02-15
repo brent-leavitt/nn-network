@@ -45,6 +45,7 @@ if( !class_exists( 'NNStripeCollect' ) ){
 		Description: 
 	*/		
 		private function init(){
+			dump( __LINE__, __METHOD__, $_POST );
 			
 			//This class shoudl only fire if there is form data to be processed. 
 			if( !isset( $_POST ) || empty( $_POST ) ){
@@ -54,7 +55,7 @@ if( !class_exists( 'NNStripeCollect' ) ){
 			
 			//Sanitize incoming POST data. 
 			$post = filter_var_array( $_POST, FILTER_SANITIZE_STRING );
-
+			
 			//Check if Nonce is set. 
 			if ( ! isset( $post['_nb_payment_nonce'] )  || ! wp_verify_nonce( $post['_nb_payment_nonce'], 'nbcs_pay_'.$post[ 'enrollment_type' ] ) 
 			) {
@@ -82,6 +83,7 @@ if( !class_exists( 'NNStripeCollect' ) ){
 				
 			$response = NULL;
 			
+		
 			//This is from old code which class is presently found on NBCS_Network plugin on the cbldev server. 
 			$t_action = new DoTransaction( $post );
 			

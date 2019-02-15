@@ -124,7 +124,7 @@ if( !class_exists( 'NNStripePayForm' ) ){
 			//Replace with an options table load to figure out what data to load from database. 
 			//We need a settings page that loads values from the Options Table and allows these to be modified in the backend. 
 			
-			$sets = array(
+			/* $sets = array(
 				'library_preview' => array(
 					'payment_type' => 'payment',
 					'price' => 0,
@@ -208,24 +208,24 @@ if( !class_exists( 'NNStripePayForm' ) ){
 				),
 			
 			);
+			 */
 			
-			
-			//This is important in determining the service we are billing for. 
+		/* 	//This is important in determining the service we are billing for. 
 			if( isset( $atts[ 'service_id' ] ) && !empty( $atts[ 'service_id' ] ) )
 				$this->args[ 'service_id' ] = $service_id = $atts[ 'service_id' ];
 			
 			//This help us determine the type of payment being processed. 
 			if( isset( $atts[ 'enrollment' ] ) && !empty( $atts[ 'enrollment' ] ) )
-				$this->args[ 'enrollment' ] = $enrollment = $atts[ 'enrollment' ];			
+				$this->args[ 'enrollment' ] = $enrollment = $atts[ 'enrollment' ];		 */	
 			
 			//Query for default button sets. 
 		//*** ADD functionality to insert other sets of data to allow for custom generated forms. 
 			$att_set = $sets[ $enrollment ];
 			
 			foreach( $this->args as $key => $val ){
-				if( ( isset( $att_set[ $key ] ) ) && ( !empty( $att_set[ $key ] ) ) ){
-					
-					$this->args[ $key ] = $att_set[ $key ];
+				if( ( isset( $atts[ $key ] ) ) && ( !empty( $atts[ $key ] ) ) ){
+		
+					$this->args[ $key ] = $atts[ $key ];
 					
 				}				
 			}
@@ -306,7 +306,7 @@ if( !class_exists( 'NNStripePayForm' ) ){
 					data-amount='". $args[ 'price' ] ."'
 					data-name='NB Childbirth Srvcs'
 					data-description='". $args[ 'description' ] ."'
-					data-image='". $site_url ."/wp-content/uploads/2017/11/HEART-logo.png'
+					data-image='https://www.trainingdoulas.com/wp-content/uploads/2017/11/HEART-logo.png' //set logo image in options table. 
 					data-locale='auto'
 					data-zip-code='true'
 					";
