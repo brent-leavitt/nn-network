@@ -64,11 +64,12 @@ if( !class_exists( 'NNStripeCollect' ) ){
 			} 
 			
 			//If response is not false...
-			if( ( $response = $this->process( $post ) ) != false ){
+			if( ( $response = $this->process( $post ) ) !== false ){
+				
+				dump( __LINE__, __METHOD__, $response );
 				
 				$arr = nn_format_data( $response, 'Stripe' );
 				//format data
-				dump( __LINE__, __METHOD__, $arr );
 			}
 			
 			

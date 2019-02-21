@@ -111,6 +111,8 @@ if( !class_exists( 'NNDataFormat' ) ){
 			
 			$this->init( $data, $source );
 			
+			dump( __LINE__, __METHOD__, $data );
+			dump( __LINE__, __METHOD__, $source );
 		}	
 		
 
@@ -331,7 +333,7 @@ if( !class_exists( 'NNDataFormat' ) ){
 			
 			//what is the payee email? 
 				
-			return ( is_object( $patron ) )$patron_id : NULL;
+			return ( is_object( $patron ) )? $patron_id : NULL;
 		}		
 				
 		

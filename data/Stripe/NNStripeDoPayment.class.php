@@ -114,7 +114,8 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 						'currency' => 'usd',
 						'description' => $this->data[ 'service_id' ].' - '.$this->data[ 'enrollment_type' ],
 					];
-			
+					
+			dump( __LINE__, __METHOD__, $args );
 			//Must have either a valid Token or a strike Customer ID. 
 			if( !empty( $this->token )  ){
 				
@@ -137,6 +138,8 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 					
 				}
 			}
+			
+			dump( __LINE__, __METHOD__, $charge );
 			
 			return $charge;
 			
