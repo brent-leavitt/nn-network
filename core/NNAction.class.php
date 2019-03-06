@@ -34,8 +34,8 @@ if( !class_exists( 'NNAction' ) ){
 		public $data = array();
 		
 		private $actions = array();
-			
 		
+		public $error = array();
 
 	// METHODS	
 
@@ -81,20 +81,21 @@ if( !class_exists( 'NNAction' ) ){
 				if( isset( $data[ "action" ] ) /* && is_callable( array( $this, $data[ "action" ] )  ) */){
 					$super = $data[ "action" ];
 					
-					//A lite registration must be processed before any payments can be accepted on our website? 
-					
+					//A simple registration must be processed before any payments can be accepted on our website. Do automatically if not explicit.
 					
 					//Is this a registration?
-					if( strpos( 'register', $super ) === 0 ){
-						
-						
+					if( strpos( 'register', $super ) === 0 ){						
 						$this->register();
-						return; 
-				
-						
+						return;
+					} 
+					
 					//If not registration, get patron from submitted data. 	
-					} elseif( $this->do_patron( 'find' ) ){
-						
+					if( $this->do_patron( 'find' ) ){
+						if( $this->patron === 0 )
+							$this->register();
+					}
+					
+					if( $this->patron != 0 ){
 						//Set the primary action to be taken. 
 						$this->actions[] = 'do_'.$super;
 						
@@ -114,29 +115,7 @@ if( !class_exists( 'NNAction' ) ){
 
 	/*
 		Name: actions
-		Description: This is a very powerful step. This loops through all set actions in the action paramater, and processes each accordingly. This replaced 4 functions that had parallel code within it. 
-		
-		This set of processes was replaced with the code below it: 
-			//Do Receipt
-			$record['do_receipt'] = $this->do_receipt();
-			
-			//Do Enrollment
-			if( in_array( 'do_enrollment', $this->actions ) )
-				$record['do_enrollment'] = $this->do_enrollment();
-			
-			//Do Service
-			if( in_array( 'do_service', $this->actions ) )
-				$record['do_service'] = $this->do_service();
-			
-			//Is User Action Needed?
-				//If Yes Do User Action.
-			if( in_array( 'do_role', $this->actions ) )
-				$record[ 'do_role' ] = $this->do_role();
-				
-			
-			//Do notice
-			if( in_array( 'do_notice', $this->actions ) )
-				$record['do_notice'] = $this->do_notice();
+		Description: This is a very powerful step. This loops through all set actions in the action paramater, and processes each accordingly. 
 	*/	
 		
 		public function actions(){
@@ -166,7 +145,7 @@ if( !class_exists( 'NNAction' ) ){
 			$record = array();
 			
 			//do register
-			$record[ 'do_patron' ] = $this->do_patron( 'register' );
+			$record[ 'register' ] = $this->do_patron( 'register' );
 			
 			//do notice
 			if( in_array( 'do_notice', $this->actions ) )
@@ -259,10 +238,10 @@ if( !class_exists( 'NNAction' ) ){
 				
 				$this->patron = $patron->id;
 				
-			} else {
+			} elseif( $patron->error != false ) {
 				
-				//Error Processing. 
-				//How to handle error messages and send them back to the front end. 
+				//process error messages. 
+				$this->error[ 'patron' ] = $patron->err_msg;
 				
 			}
 			

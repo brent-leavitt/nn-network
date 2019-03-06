@@ -12,6 +12,7 @@ Last Updated 11 Feb 2019
 
 namespace proc;
 
+//Need to separate Thrid Party directly from Cashier page. 
 use data\Stripe\NNStripeDoPayment as DoPayment;
 use data\Stripe\NNStripePayForm as PayForm;
 
@@ -80,8 +81,32 @@ if( !class_exists( 'NNCashier' ) ){
 	
 		public function init(){		
 			
-			$this->set_args();
+			//1: determine if user is logged in or not. 
+			$this->get_patron_logged_in(); //Returns ID or 0.
+			
+	
+			//2: details of transaction to be charged for have been collected and staged to payment processors. 
 			$this->get_vars();
+			
+			if( !empty( $this->vars ) ){
+
+			//3: Available Payment processors are staged. 
+				$this->get_payment_processors();
+
+
+			//4: Information is prepared for display on the screen. 
+
+				$this->prepare();
+
+			
+			}else{
+				
+				$this->error[ "no_payment" ] = "No payment to be collected at this time.";	
+				
+			}
+			
+			//$this->set_args();
+			//$this->get_vars();
 			
 			
 			
@@ -287,11 +312,23 @@ if( !class_exists( 'NNCashier' ) ){
 		
 		public function display(){
 			
-			$show = $this->load_stripe();
+			//$show = $this->load_stripe();
 			
 			//$show = print_r( $_POST, true );
+			$show = '';
+			//if no errors, display output. 
+			if( !empty( $this->errors ) ){
+				
+				foreach( $this->errors as $err_msg )
+					$show .= "<p class='error'>$err_msg</p>";				
 			
+			} else {
+				
+			//if no errors, let's show the cashier page. 
 			
+				$show .= $this->prepare();
+				
+			}
 			
 			return $show;
 		}		
@@ -315,6 +352,101 @@ if( !class_exists( 'NNCashier' ) ){
 				
 		
 		
+	/*
+		Name: prepare
+		Description: 
+	*/	
+		
+		public function prepare(){
+			
+			 $prep = [
+				'top' 		=> 'patron_info',
+				'left' 		=> 'trans_summary',
+				'right' 	=> 'checkout_buttons',
+				'bottom' 	=> 'lower_info',
+			 ];
+			 
+			foreach( $prep as $pkey => $pval ){
+				$$pkey = $this->$pval;
+			}
+			
+			$output = "
+				<section id='cashier_top'>
+					$top
+				</section>
+				<section id='cashier_right'>
+					$right
+				</section>
+				<section id='cashier_left'>
+					$left
+				</section>
+				<section id='cashier_bottom'>
+					$bottom
+				</section>
+			";
+			
+			return $output;
+			
+		}
+	
+	/*
+		Name: patron_info
+		Description: Display current information about logged-in patron or a prompt to login. 
+	*/	
+		
+		public function patron_info(){
+			
+			$output = 'Patron Info goes here.';
+			
+			
+			
+			return $output;
+		}
+	
+	/*
+		Name: transaction_summary
+		Description: 
+	*/	
+		
+		public function trans_summary(){
+			
+			$output = 'Transaction Summary info goes here.';
+			
+			
+			
+			return $output;
+		}	
+		
+		
+	/*
+		Name: checkout_buttons
+		Description: 
+	*/	
+		
+		public function checkout_buttons(){
+			
+			$output = 'checkout_buttons goes here';
+			
+			
+			
+			return $output;
+		}	
+		
+		
+	/*
+		Name: 
+		Description: 
+	*/	
+		
+		public function lower_info(){
+			
+			$output = 'lower info here!';
+			
+			
+			
+			return $output;
+		}
+	
 	/*
 		Name: 
 		Description: 
