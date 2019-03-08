@@ -89,12 +89,13 @@ if( !class_exists( 'NNAction' ) ){
 						return;
 					} 
 					
-					//If not registration, get patron from submitted data. 	
+					//If not registration, get patron from submitted data. If no patron is found, then we register. 
 					if( $this->do_patron( 'find' ) ){
 						if( $this->patron === 0 )
 							$this->register();
 					}
 					
+					//As long as a patron ID has been set at this point, we're good to continue. 
 					if( $this->patron != 0 ){
 						//Set the primary action to be taken. 
 						$this->actions[] = 'do_'.$super;

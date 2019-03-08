@@ -28,7 +28,7 @@ if( !class_exists( 'NNCashier' ) ){
 			'payment_type' => '',
 			'price' => '',
 			'button_label' => '',
-			'descirption' => '',
+			'description' => '',
 			'interval' => '',
 			'duration' => '',
 		
@@ -40,6 +40,9 @@ if( !class_exists( 'NNCashier' ) ){
 			'service' => '',
 		);
 		
+		public $login_required = false;
+		
+		public $patron = null;
 		
 		/*
 		 Incoming Vars: 
@@ -81,19 +84,23 @@ if( !class_exists( 'NNCashier' ) ){
 	
 		public function init(){		
 			
-			//1: determine if user is logged in or not. 
-			$this->get_patron_logged_in(); //Returns ID or 0.
+			//1: Set Args
+			$this->set_args();
 			
-	
-			//2: details of transaction to be charged for have been collected and staged to payment processors. 
+		
+			//2: determine if user is logged in or not. 
+			$this->get_patron_logged_in(); //Returns ID or 0.
+		
+		
+			//3: details of transaction to be charged for have been collected and staged to payment processors. 
 			$this->get_vars();
 			
 			if( !empty( $this->vars ) ){
 
-			//3: Available Payment processors are staged. 
-				$this->get_payment_processors();
+			
 
-
+			/* NOT USED because $this->display() is called from the Shortcodes class which bypasses this. 
+			
 			//4: Information is prepared for display on the screen. 
 
 				$this->prepare();
@@ -103,12 +110,12 @@ if( !class_exists( 'NNCashier' ) ){
 				
 				$this->error[ "no_payment" ] = "No payment to be collected at this time.";	
 				
-			}
+			} */
 			
 			//$this->set_args();
 			//$this->get_vars();
 			
-			
+			//print_pre( $this );
 			
 		}
 		
@@ -120,7 +127,7 @@ if( !class_exists( 'NNCashier' ) ){
 		
 		public function set_args(){
 			
-			$args = nn_sanitize_text_array( $_POST );
+			$args = nn_sanitize_text_array( $_POST );			
 			
 			print_pre( $args );
 			$enrollment = $args[ 'enrollment' ];
@@ -143,13 +150,35 @@ if( !class_exists( 'NNCashier' ) ){
 					return false;
 			}
 			
+			//Check if login is required. 
+			//This code NOT TESTED YET. Maybe we don't need to be securing this? Wrong? 
+			
+			if( ( $args[ 'login_required' ] === 1 ) && ( get_current_user_id() === 0 ) ){
+				
+				$str = "?"; 
+				
+				foreach( $args as $key => $val ){
+					$str .= "$key=$val&";
+				}
+				
+				
+				$params = urlencode( $str );
+				
+				ep( "Not logged in." );
+				ep( $params );
+				
+				//Redirect to login page with needed parameters.
+				//wp_redirect( wp_login_url( get_permalink() . $params ) ) );
+				
+			}
+			
 			
 			return true;
 		}
 		
 	/*
-		Name: 
-		Description: 
+		Name: get_vars()
+		Description: This needs to be loaded from the Options Table. If not available. We send a link with instructions on how to do this. The default set should be loaded on installation of the plugin. 
 	*/	
 		
 		public function get_vars(){
@@ -346,7 +375,9 @@ if( !class_exists( 'NNCashier' ) ){
 			
 			$form = $pay_form->get_pay_form( $pid );
 			
-			return $form;			
+			$cc_logos = "<img src='".home_url()."/uploads/01/01/cc_logos.png' alt='Pay with credit card.'>";
+			
+			return $form . $cc_logos;			
 			
 		}
 				
@@ -367,19 +398,22 @@ if( !class_exists( 'NNCashier' ) ){
 			 ];
 			 
 			foreach( $prep as $pkey => $pval ){
-				$$pkey = $this->$pval;
+				$$pkey = $this->$pval();
 			}
 			
 			$output = "
 				<section id='cashier_top'>
 					$top
 				</section>
-				<section id='cashier_right'>
-					$right
-				</section>
+				
 				<section id='cashier_left'>
 					$left
 				</section>
+				
+				<section id='cashier_right'>
+					$right
+				</section>
+				
 				<section id='cashier_bottom'>
 					$bottom
 				</section>
@@ -396,8 +430,18 @@ if( !class_exists( 'NNCashier' ) ){
 		
 		public function patron_info(){
 			
-			$output = 'Patron Info goes here.';
+			if( empty( $this->patron->ID ) ){
+				//Not logged in
+				$output = "You are not logged in. Please consider logging in to expedite the checkout process. ";
+			}else{
+				//Logged in. 
+				$output = "You are logged in as ";
+				$output .= "<strong>".$this->patron->display_name."</strong>. ";
+				$output .= "If this is not you, please log out before proceeding. Thank you!";
+				
+			}
 			
+			//print_pre( $this->patron );
 			
 			
 			return $output;
@@ -410,7 +454,15 @@ if( !class_exists( 'NNCashier' ) ){
 		
 		public function trans_summary(){
 			
-			$output = 'Transaction Summary info goes here.';
+			$output = "<hr>
+			<h3>Transaction Summary</h3>
+			<pre>
+What: {$this->vars[ 'description' ]}
+How Much: $ {$this->vars[ 'price' ]}.00 USD
+How Long: 1 Month
+</pre>
+			<hr>
+			";
 			
 			
 			
@@ -420,12 +472,13 @@ if( !class_exists( 'NNCashier' ) ){
 		
 	/*
 		Name: checkout_buttons
-		Description: 
+		Description: //3: Available Payment processors are staged. 
 	*/	
 		
 		public function checkout_buttons(){
 			
-			$output = 'checkout_buttons goes here';
+			$output = $this->get_payment_processors();
+
 			
 			
 			
@@ -440,12 +493,40 @@ if( !class_exists( 'NNCashier' ) ){
 		
 		public function lower_info(){
 			
-			$output = 'lower info here!';
+			$output = "<hr>
+			<small>Please note: All credit card information is securely stored via third party services. Credit card payments made on this site are store directly with STRIPE payments. PayPal transactions are stored with PayPal.  Please review our policies pages below for further details regarding storing of personal data, refunds, etc.</small>
+			";
 			
 			
 			
 			return $output;
 		}
+	
+	
+	/*
+		Name: get_patron_logged_in
+		Description: 
+	*/	
+		
+		public function get_patron_logged_in(){
+			$this->patron = wp_get_current_user();
+			return $this->patron->ID;
+			
+		}
+
+		
+	/*
+		Name: get_payment_processors
+		Description: This determines that available payment processors (Stripe, PayPal, etc.)
+	*/	
+		
+		public function get_payment_processors(){
+			//Where's PayPal?
+			
+			return $this->load_stripe();
+			
+		}
+	
 	
 	/*
 		Name: 
