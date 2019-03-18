@@ -46,7 +46,7 @@ if( !class_exists( 'NBCS_Network' ) ){
 			
 			$this->autoload_classes();
 			add_action( 'init', array( $this, 'init' ) );
-			
+			add_action( 'admin_init', array( $this, 'admin_init' ));
 		}
 		
 		public function init(){
@@ -71,6 +71,11 @@ if( !class_exists( 'NBCS_Network' ) ){
 			
 			//version control?
 
+		}
+		
+		public function admin_init(){
+			$settings = new init\NNSettings(); //Add a settings page
+			$settings->build();
 		}
 		
 		//Add Custom Post Types
@@ -131,7 +136,11 @@ if( !class_exists( 'NBCS_Network' ) ){
 		
 			flush_rewrite_rules();	//Clear the permalinks after CPTs have been registered
 		
-		
+			//Register settings
+			
+			//register_setting( $option_group, $option_name, $args = array() )
+			
+			
 			//Add Tokens to all sites. 
 			/* (HOLD WHILE IN LOCAL DEV)
 			$tokens = new init\NNToken();

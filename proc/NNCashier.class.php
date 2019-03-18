@@ -96,6 +96,9 @@ if( !class_exists( 'NNCashier' ) ){
 			$this->get_vars();
 			
 			if( !empty( $this->vars ) ){
+				
+				
+			}
 
 			
 
