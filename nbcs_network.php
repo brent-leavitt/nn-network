@@ -47,6 +47,7 @@ if( !class_exists( 'NBCS_Network' ) ){
 			$this->autoload_classes();
 			add_action( 'init', array( $this, 'init' ) );
 			add_action( 'admin_init', array( $this, 'admin_init' ));
+			add_action( 'admin_menu', array( $this, 'admin_menus' ));
 		}
 		
 		public function init(){
@@ -76,6 +77,26 @@ if( !class_exists( 'NBCS_Network' ) ){
 		public function admin_init(){
 			$settings = new init\NNSettings(); //Add a settings page
 			$settings->build();
+		}
+		
+		
+		public function admin_menus(){
+			
+			//Define Menus to add. 
+			$args = array(
+			/* 		'education' => array(
+						'current_submissions',
+						'my_students',
+						'assignments',
+						'coaching_schedule',
+						'certificate_generator',
+					),
+			*/
+				'settings' => array( NN_TD )
+			);
+			
+			$menus = new init\NNAdminMenu( $args, 'add' ); //Add a settings page
+			
 		}
 		
 		//Add Custom Post Types
