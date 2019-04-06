@@ -204,8 +204,8 @@ if( !class_exists( 'NNAdminMenu' ) ){
 			//'certificates-lms/view/admin/'.$slug.'.php';
 			global $plugin_page, $title;
 			
-			echo "<div class='wrap'>
-			<h1 id='wp-heading-inline'>$title</h1>";
+			echo "<div class='wrap'>";
+			//<h1 id='wp-heading-inline'>$title</h1>
 			
 			$path = NBCS_NET_PATH.'tmpl/admin/'.$plugin_page.'.php';
 			

@@ -22,7 +22,7 @@ if( !class_exists( 'NNSetting' ) ){
 		
 		//Parameters
 		
-		public $option_group = NN_TD; //
+		//public $option_group = NN_TD; //
 		
 		
 		
@@ -64,23 +64,23 @@ if( !class_exists( 'NNSetting' ) ){
 		
 		public function register(){
 			
-			// register a new setting for "reading" page
-			register_setting('reading', 'wporg_setting_name');
+			// register a new setting for NN_TD (constant defined in plugin init) page
+			register_setting( NN_TD, 'wporg_setting_name' );
 		 
-			// register a new section in the "reading" page
+			// register a new section in the NN_TD page
 			add_settings_section(
 				'wporg_settings_section',
 				'WPOrg Settings Section',
 				array( $this, 'wporg_settings_section_cb'),
-				'reading'
+				NN_TD
 			);
 		 
-			// register a new field in the "wporg_settings_section" section, inside the "reading" page
+			// register a new field in the "wporg_settings_section" section, inside the NN_TD page
 			add_settings_field(
 				'wporg_settings_field',
 				'WPOrg Setting',
 				array( $this, 'wporg_settings_field_cb'),
-				'reading',
+				NN_TD,
 				'wporg_settings_section',
 				array(
 					'label_for' => 'Field 1 Label',
@@ -89,12 +89,12 @@ if( !class_exists( 'NNSetting' ) ){
 			);
 			
 			
-			// Second register a new field in the "wporg_settings_section" section, inside the "reading" page
+			// Second register a new field in the "wporg_settings_section" section, inside the NN_TD page
 			add_settings_field(
 				'wporg_settings_field2',
 				'WPOrg Setting 2',
 				array( $this, 'wporg_settings_field_cb'),
-				'reading',
+				NN_TD,
 				'wporg_settings_section'
 			);
 
