@@ -209,6 +209,8 @@ if( !class_exists( 'NNAdminMenu' ) ){
 			
 			$path = NBCS_NET_PATH.'tmpl/admin/'.$plugin_page.'.php';
 			
+			//echo "The required Template Path is: $path . ";
+			
 			if (file_exists($path))
 					require $path;
 			

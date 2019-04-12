@@ -7,6 +7,10 @@ Last Updated 16 Mar 2019
 
   Description: This sets up basic modeling parameters for the init\Setting class.
 
+  This is the setting model class
+  - 
+  
+  
 ---
 
 */
@@ -35,11 +39,10 @@ if( !class_exists( 'NNSetting' ) ){
 		
 		*/
 		
-		public function __construct(){
+		public function __construct( ){
 			
 			
 			$this->init();
-			
 		}
 		
 		/*
@@ -49,6 +52,7 @@ if( !class_exists( 'NNSetting' ) ){
 		*/
 		
 		public function init(){
+			
 			
 			
 			

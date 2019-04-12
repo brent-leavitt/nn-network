@@ -76,7 +76,7 @@ if( !class_exists( 'NBCS_Network' ) ){
 		
 		public function admin_init(){
 			$settings = new init\NNSettings(); //Add a settings page
-			$settings->build();
+			$settings->init();
 		}
 		
 		
