@@ -48,6 +48,7 @@ Is there an action hook that I could setup here to
 namespace init;
 
 use proc\NNCashier as Cashier;
+use tmpl\NNUserForms as UserForms; 
 
 // Exit if accessed directly
 if ( !defined('ABSPATH')) exit;
@@ -57,7 +58,7 @@ if( !class_exists( 'NNShortCodes' ) ){
 		
 		//properties
 		
-		public $shortcodes =[ 'payment', 'register', 'login', 'account', 'm', 'cashier' ];
+		public $shortcodes =[ 'payment', 'register', 'login', 'account', 'm', 'cashier', 'payment_login' ];
 		
 
 		
@@ -122,13 +123,26 @@ if( !class_exists( 'NNShortCodes' ) ){
 	*/			
 		public function load_cashier_cb( $atts ){
 			
-			//Get Cashier Class
-			$cashier = new Cashier();
-			
-			$display = $cashier->display();
-			
-			return $display;
-			
+			if( is_admin() == false ){ //Disable on admin screen. 
+				
+				
+				print_pre( $atts );
+				print_pre( $_POST );
+				
+				$post = $_POST;
+				
+				if( empty( $post[ 'nn_patron' ] ) )
+					return $this->get_user_forms( $post , $atts );
+					
+					
+				
+				//Get Cashier Class
+				$cashier = new Cashier();
+				
+				$display = $cashier->display();
+				
+				return $display;
+			}
 		}
 		
 
@@ -142,12 +156,16 @@ if( !class_exists( 'NNShortCodes' ) ){
 		
 			if(!is_user_logged_in()) {
 	 
-				global $pippin_load_css;
+				//global $nn_load_css;
 		 
 				// set this to true so the CSS is loaded
-				$pippin_load_css = true;
+				//$nn_load_css = true;
 		 
-				$output = pippin_login_form_fields();
+				$login = new Login();
+				
+				$output = $login->login_form_fields();
+				
+/* 				$output = '<p>Testing this field!</p>'; */
 				
 			} else {
 			
@@ -155,6 +173,42 @@ if( !class_exists( 'NNShortCodes' ) ){
 				// could show some logged in user info here
 				// $output = 'user info here';
 				// Or do a redirect. 
+				
+				$output = '<p>You are already logged in. Move on!</p>';
+				
+			}
+			return $output;
+			
+		
+		}		
+
+	/*
+		Name: 
+		Description: 
+	*/			
+		public function load_payment_login_cb( $atts ){
+		
+		// Lifted from PIPPIN
+		
+			if(!is_user_logged_in()) {
+	 
+				//global $nn_load_css;
+		 
+				// set this to true so the CSS is loaded
+				//$nn_load_css = true;
+				
+				$output = $this->get_user_forms();
+				
+/* 				$output = '<p>Testing this field!</p>'; */
+				
+			} else {
+			
+			
+				// could show some logged in user info here
+				// $output = 'user info here';
+				// Or do a redirect. 
+				
+				$output = '<p>You are already logged in. Move on!</p>';
 				
 			}
 			return $output;
@@ -177,13 +231,17 @@ if( !class_exists( 'NNShortCodes' ) ){
 			
 			$nonce = wp_nonce_field( $action, '_nn_nonce', true, false );
 			
+			$patron = wp_get_current_user();
+			$patron_id = ( !empty( $patron ) )? $patron->ID : 0 ; 
+			
+			
 			$btn = "
 			<form method='post' action='/cashier/'>
 				<input type='hidden' name='enrollment' value='$enrollment' />	
-				<input type='hidden' name='patron' value='1' />	
+				<input type='hidden' name='patron' value='$patron_id' />	
 				<input type='hidden' name='service' value='$service' />	
 				$nonce		
-				<input type='submit' value='$enrollment for $service' />
+				<input type='submit' value='Start $service' />
 			</form>";
 			
 			return $btn;
@@ -199,7 +257,31 @@ if( !class_exists( 'NNShortCodes' ) ){
 		
 
 
-
+		public function get_user_forms( $post = '', $atts = '' ){
+			
+			$uforms = new UserForms();
+			
+			//GET REGISTRATION FORM
+			$output = $uforms->form( 'registerlite', $post );
+			
+			// GET LOGIN FORM
+			$output .= $uforms->form( 'login', $post );
+			
+			//ALLOW FOR SKIP REGISTRATION OPTION, JUMP STRAIGHT TO CHECKOUT FOR GUEST REGISTRATION
+			//if Skip Attr is set
+			if( $atts[ 0 ] == 'skip' ){
+				
+				$output .= "<h2>Guest Registration?</h2> 
+				<p>Are you registering on behalf of someone else? Not ready to make an account?</p> ";
+				
+				$output .= $uforms->skip( $post );
+				
+				$output .= "<p>All account details will be sent to the email used at time of payment.</p>";
+			}
+			
+			
+			return $output;
+		}
 
 		
 		

@@ -132,16 +132,21 @@ if( !class_exists( 'NNCashier' ) ){
 			
 			$args = nn_sanitize_text_array( $_POST );			
 			
-			print_pre( $args );
-			$enrollment = $args[ 'enrollment' ];
-			$service = $args[ 'service' ];
-			$action = 'nn_payment_'.$enrollment.'_'.$service;
+			//print_pre( $args );
+			
+			//ACTION is needed var to do VERIFY NONCE
+			if( !empty( $args ) ){
+				$enrollment = $args[ 'enrollment' ];
+				$service = $args[ 'service' ];
+				$action = 'nn_payment_'.$enrollment.'_'.$service;	
+			}
+			
 			//ep( $action );			
 					
 			//check nonce
 			if ( ! wp_verify_nonce( $_POST[ '_nn_nonce' ], $action ) ) {
 				// This nonce is not valid.
-				die( 'Security check' ); 
+				die( 'Are \'ya lost?' ); 
 			}
 						
 			//check that all values are set. 
@@ -189,22 +194,22 @@ if( !class_exists( 'NNCashier' ) ){
 			
 			$sets = array(
 				'library_preview' => array(
-					'payment_type' => 'payment',
+					'payment_type' => 'preview',
 					'price' => 0,
-					'button_label' => 'Start 10-Day Preview',
+					'button_label' => 'Start 16-Day Preview',
 					'description' => 'Library Preview Subscription',
 					'interval' => 1,
-					'duration' => '10d',
+					'duration' => '16d',
 				),		
 				'library_month' => array(
 					'payment_type' => 'subscription',
-					'price' => 20,
+					'price' => 5,
 					'button_label' => 'Start Monthly Plan',
 					'description' => 'Library Monthly Subscription',
 					'interval' => 0,
 					'duration' => '1m',
 				),				
-				'library_year' => array(
+				/* 'library_year' => array(
 					'payment_type' => 'subscription',
 					'price' => 200,
 					'button_label' => 'Start Annual Plan',
@@ -220,16 +225,16 @@ if( !class_exists( 'NNCashier' ) ){
 					'interval' => 1,
 					'duration' => '2y',
 					
-				),
+				), */
 				'certificate_recurring' => array(
 					'payment_type' => 'subscription',
-					'price' => 50,
+					'price' => 25,
 					'button_label' => 'Pay Automatic Monthly',
 					'description' => 'Doula Certification - Automatic Payment Plan',
-					'interval' => 12,
+					'interval' => 0,
 					'duration' => '1m',
 				),
-				'certificate_manual' => array(
+				/* 'certificate_manual' => array(
 					'payment_type' => 'invoice',
 					'price' => 50,
 					'button_label' => 'Pay Manual Monthly ',
@@ -260,7 +265,7 @@ if( !class_exists( 'NNCashier' ) ){
 					'description' => 'Certification Extension - 6 mo.',
 					'interval' => 1,
 					'duration' => '6m',
-				),
+				), */
 				'certificate_renewal' => array(
 					'payment_type' => 'payment',
 					'price' => 50,
@@ -435,12 +440,12 @@ if( !class_exists( 'NNCashier' ) ){
 			
 			if( empty( $this->patron->ID ) ){
 				//Not logged in
-				$output = "You are not logged in. Please consider logging in to expedite the checkout process. ";
+				$output = "You are not logged in. Please consider <a href='javascript:history.back()'>signing in</a> to expedite the checkout process.";
 			}else{
 				//Logged in. 
 				$output = "You are logged in as ";
 				$output .= "<strong>".$this->patron->display_name."</strong>. ";
-				$output .= "If this is not you, please log out before proceeding. Thank you!";
+				$output .= "If this is not you, please <a href='/sign-out/'>sign out</a> before proceeding. Thank you!";
 				
 			}
 			
@@ -497,7 +502,7 @@ How Long: 1 Month
 		public function lower_info(){
 			
 			$output = "<hr>
-			<small>Please note: All credit card information is securely stored via third party services. Credit card payments made on this site are store directly with STRIPE payments. PayPal transactions are stored with PayPal.  Please review our policies pages below for further details regarding storing of personal data, refunds, etc.</small>
+			<small>Please note: All credit card information is securely stored via third party services. Please review our policies pages below for further details regarding storing of personal data, refunds, etc.</small>
 			";
 			
 			

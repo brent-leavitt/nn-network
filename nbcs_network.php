@@ -48,6 +48,7 @@ if( !class_exists( 'NBCS_Network' ) ){
 			add_action( 'init', array( $this, 'init' ) );
 			add_action( 'admin_init', array( $this, 'admin_init' ));
 			add_action( 'admin_menu', array( $this, 'admin_menus' ));
+			//add_action( 'init' ); 
 		}
 		
 		public function init(){
@@ -65,6 +66,11 @@ if( !class_exists( 'NBCS_Network' ) ){
 			//setup Custom Post Types
 			$this->set_cpts();
 			
+			//login controls
+			$login = new init\NNLogin();
+			
+			//register controls
+			$reglite = new init\NNRegisterLite();
 			
 			//setup activation and deactivation hooks
 			register_activation_hook( __FILE__, array( $this, 'activation' ) );

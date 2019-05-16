@@ -83,3 +83,16 @@ function nn_sanitize_text_array( $in ){
 	
 	return ( !empty( $out ) )? $out : '';
 }
+
+
+/*
+	Name: nn_errors
+	Description: Error handling funciton taken from Pippens Plugins
+*/
+
+function nn_errors(){
+	
+		static $wp_error; // Will hold global variable safely
+		return isset($wp_error) ? $wp_error : ($wp_error = new WP_Error(null, null, null));
+	
+}

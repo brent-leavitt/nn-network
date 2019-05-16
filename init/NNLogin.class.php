@@ -1,0 +1,109 @@
+<?php 
+
+
+//Login Functionality Class
+/*
+---
+
+Description: This handles all the login action 
+	
+// logs a member in after submitting a form
+
+*/
+
+namespace init;
+
+//use proc\NNError as Error; 
+
+// Exit if accessed directly
+if ( !defined('ABSPATH')) exit;
+	
+if( !class_exists( 'NNLogin' ) ){
+	class NNLogin{
+
+	
+			
+		
+		//Methods
+		/*
+			Name: __construct
+			Description: 
+		*/	
+		
+		
+		public function __construct(){			
+				
+			$this->init();
+			
+		}
+		
+		
+		
+		/*
+			Name: init
+			Description: 
+		*/	
+			
+		public function init(){
+			
+			$this->do_login();
+			
+		}
+		
+		
+		/*
+			Name: do_login
+			Description: 
+		*/			
+	
+		public function do_login() {
+		 
+			if(isset($_POST['nn_login']) && wp_verify_nonce($_POST['nn_login_nonce'], 'nn-login-nonce')) {
+		 
+				// this returns the user ID and other info from the user name
+				$user = get_user_by( 'login', $_POST['nn_login']);
+				
+				//print_pre( $user );
+				
+				if( empty( $user ) ) {
+					// if the user name doesn't exist
+					nn_errors()->add('empty_username', __('Invalid username'));
+				}
+		 
+				if(!isset($_POST['nn_password']) || $_POST['nn_password'] == '') {
+					// if no password was entered
+					nn_errors()->add('empty_password', __('Please enter a password'));
+				}
+		 
+				// check the user's login with their password
+				if(!wp_check_password($_POST['nn_password'], $user->user_pass, $user->ID)) {
+					// if the password is incorrect for the specified user
+					nn_errors()->add('empty_password', __('Incorrect password'));
+				}
+		 
+				// retrieve all error messages
+				$errors = nn_errors()->get_error_messages();
+		 
+		 
+				//print_pre( nn_errors() );
+		 
+				// only log the user in if there are no errors
+				if( empty( $errors ) ) {
+					
+					//print_pre( $_POST ); 
+					wp_set_current_user( $user->ID, $user->user_login );	
+					
+					wp_set_auth_cookie( $user->ID ); //optional params: $remember, $secure
+					//Replaced by above. wp_setcookie($_POST['nn_patron_login'], $_POST['nn_password'], true);
+					
+					do_action('wp_login', $user->user_login);
+					
+					wp_redirect(home_url()); exit;
+					
+				} 
+			}
+		}	
+		
+	}
+}
+?>
