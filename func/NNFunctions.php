@@ -96,3 +96,34 @@ function nn_errors(){
 		return isset($wp_error) ? $wp_error : ($wp_error = new WP_Error(null, null, null));
 	
 }
+
+
+/*
+	Name: nn_referer_requst_match
+	Description: A security check for when $_GET data is being sent via wp_redirect. 
+*/
+
+function nn_referer_requst_match(){
+	
+	$source = parse_url( $_SERVER[ 'HTTP_REFERER' ] );
+	$source_test = $source[ 'scheme' ].'://'.$source[ 'host' ];
+	//If site is local host add port:
+	$source_test .= ( strcmp( $source[ 'host' ], 'localhost' ) === 0 )?':'.$source[ 'port' ] : '';
+	$site_url = get_site_url();
+	
+	if( strcmp( $source_test, $site_url ) !== 0 )
+		return false;
+	
+	$path_test = rtrim( $source[ 'path' ] ,"/");
+	$request_test = rtrim( strtok( $_SERVER['REQUEST_URI'], '?' ) , "/"); 
+	
+	if( strcmp( $path_test, $request_test ) !== 0 )
+		return false;
+	
+	return true;
+	
+	//$_SERVER['REQUEST_URI']
+	//$_SERVER['HTTP_REFERER'] 
+	//These TWO MUST MATCH for $_GET. 
+	
+}

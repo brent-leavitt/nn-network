@@ -55,13 +55,26 @@ if( !class_exists( 'NNRegisterLite' ) ){
 			Description: 
 		*/	
 		public function do_registerlite() {
-			if( isset( $_POST[ "nn_login" ] ) && wp_verify_nonce( $_POST[ 'nn_registerlite_nonce' ], 'nn-registerlite-nonce' ) ){
+			if( isset( $_POST[ "nn_login" ] ) && wp_verify_nonce( $_POST[ '_nn_registerlite_nonce' ], 'nn-registerlite-nonce' ) ){
+				
+				
 				$user_login		= $_POST[ "nn_login" ];	
 				$user_email		= $_POST[ "nn_email" ];
 				/* $user_first 	= $_POST[ "nn_user_first" ];
 				$user_last	 	= $_POST[ "nn_user_last" ]; */
 				$user_pass		= $_POST[ "nn_password" ];
 				$pass_confirm 	= $_POST[ "nn_confirm" ];
+		 
+				$action = ( !empty( $_POST[ 'action' ] ) )?  $_POST[ 'action' ] : '';
+				unset( $_POST[ 'action' ] );
+				unset( $_POST[ "nn_password" ] );
+				unset( $_POST[ "nn_confirm" ] );
+				unset( $_POST[ "nn_email" ] );
+				unset( $_POST[ "nn_login" ] );
+				unset( $_POST[ "_nn_registerlite_nonce" ] );
+				unset( $_POST[ "_nn_nonce" ] );
+				$action = add_query_arg( $_POST, $action );
+		 
 		 
 				// this is required for username checks
 				require_once(ABSPATH . WPINC . '/registration.php');
@@ -110,17 +123,21 @@ if( !class_exists( 'NNRegisterLite' ) ){
 							'role'				=> 'subscriber'
 						)
 					);
+					
 					if( $new_user_id ) {
 						// send an email to the admin alerting them of the registration
 						wp_new_user_notification($new_user_id);
 		 
-						// log the new user in
-						/* wp_setcookie($user_login, $user_pass, true);
-						wp_set_current_user($new_user_id, $user_login);	
-						do_action('wp_login', $user_login); */
+						//print_pre( $_POST ); 
+						wp_set_current_user( $new_user_id, $user_login );	
+						
+						wp_set_auth_cookie( $new_user_id ); //optional params: $remember, $secure
+						//Replaced by above. wp_setcookie($_POST['nn_patron_login'], $_POST['nn_password'], true);
+						
+						do_action('wp_login', $user_login );
 		 
 						// send the newly created user to the home page after logging them in
-						wp_redirect( home_url( 'sign-in' ) ); exit;
+						wp_safe_redirect( $action ); exit;
 					}
 		 
 				}

@@ -126,15 +126,13 @@ if( !class_exists( 'NNShortCodes' ) ){
 			if( is_admin() == false ){ //Disable on admin screen. 
 				
 				
-				print_pre( $atts );
-				print_pre( $_POST );
+				//print_pre( $_SERVER );				
 				
-				$post = $_POST;
-				
-				if( empty( $post[ 'nn_patron' ] ) )
+				$post = $_REQUEST;
+				print_pre( $post );
+			
+				if( /* empty( $post[ 'patron' ] ) ||  */$post[ 'patron' ] === "0" ) //If patron is set to 0. 
 					return $this->get_user_forms( $post , $atts );
-					
-					
 				
 				//Get Cashier Class
 				$cashier = new Cashier();
@@ -229,14 +227,16 @@ if( !class_exists( 'NNShortCodes' ) ){
 			$action = 'nn_payment_'.$enrollment.'_'.$service;
 			//ep( $action );	
 			
-			$nonce = wp_nonce_field( $action, '_nn_nonce', true, false );
+			$nonce = wp_nonce_field( $action, '_nn_nonce', false, false );
 			
 			$patron = wp_get_current_user();
 			$patron_id = ( !empty( $patron ) )? $patron->ID : 0 ; 
 			
+			//$url_ref = $_SERVER['REQUEST_URI']; may be irrelevant
 			
 			$btn = "
 			<form method='post' action='/cashier/'>
+				<input type='hidden' name='action' value='/cashier/' />	
 				<input type='hidden' name='enrollment' value='$enrollment' />	
 				<input type='hidden' name='patron' value='$patron_id' />	
 				<input type='hidden' name='service' value='$service' />	

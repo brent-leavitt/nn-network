@@ -58,25 +58,37 @@ if( !class_exists( 'NNLogin' ) ){
 	
 		public function do_login() {
 		 
-			if(isset($_POST['nn_login']) && wp_verify_nonce($_POST['nn_login_nonce'], 'nn-login-nonce')) {
+			if(isset($_POST['nn_login']) && wp_verify_nonce($_POST['_nn_login_nonce'], 'nn-login-nonce')) {
 		 
 				// this returns the user ID and other info from the user name
 				$user = get_user_by( 'login', $_POST['nn_login']);
 				
-				//print_pre( $user );
+				$user_login	= $_POST[ "nn_login" ];	
+				$user_pass	= $_POST[ "nn_password" ];
+				
+				//print_pre( $_POST );
+				$action = ( !empty( $_POST[ 'action' ] ) )?  $_POST[ 'action' ] : '/';
+				unset( $_POST[ "action" ] );
+				unset( $_POST[ "nn_password" ] );
+				unset( $_POST[ "nn_login" ] );
+				unset( $_POST[ "_nn_login_nonce" ] );
+				unset( $_POST[ "_nn_nonce" ] );
+				$action = add_query_arg( $_POST, $action );
+				
+				//ep( $action );
 				
 				if( empty( $user ) ) {
 					// if the user name doesn't exist
 					nn_errors()->add('empty_username', __('Invalid username'));
 				}
 		 
-				if(!isset($_POST['nn_password']) || $_POST['nn_password'] == '') {
+				if(!isset( $user_pass ) || $user_pass == '') {
 					// if no password was entered
 					nn_errors()->add('empty_password', __('Please enter a password'));
 				}
 		 
 				// check the user's login with their password
-				if(!wp_check_password($_POST['nn_password'], $user->user_pass, $user->ID)) {
+				if(!wp_check_password( $user_pass, $user->user_pass, $user->ID)) {
 					// if the password is incorrect for the specified user
 					nn_errors()->add('empty_password', __('Incorrect password'));
 				}
@@ -98,7 +110,7 @@ if( !class_exists( 'NNLogin' ) ){
 					
 					do_action('wp_login', $user->user_login);
 					
-					wp_redirect(home_url()); exit;
+					wp_safe_redirect( $action ); exit;
 					
 				} 
 			}

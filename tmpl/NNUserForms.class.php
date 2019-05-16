@@ -80,6 +80,18 @@ if( !class_exists( 'NNUserForms' ) ){
 		public function form( $type, $post = '' ) {
 		 
 			$vals = $this->$type;
+			
+			
+			/* $action = ( !empty( $post[ 'action' ] ) )?  $post[ 'action' ] : '/';
+			unset( $post[ 'action' ] ); */
+		 
+			$action = 'nn-'. $type .'-nonce';
+						
+			
+			//ep( $action );	
+			//unset( $post[ '_nn_nonce' ] );
+			$nonce = wp_nonce_field( $action, '_nn_'.$type.'_nonce', false, false );
+		 
 		 
 			ob_start(); ?>	
 				<h3 class="nn_header"><?php _e( $vals[ 'title' ] ); ?></h3>
@@ -88,11 +100,15 @@ if( !class_exists( 'NNUserForms' ) ){
 				// show any error messages after form submission
 				$this->show_error_messages(); ?>
 		 
+		 
+		 
 				<form id="nn_<?php echo $type; ?>_form" class="nn_form" action="" method="POST">
 					<fieldset>
 					
 						<?php
 							if( !empty( $post ) ){
+								//remove patron value
+								unset( $post[ 'patron' ] );
 								foreach( $post as $pkey => $pval ){
 									echo $this->hidden( $pkey, $pval ); 
 								}	
@@ -124,7 +140,11 @@ if( !class_exists( 'NNUserForms' ) ){
 						
 						?>
 						<p>
-							<input type="hidden" name="nn_<?php echo $type; ?>_nonce" value="<?php echo wp_create_nonce('nn-'.$type.'-nonce'); ?>"/>
+						<?php /*
+							<input type="hidden" name="_nn_<?php echo $type; ?>_nonce" value="<?php echo wp_create_nonce( $action ); ?>"/> */
+							
+							echo $nonce;
+							?>
 							<input type="submit" value="<?php _e( $vals[ 'submit' ] ); ?>"/>
 						</p>
 					</fieldset>
@@ -197,8 +217,8 @@ if( !class_exists( 'NNUserForms' ) ){
 					
 					
 					<p>
-						<input type="hidden" name="nn_patron" value="-1" />
-						<input type="hidden" name="nn_<?php echo $type; ?>_nonce" value="<?php echo wp_create_nonce('nn-'.$type.'-nonce'); ?>"/>
+						<input type="hidden" name="patron" value="-1" />
+						<input type="hidden" name="_nn_<?php echo $type; ?>_nonce" value="<?php echo wp_create_nonce('nn-'.$type.'-nonce'); ?>"/>
 						<input type="submit" value="<?php _e( 'Skip Registration' ); ?>"/>
 					</p>
 				</form>

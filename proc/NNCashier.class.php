@@ -130,23 +130,29 @@ if( !class_exists( 'NNCashier' ) ){
 		
 		public function set_args(){
 			
-			$args = nn_sanitize_text_array( $_POST );			
+			$args = nn_sanitize_text_array( $_REQUEST );			
 			
 			//print_pre( $args );
 			
-			//ACTION is needed var to do VERIFY NONCE
+			//IMPORTANT SECURITY CHECK. 
+			//If request and Referer URLs match, all for GET request types. 
+			if( $_SERVER[ 'REQUEST_METHOD' ] !== 'POST' && !nn_referer_requst_match() )
+				die( 'Are \'ya lost?' ); 	
+			
 			if( !empty( $args ) ){
 				$enrollment = $args[ 'enrollment' ];
 				$service = $args[ 'service' ];
 				$action = 'nn_payment_'.$enrollment.'_'.$service;	
 			}
 			
-			//ep( $action );			
-					
-			//check nonce
-			if ( ! wp_verify_nonce( $_POST[ '_nn_nonce' ], $action ) ) {
-				// This nonce is not valid.
-				die( 'Are \'ya lost?' ); 
+			
+			//ACTION is needed var to do VERIFY NONCE
+			//Logic is that if user is logged, NONCE has already been checked.
+			if( !is_user_logged_in() ){
+				
+				if( !wp_verify_nonce( $args[ '_nn_nonce' ], $action ) )
+					die( 'Are \'ya still lost?' ); 	
+
 			}
 						
 			//check that all values are set. 

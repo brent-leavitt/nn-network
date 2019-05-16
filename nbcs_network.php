@@ -38,7 +38,6 @@ if( !defined( 'NN_BASESITE' ) )
 if( !defined( 'NN_TD' ) )
 	define( 'NN_TD', 'nbcs_network' );	//Plugin text domain. 
 
-
 if( !class_exists( 'NBCS_Network' ) ){
 	class NBCS_Network{
 
