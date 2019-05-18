@@ -222,10 +222,10 @@ if( !class_exists( 'NNSettings' ) ){
 						$section_prop = $section.'_section';
 						$section_id = NN_PREFIX.$this->$section_prop[ 'section_id' ].'_options';
 						
-						echo 'The Section ID is: '. $section_id;
+						echo 'The Section ID is: '. $section_id.'<br />';
 						
-						settings_fields( $section_id );
-						do_settings_sections( $section_id  );
+						settings_fields( NN_TD );
+						do_settings_sections( NN_TD  );
 					}
 							
 				}

@@ -17,8 +17,6 @@ if( !class_exists( 'NNAdminMenu' ) ){
 		* 
 		*/
 		
-		public CONST TD = 'certificates_lms'; //Text Domain
-		
 		public 	$icons = array(
 			//https://developer.wordpress.org/resource/dashicons/
 			//'menu_slug'	=> 'icon_slug',
@@ -207,7 +205,7 @@ if( !class_exists( 'NNAdminMenu' ) ){
 			echo "<div class='wrap'>";
 			//<h1 id='wp-heading-inline'>$title</h1>
 			
-			$path = NBCS_NET_PATH.'tmpl/admin/'.$plugin_page.'.php';
+			$path = NN_NET_PATH.'tmpl/admin/'.$plugin_page.'.php';
 			
 			//echo "The required Template Path is: $path . ";
 			

@@ -7,12 +7,12 @@ NN Network (Base File) Psuedo Code
 // Description : This is the plugin root file for network. 
 
 /*
-Plugin Name: NBCS Network
-Plugin URI: https://www.trainingdoulas.com//
-Description: Plugin that encompasses all functions, classes and activities that are needed across the entire NBCS Network
+Plugin Name: NN Network
+Plugin URI: https://tech.trainingdoulas.com//
+Description: Plugin that encompasses all functions, classes and activities that are needed across the entire NN Network
 Version: 1.0
 Author: Brent Leavitt
-Author URI: https://www.trainingdoulas.com/
+Author URI: https://tech.trainingdoulas.com/
 License: GPLv2
 
 */

@@ -83,7 +83,7 @@ if( !class_exists( 'NNSetting' ) ){
 			add_settings_field(
 				'wporg_settings_field',
 				'WPOrg Setting',
-				array( $this, 'wporg_settings_field_cb'),
+				array( $this, 'wporg_settings_field_cb'), //<- THIS CALL BACK NEEDS TO BE UNIQUE FOR EVERY FIELD, unless you pass a unique $arg value. 
 				NN_TD,
 				'wporg_settings_section',
 				array(
