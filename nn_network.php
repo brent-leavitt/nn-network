@@ -1,6 +1,6 @@
 <?php 
 /*
-NBCS Network (Base File) Psuedo Code
+NN Network (Base File) Psuedo Code
 5 October 2018
 -------------------
 
@@ -19,14 +19,14 @@ License: GPLv2
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-if( !defined( 'NBCS_NET_PATH' ) )
-	define( 'NBCS_NET_PATH', plugin_dir_path( __FILE__ )  );
+if( !defined( 'NN_NET_PATH' ) )
+	define( 'NN_NET_PATH', plugin_dir_path( __FILE__ )  );
 
 if( !defined( 'CRON_DEBUG' ) )
 	define( 'CRON_DEBUG', false ); //
 
-if( !defined( 'NBCS_NET_DEV' ) )
-	define( 'NBCS_NET_DEV', true ); //Used mostly for determining which set of credentials to call. 
+if( !defined( 'NN_NET_DEV' ) )
+	define( 'NN_NET_DEV', true ); //Used mostly for determining which set of credentials to call. 
 
 
 if( !defined( 'NN_PREFIX' ) )
@@ -36,10 +36,10 @@ if( !defined( 'NN_BASESITE' ) )
 	define( 'NN_BASESITE', 2 ); 	//The homebase site ID for the network. This maybe different than the network's primary domain, based on how it was first set up. 				
 
 if( !defined( 'NN_TD' ) )
-	define( 'NN_TD', 'nbcs_network' );	//Plugin text domain. 
+	define( 'NN_TD', 'nn_network' );	//Plugin text domain. 
 
-if( !class_exists( 'NBCS_Network' ) ){
-	class NBCS_Network{
+if( !class_exists( 'NN_Network' ) ){
+	class NN_Network{
 
 		public function __construct(){			
 			
@@ -53,7 +53,7 @@ if( !class_exists( 'NBCS_Network' ) ){
 		public function init(){
 			
 			
-			if( NBCS_NET_DEV )
+			if( NN_NET_DEV )
 				$dev = new misc\NNDev();
 			
 		 	
@@ -228,7 +228,7 @@ require_once('func/NNFunctions.php');
 //User Permissions Across Network
 //require_once('func/nbcs_net_permissions.php');
 
-$the_network = new NBCS_Network();
+$the_network = new NN_Network();
 
 //include_once( 'dev_space.php' );
 ?>

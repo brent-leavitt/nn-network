@@ -287,7 +287,7 @@ if( !class_exists( 'NNStripePayForm' ) ){
 				
 			}
 					
-			$form .= wp_nonce_field( 'nbcs_pay_'.$args[ 'enrollment' ] , '_nb_payment_nonce', true, false );
+			$form .= wp_nonce_field( 'nn_pay_'.$args[ 'enrollment' ] , '_nn_payment_nonce', true, false );
 				  
 			if( $args[ 'enrollment' ] == 'library_preview'  || $source_on_file == true ){
 				//If either of the above conditions are true, only generate a button. 

@@ -85,7 +85,7 @@ if( !class_exists( 'NNListener' ) ){
 					if (isset($_GET[ $listener ]) && $_GET[ $listener ] == $key ){
 						
 						//$collect = new proc\NNCollect();
-						//require_once( NBCS_NET_PATH . ( 'func/'.$action.'.php' ) );
+						//require_once( NN_NET_PATH . ( 'func/'.$action.'.php' ) );
 						//Stop WordPress entirely
 						exit;
 					}

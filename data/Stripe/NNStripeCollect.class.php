@@ -57,7 +57,7 @@ if( !class_exists( 'NNStripeCollect' ) ){
 			$post = filter_var_array( $_POST, FILTER_SANITIZE_STRING );
 			
 			//Check if Nonce is set. 
-			if ( ! isset( $post['_nb_payment_nonce'] )  || ! wp_verify_nonce( $post['_nb_payment_nonce'], 'nbcs_pay_'.$post[ 'enrollment_type' ] ) 
+			if ( ! isset( $post['_nn_payment_nonce'] )  || ! wp_verify_nonce( $post['_nn_payment_nonce'], 'nn_pay_'.$post[ 'enrollment_type' ] ) 
 			) {
 			   print 'Sorry, your nonce did not verify.';
 			   exit;

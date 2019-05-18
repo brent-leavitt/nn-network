@@ -451,7 +451,7 @@ if( !class_exists( 'NNCashier' ) ){
 				//Logged in. 
 				$output = "You are logged in as ";
 				$output .= "<strong>".$this->patron->display_name."</strong>. ";
-				$output .= "If this is not you, please <a href='/sign-out/'>sign out</a> before proceeding. Thank you!";
+				$output .= "If this is not you, please <a href='". wp_logout_url( home_url() )."'>sign out</a> before proceeding. Thank you!";
 				
 			}
 			

@@ -14,11 +14,7 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 	class NNStripeDoPayment{
 
 	
-		public $credentials = array( 
-			//This must be moved to the options table and set dynamically. 
-			'test' => 'sk_test_o4TdZr2hwSlbbbgzC5SMAdUS',
-			'live' => ''
-		),
+		public $credentials = 'sk_test_o4TdZr2hwSlbbbgzC5SMAdUS', //Make Blank when moved to options table. This is the test cred. 
 		$token 		= NULL, 
 		$plan 		= NULL,
 		$customer 	= NULL,
@@ -45,10 +41,11 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 		
 		public function __construct( $post ){
 			
+			$this->set_props();
 			$this->set_data( $post );
 			$this->init();
 			
-			dump( __LINE__, __METHOD__, $this );
+			//dump( __LINE__, __METHOD__, $this );
 		}
 		
 	/*
@@ -59,11 +56,56 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 		public function init(){
 			
 			//Establish connection. 
-			require_once( NBCS_NET_PATH . 'lib/vendor/autoload.php' );	
+			require_once( NN_NET_PATH . 'lib/vendor/autoload.php' );	
 			
-			$key = ( defined( 'NBCS_NET_DEV' ) && NBCS_NET_DEV == true )? $this->credentials[ 'test' ] : $this->credentials[ 'live' ] ;
+			$key = $this->credentials;
 			
 			\Stripe\Stripe::setApiKey( $key );
+			
+		}	
+		
+
+	/*
+	*	name: set_props
+	*	description: Set values for properties as defined in options tables.
+	*
+	*/
+		public function set_props(){
+			
+			//dump( __LINE__, __METHOD__, $post );
+			
+			$opts = get_option( 'nn_network_vars' );
+			
+			//How is data received?
+			
+			
+			
+			
+			/* 
+			$data = $this->data;
+			
+			foreach( $data as $key => $val ){
+				if( isset( $post[ $key ] ) && !empty( $post[ $key ] ) )
+					$data[ $key ] = $post[ $key ];	
+			}
+			
+			$this->data = $data; */
+			
+			
+			//Make Assignments. 
+			$key = ( defined( 'NN_NET_DEV' ) && NN_NET_DEV == true )? 'test' : 'live';
+			
+			//Set Stripe Credential
+			if( isset( $opts[ $key .'StripeCred' ] ) && !empty( $opts[ $key .'StripeCred' ] ) )
+				$this->credentials = $opts[ $key .'StripeCred' ];
+			
+		
+			 
+			//Set Payment Token
+			/* if( isset( $post[ 'stripeToken' ] ) && !empty( $post[ 'stripeToken' ] ) )
+				$this->token = $post[ 'stripeToken' ];
+			 */
+			
 			
 		}	
 		
