@@ -23,19 +23,19 @@ if( !class_exists( 'NNSettings' ) ){
 	class NNSettings{
 		
 		
+		public $option_name = '';
+		
 		public  $tabs = array(
-			array(
-				'tab_id' => 'payment_creds',
-				'tab_name' => 'Payments',
+			'payment_creds' => array(
+				'title' => 'Payments',
 				'sections' => array(
 					'stripe',
 					'paypal'
 					
 				)
 			),
-			array(
-				'tab_id' => 'cashier_vars',
-				'tab_name' => 'Cashier Page',
+			'cashier_vars' => array(
+				'title' => 'Cashier Page',
 				'sections' => array(
 					'cashier'				
 				)
@@ -44,64 +44,74 @@ if( !class_exists( 'NNSettings' ) ){
 		
 		//Sections
 		public $paypal_section = array(
-			'section_id' => 'paypal',
-			'section_name' => 'PayPal',
+			'id' => 'paypal',
+			'title' => 'PayPal',
+			'page' => NN_TD,
 			'cb_type' => 'string',
 			'cb_string' =>'Please enter your PayPal credentials to use PayPal as a valid payment option.', //Callback used to render the description of the section. 
 			'fields' => array(
 				array(
-					0 => 	'sandbox_key', 				//
-					1 =>	'text', 					//Callback based on field's input type.
-					2 =>	'field description name.'	// This is sent to the callback function as an $arg variable and used as $arg[0]
+					'id' 			=> 	'sandbox_key', 				//
+					'title'			=> 	'Sandbox Key',							//Field name
+					'type'			=>	'text', 					//Callback based on field's input type.
+					'description' 	=>	'field description name.',	// This is sent to the callback function as an $arg variable and used as $arg[0]
+					
 					
 				),
 				array(
-					0 => 	'prod_key', 				//
-					1 =>	'text', 					//Callback based on field's input type.
-					2 =>	'field description name.'	// This is sent to the callback function as an $arg variable and used as $arg[0]
+					'id'			=> 	'prod_key', 				//
+					'title'			=> 	'Production Key',							//Field name
+					'type'			=>	'text', 					//Callback based on field's input type.
+					'description'	=>	'field description name.'	// This is sent to the callback function as an $arg variable and used as $arg[0]
 					
 				),
 			),
 		);
 		
 		public $stripe_section = array(
-			'section_id' => 'stripe',
-			'section_name' => 'Stripe',
+			'id' => 'stripe',
+			'title' => 'Stripe',
+			'page' => NN_TD,
 			'cb_type' => 'string',
 			'cb_string' =>'Please enter your Stripe credentials to use Stripe as a valid payment option.', //Callback used to render the description of the section. 
 			'fields' => array(
 				array(
-					0 => 	'sandbox_key', 				//
-					1 =>	'text', 					//Callback based on field's input type.
-					2 =>	'field description name.'	// This is sent to the callback function as an $arg variable and used as $arg[0]
+					'id' 			=> 	'sandbox_key', 				//
+					'title'			=> 	'Sandbox Key',				//Field name
+					'type'			=>	'text', 					//Callback based on field's input type.
+					'description' 	=>	'field description name.',	// This is sent to the callback function as an $arg variable and used as $arg[0]
 					
 				),
 				array(
-					0 => 	'prod_key', 			 	//
-					1 =>	'text', 					//Callback based on field's input type.
-					2 =>	'field description name.'	// This is sent to the callback function as an $arg variable and used as $arg[0]
+					'id' 			=> 	'prod_key', 				//
+					'title'			=> 	'Production Key',			//Field name
+					'type'			=>	'text', 					//Callback based on field's input type.
+					'description' 	=>	'field description name.',	// This is sent to the callback function as an $arg variable and used as $arg[0]
 					
 				),
 			),
 		);
 		
 		public $cashier_section = array(
-			'section_id' => 'cashier',
-			'section_name' => 'Cashier Options',
+			'id' => 'cashier',
+			'title' => 'Cashier Options',
+			'page' => NN_TD,
 			'cb_type' => 'string',
 			'cb_string' =>'This is a text string.', //Callback used to render the description of the section. 
 			'fields' => array(
 				array(
-					0 => 	'field 1', 		//
-					1 =>	'text', 				//Callback based on field's input type.
-					2 =>	'field description name.'	// This is sent to the callback function as an $arg variable and used as $arg[0]
+					'id' 			=> 	'option_1', 						//
+					'title'			=> 	'Option 1',							//Field name
+					'type'			=>	'text', 					//Callback based on field's input type.
+					'description' 	=>	'field description name.',	// This is sent to the callback function 
 					
 				),
 				array(
-					0 => 	'field 2', 		//
-					1 =>	'text', 				//Callback based on field's input type.
-					2 =>	'field description name.'	// This is sent to the callback function as an $arg variable and used as $arg[0]
-					
+					'id' 			=> 	'option_2', 						//
+					'title'			=> 	'Option 2',							//Field name
+					'type'			=>	'text', 					//Callback based on field's input type.
+					'description' 	=>	'field description name.',	// This is sent to the callback function 
+
 				),
 			),
 		);
@@ -139,7 +149,24 @@ if( !class_exists( 'NNSettings' ) ){
 			
 			//$this->admin_menu();
 			//add_action( 'admin_menu', array( $this, 'add_submenu' ) );
-			$setting = new Setting();
+			
+			
+			foreach( $this->tabs as $tab => $tab_arr ){
+				
+				$option_name = NN_TD.'_'.$tab; 
+				
+				$sections = $tab_arr[ 'sections' ];
+				
+				$args = array();
+			
+				foreach( $sections as $section ){
+					$section_name =  $section.'_section';
+					$args[ $section_name ] = $this->$section_name;
+				}
+				
+				$setting = new Setting( $option_name, $args );
+				//print_pre( $setting );
+			}			
 		}		
 			
 		
@@ -152,8 +179,12 @@ if( !class_exists( 'NNSettings' ) ){
 		public function render(){
 			
 			$active_tab = $this->get_active_tab();
+			
+			$this->option_name = NN_TD.'_'.$active_tab;
+			//maybe set a property for active_tab		
+			
 			$tab_nav = $this->tab_navigation( $active_tab );
-			$form = $this->form( $active_tab );
+			$form = $this->tab_form( $active_tab );
 			
 			return $tab_nav . $form;
 		}	
@@ -192,11 +223,11 @@ if( !class_exists( 'NNSettings' ) ){
 			
 			$output ='<h2 class="nav-tab-wrapper">';
 			
-			foreach( $this->tabs as $tab ){
+			foreach( $this->tabs as $tab => $arr ){
 				
-				$output .='<a href="?page=settings&tab='.$tab[ 'tab_id' ].'" class="nav-tab ';
-				$output .= $active_tab == $tab[ 'tab_id' ] ? 'nav-tab-active' : '';
-				$output .= '">'.$tab[ 'tab_name' ].'</a>';
+				$output .='<a href="?page=settings&tab='.$tab.'" class="nav-tab ';
+				$output .= $active_tab == $tab ? 'nav-tab-active' : '';
+				$output .= '">'.$arr[ 'title' ].'</a>';
 			}
 			
 			$output .= "</h2>";
@@ -206,26 +237,26 @@ if( !class_exists( 'NNSettings' ) ){
 	
 			
 		/*
-		Name: form
+		Name: tab_form
 		Description: 
 		
 		*/
 		
-		public function form( $active_tab ){
+		public function tab_form( $active_tab ){
 			$output = '<form method="post" action="options.php">';
 			
 			ob_start();
 			
-			foreach( $this->tabs as $tab ){
-				if( $tab[ 'tab_id' ] == $active_tab ){
-					foreach( $tab[ 'sections' ] as $section ){
+			foreach(  $this->tabs as $tab => $arr ){
+				if( $tab == $active_tab ){
+					foreach( $arr[ 'sections' ] as $section ){
 						$section_prop = $section.'_section';
-						$section_id = NN_PREFIX.$this->$section_prop[ 'section_id' ].'_options';
+						$section_id = $this->$section_prop[ 'id' ].'_section';
 						
 						echo 'The Section ID is: '. $section_id.'<br />';
-						
-						settings_fields( NN_TD );
-						do_settings_sections( NN_TD  );
+						echo 'Option Name: '. $this->option_name. '<br />';
+						settings_fields( $this->option_name.'_group' );
+						do_settings_sections( $this->option_name.'_group' );
 					}
 							
 				}
