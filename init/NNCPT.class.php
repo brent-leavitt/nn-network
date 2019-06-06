@@ -41,7 +41,11 @@ class NNCPT{
 	
 	public function setup(){
 		//Define specific CPTs for use across the network. 
-
+		//Most of these CPTs should only be active on the NN_BASESITE
+		
+		//if network and site_id equals NN_BASESITE then declare these CPTS. 
+		
+		
 		//Guide
 		$guide	= new CPT( 
 			array( 

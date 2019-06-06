@@ -17,11 +17,47 @@ Description: class independent list of functions
 	
 function nn_format_data( $data, $source = '' ){
 	
-	$formatter = new misc\NNDataFormat( $data, $source );
+	$formatter = new misc\NNDataFormat( $data );
 	
+	$formatted = array();
+	
+	switch( $source ){
+		
+		case 'stripe':
+				
+			$formatted = $formatter->stripe();
+			break;
+			
+		default:
+			
+			$formatted = $formatter->basic();
+			break;
+		
+	}
+	
+	return ( !empty( $formatted ) )? $formatted : NULL ;
 }
 
 
+
+/*
+	Name: nn_do_core_action
+	Description: This initiates the backend core processes 
+	Params: (string) $action, (array) $data
+*/
+
+function nn_do_core_action( $action, $data ){
+	
+	
+	$actor = new core\NNAction( $data );
+	
+	$actor->$action();
+	
+	//incomplete
+	
+	return true;
+	
+}
 
 /*
 	Name: nn_switch_to_base_blog
@@ -127,3 +163,51 @@ function nn_referer_requst_match(){
 	//These TWO MUST MATCH for $_GET. 
 	
 }
+
+
+/*
+	Name: nn_not_admin
+	Description: Keep Non-Admin users out of admin areas. 
+*/
+
+function nn_not_admin(){
+	if( is_user_logged_in() && !current_user_can( 'administrator' ) ){
+		
+	 if( is_admin() ){
+		
+			$site_url = site_url();
+			wp_redirect($site_url); 
+			exit; 
+			
+		}	
+	}
+}
+
+add_action('init', 'nn_not_admin');
+
+
+/*
+	Name: nn_admin_bar
+	Description: Disable the default admin bar for all users except administrators. 
+*/
+
+function nn_admin_bar($admin_bar) {
+	return ( current_user_can( 'administrator' ) ) ? $admin_bar : false;
+}
+
+add_filter( 'show_admin_bar' , 'nn_admin_bar'); 
+
+
+
+
+/*
+	Name: nn_
+	Description:
+*/
+
+function nn_(){
+	
+	
+}
+
+?>

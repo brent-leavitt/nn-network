@@ -71,6 +71,10 @@ if( !class_exists( 'NN_Network' ) ){
 			//register controls
 			$reglite = new init\NNRegisterLite();
 			
+			//Crons schedule.
+			$cron = new init\NNCron();
+			$cron->schedule();
+			
 			//setup activation and deactivation hooks
 			register_activation_hook( __FILE__, array( $this, 'activation' ) );
 			register_deactivation_hook( __FILE__, array( $this, 'deactivation' ) );
@@ -127,6 +131,18 @@ if( !class_exists( 'NN_Network' ) ){
 		}
 		
 		
+		public function set_crons(){
+			$cron = new init\NNCron();
+			$cron->init();
+			
+		}		
+		public function stop_crons(){
+			$cron = new init\NNCron();
+			$cron->remove_cron();
+			
+		}
+		
+		
 		
 		private function autoload_classes( ){
 			
@@ -157,10 +173,14 @@ if( !class_exists( 'NN_Network' ) ){
 			
 		public function activation(){
 		
-			$cpts = new init\NNCPT();
-			$cpts->setup();
-		
+			
+			//Setup Custom Post Types
+			$this->set_cpts();
+					
 			flush_rewrite_rules();	//Clear the permalinks after CPTs have been registered
+		
+			
+		
 		
 			//Register settings
 			
@@ -190,6 +210,9 @@ if( !class_exists( 'NN_Network' ) ){
 		
 		
 		public function deactivation(){
+			
+			//Stop Network Cron Jobs
+			$this->stop_crons();
 			
 			//Clean up Post Types being removed. 
 			$this->remove_cpts(); 	// unregister the post type, so the rules are no longer in memory

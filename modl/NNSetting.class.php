@@ -28,7 +28,6 @@ if( !class_exists( 'NNSetting' ) ){
 		
 		
 		public $opt_name = '',
-		$opt_group = '', 
 		$opt_args = array(),
 		$opt_vals = array();
 		
@@ -45,10 +44,11 @@ if( !class_exists( 'NNSetting' ) ){
 		
 		*/
 		
-		public function __construct( $td, $args ){
+		public function __construct( $opt_name, $args ){
 			
+			$this->opt_name = $opt_name;
 			$this->opt_args = $args;
-			$this->init( $td );
+			$this->init();
 			
 		}
 		
@@ -58,14 +58,12 @@ if( !class_exists( 'NNSetting' ) ){
 		
 		*/
 		
-		public function init( $td ){
+		public function init(){
 			
-			$this->opt_name = $td.'_settings';
-			$this->opt_group = $td.'_group';
 			$this->opt_vals = get_option( $this->opt_name );
 			
 			if( false == $this->opt_vals ) {	
-				add_option( $this->opt_name, apply_filters( '', _() ) ); //add default values. 
+				add_option( $this->opt_name, '', '', 'no' /* , apply_filters( '', _() ) */ ); //add default values. 
 			} // end if
 			
 			$this->register();
@@ -82,11 +80,15 @@ if( !class_exists( 'NNSetting' ) ){
 			
 			
 			// register a new setting for NN_TD (constant defined in plugin init) page
-			register_setting( $this->opt_group, $this->opt_name );
+			register_setting( $this->opt_name, $this->opt_name );
 			
 			//ep( "Option Name is {$this->opt_name}" );
 			
+			
 			foreach( $this->opt_args as /* $section_key => */ $section_args ){			
+				//print_pre( $section_args );
+			
+
 				$this->add_section( $section_args );
 				
 				foreach( $section_args[ 'fields' ] as $field ){
@@ -208,6 +210,7 @@ if( !class_exists( 'NNSetting' ) ){
 		public function prep_field_args( $section, $field ){
 			
 			$field_id = $section[ 'id' ].'_'.$field[ 'id' ];
+			$value = ( !empty( $this->opt_vals[ $field_id ] ) )?  $this->opt_vals[ $field_id ] : '' ;
 			
 			$args = [
 				'id' => $field_id ,
@@ -217,7 +220,7 @@ if( !class_exists( 'NNSetting' ) ){
 				'page' => $section[ 'page' ],
 				'args' => array(
 					'name' => $field_id,
-					'value' => $this->opt_vals[ $field_id ], //the value stored in the option table.
+					'value' => $value, //the value stored in the option table.
 					'label_for'	=> '', //label for field
 					'class' => ''  
 				)

@@ -108,12 +108,28 @@ if( !class_exists( 'NNShortCodes' ) ){
 		
 
 	/*
-		Name: 
+		Name: load_register_cb
 		Description: 
 	*/			
 		public function load_register_cb( $atts ){
+			return 'We are calling the REGiSTER CB function!!';
 			
+		}
+					
+
+	/*
+		Name: account
+		Description: 
+	*/			
+		public function load_account_cb( $atts ){
 			
+			$atts_arr = shortcode_atts( array(
+					'show' => '',	
+				), $atts );
+
+			print_pre( $atts );
+			
+			return 'We are calling the ACCOUNT CB function!!';
 		}
 			
 

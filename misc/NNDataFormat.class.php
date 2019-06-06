@@ -111,8 +111,8 @@ if( !class_exists( 'NNDataFormat' ) ){
 			
 			$this->init( $data, $source );
 			
-			dump( __LINE__, __METHOD__, $data );
-			dump( __LINE__, __METHOD__, $source );
+			//dump( __LINE__, __METHOD__, $data );
+			//dump( __LINE__, __METHOD__, $source );
 		}	
 		
 
@@ -138,11 +138,14 @@ if( !class_exists( 'NNDataFormat' ) ){
 			
 			if( $this->set_source( $source ) )				
 				$formatted = $this->set_format();
-			
+			dump( __LINE__, __METHOD__, $formatted );
 			//This sends formatted Data to the backend for processing. Do I need to do anything else? 
 			if( $formatted )
 				$action = new Action( $this->out );
 			
+			
+			
+			dump( __LINE__, __METHOD__, $this->out );
 		}	
 		
 	
@@ -175,16 +178,16 @@ if( !class_exists( 'NNDataFormat' ) ){
 			//Set Source Name Property
 			if( !empty( $source ) ){
 				
+				
 				//All Source Class Names will be formated with first letter cap, all else lower case: ex. Paypal. 
 				$source = ucfirst( strtolower( $source ) );
 				
 				$src_class = 'data\\'.$source.'\\NNData'.$source;
-				
 				$this->source = new $src_class( $this->in );
 				
+				//dump( __LINE__, __METHOD__, $this->source );
 				/* //Convert incoming data to an array. This will vary according on where the data is coming from. 
 				$this->data = $this->source->to_array(); */	
-				
 				return true;
 			}
 			
@@ -201,7 +204,7 @@ if( !class_exists( 'NNDataFormat' ) ){
 			
 			//source data in array format
 			$data = $this->source->data;
-			
+						
 			//data_map for source type: paypal, stripe, etc. 
 			if( is_object( $this->source ) )			
 				$data_map = $this->source->get_data_map();
@@ -214,9 +217,12 @@ if( !class_exists( 'NNDataFormat' ) ){
 			if( empty( $data ) || empty( $data_map ) || empty( $output ) ) 
 				return; 
 			
+			
+			
 			//Map data from source to final format
 			$output = $this->do_mapping( $output, $data_map, $data );
 			
+			dump( __LINE__, __METHOD__, $output );
 
 			//Then remove empty fields from the output array. 
 			$output = $this->clean( $output );
@@ -260,14 +266,17 @@ if( !class_exists( 'NNDataFormat' ) ){
 		
 		public function do_mapping( $output, $data_map, $data){
 			//Then for each field in the output format, look for a suitable input. 
+			
 			foreach( $output as $o_key => $o_val ){
 
 				//generate potential method name.
 				$set_key = 'set_'. $o_key; 
-				
+				dump( __LINE__, __METHOD__, $set_key );
 				//look for method by $o_key name; 
 				if( method_exists( $this, $set_key ) ){ 
 					$output[ $o_key ] = $this->$set_key();
+					
+					dump( __LINE__, __METHOD__, $output[ $o_key ] );
 					continue;
 				}
 				

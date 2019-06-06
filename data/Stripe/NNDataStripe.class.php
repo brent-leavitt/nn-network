@@ -105,7 +105,10 @@ if( !class_exists( 'NNDataStripe' ) ){
 		
 		public function to_array(){
 			
-			$array = json_decode( $this->in, true );
+			
+			//$array = (array) $this->in;
+			
+			$array = json_decode( json_encode( $this->in ), true );
 			
 			if( !empty( $array ) )
 				$this->data = $array;

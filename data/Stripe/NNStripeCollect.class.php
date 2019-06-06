@@ -25,7 +25,7 @@ if( !class_exists( 'NNStripeCollect' ) ){
 	class NNStripeCollect{
 			
 		//Properties
-		
+		public $type = '';
 		
 		
 		
@@ -45,7 +45,7 @@ if( !class_exists( 'NNStripeCollect' ) ){
 		Description: 
 	*/		
 		private function init(){
-			dump( __LINE__, __METHOD__, $_POST );
+			//dump( __LINE__, __METHOD__, $_POST );
 			
 			//This class shoudl only fire if there is form data to be processed. 
 			if( !isset( $_POST ) || empty( $_POST ) ){
@@ -59,17 +59,49 @@ if( !class_exists( 'NNStripeCollect' ) ){
 			//Check if Nonce is set. 
 			if ( ! isset( $post['_nn_payment_nonce'] )  || ! wp_verify_nonce( $post['_nn_payment_nonce'], 'nn_pay_'.$post[ 'enrollment_type' ] ) 
 			) {
-			   print 'Sorry, your nonce did not verify.';
+			   print 'Sorry, your payment request did not validate.';
 			   exit;
 			} 
 			
 			//If response is not false...
 			if( ( $response = $this->process( $post ) ) !== false ){
 				
-				dump( __LINE__, __METHOD__, $response );
+				//dump( __LINE__, __METHOD__, $response );
 				
-				$arr = nn_format_data( $response, 'Stripe' );
+				//$arr = nn_format_data( $response, 'Stripe' );
 				//format data
+				
+				switch( $this->type ){
+					case 'subscription':
+						$tx_id = $response[ 'latest_invoice' ];
+						break;
+						
+					case 'manual':
+						$tx_id = $response[ 'id' ]; //?
+						break;
+						
+					case 'payment':
+					default:
+						$tx_id = $response[ 'id' ];
+						break;
+					
+				}
+				
+				
+				$params = array(
+					'tx_id' => $tx_id,
+					'register' => true,
+					
+				);
+				
+				$this->redirect( $post[ 'return_success' ], $params );
+				//dump( __LINE__, __METHOD__, $post );
+				//dump( __LINE__, __METHOD__, $params );
+				//dump( __LINE__, __METHOD__, $response );
+			} else {
+				
+				$this->redirect( $post[ 'return_fail' ] );
+				
 			}
 			
 			
@@ -88,9 +120,9 @@ if( !class_exists( 'NNStripeCollect' ) ){
 			//This is from old code which class is presently found on NBCS_Network plugin on the cbldev server. 
 			$t_action = new DoTransaction( $post );
 			
-			$type = $t_action->type;
-			//print_pre( $t_action );
-			echo "TYPE is $type . <br />"; 
+			$this->type = $type = $t_action->type;
+			//print_pre( $t_action ); 
+			//echo "TYPE is $type . <br />"; 
 			//If no type set. Stop all action. 
 			if( $type == false )				
 				wp_die( 'Are \'ya lost, stranger?' );
@@ -146,12 +178,21 @@ if( !class_exists( 'NNStripeCollect' ) ){
 				
 	
 	/*
-		Name: 
+		Name: redirect
 		Description: 
 	*/		
-					
 		
-		
+		public function redirect( $page, $params = [] ){
+			
+			$url = $page;
+			
+			if( !empty( $params ) ){
+				$query = http_build_query( $params );
+				$url .=  '/?'.$query;	
+			}
+			
+			wp_safe_redirect( $url ); exit;
+		}	
 		
 	}
 }	

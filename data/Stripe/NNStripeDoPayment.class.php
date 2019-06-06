@@ -14,7 +14,7 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 	class NNStripeDoPayment{
 
 	
-		public $credentials = 'sk_test_o4TdZr2hwSlbbbgzC5SMAdUS', //Make Blank when moved to options table. This is the test cred. 
+		public $credentials = '', 
 		$token 		= NULL, 
 		$plan 		= NULL,
 		$customer 	= NULL,
@@ -45,7 +45,7 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 			$this->set_data( $post );
 			$this->init();
 			
-			//dump( __LINE__, __METHOD__, $this );
+			
 		}
 		
 	/*
@@ -62,6 +62,8 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 			
 			\Stripe\Stripe::setApiKey( $key );
 			
+			//dump( __LINE__, __METHOD__, $this );
+			
 		}	
 		
 
@@ -72,33 +74,22 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 	*/
 		public function set_props(){
 			
-			//dump( __LINE__, __METHOD__, $post );
-			
-			$opts = get_option( 'nn_network_vars' );
-			
-			//How is data received?
 			
 			
-			
-			
-			/* 
-			$data = $this->data;
-			
-			foreach( $data as $key => $val ){
-				if( isset( $post[ $key ] ) && !empty( $post[ $key ] ) )
-					$data[ $key ] = $post[ $key ];	
-			}
-			
-			$this->data = $data; */
+			$opts = get_option( 'nn_network_payment_creds' );
 			
 			
 			//Make Assignments. 
-			$key = ( defined( 'NN_NET_DEV' ) && NN_NET_DEV == true )? 'test' : 'live';
+			$environ = ( defined( 'NN_NET_DEV' ) && NN_NET_DEV == true )? 'sandbox' : 'prod';
+			
+			$key = 'stripe_secret_'. $environ .'_key';
 			
 			//Set Stripe Credential
-			if( isset( $opts[ $key .'StripeCred' ] ) && !empty( $opts[ $key .'StripeCred' ] ) )
-				$this->credentials = $opts[ $key .'StripeCred' ];
+			if( isset( $opts[ $key ] ) && !empty( $opts[ $key ] ) )
+				$this->credentials = $opts[ $key ];
 			
+			
+			//dump( __LINE__, __METHOD__, $opts );
 		
 			 
 			//Set Payment Token
@@ -137,12 +128,29 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 				$this->customer = $post[ 'stripeCustomer' ];
 			
 			//Set Subscription Plan
-			if( isset( $post[ 'stripePlan' ] ) && !empty( $post[ 'stripePlan' ] ) )
-				$this->plan = $post[ 'stripePlan' ];
+			if( isset( $post[ 'enrollment_type' ] ) && !empty( $post[ 'enrollment_type' ] ) )
+				$this->set_plan( $post[ 'enrollment_type' ] );
 			
 		}	
 		
 
+	/*
+		Name: set_plan
+		Description: 
+	*/	
+		public function set_plan( $enrollment ){
+			
+			$opts = get_option( NN_TD.'_cashier_vars' );
+			
+			$key = 'plan_key_'.$enrollment;
+			
+			$this->plan = $opts[ $key ];
+			
+			
+		}
+		
+		
+		
 	/*
 		Name: 
 		Description: 
@@ -198,6 +206,8 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 			$subscription = NULL; 
 			
 			$customer_id = $this->get_customer_id();
+			
+			//dump( __LINE__, __METHOD__, $customer_id );
 			
 			if( ( $customer_id != NULL ) && ( $this->plan != NULL ) ){
 				

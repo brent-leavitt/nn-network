@@ -29,7 +29,8 @@ if( !class_exists( 'NNSettings' ) ){
 			'payment_creds' => array(
 				'title' => 'Payments',
 				'sections' => array(
-					'stripe',
+					'stripe_public',
+					'stripe_secret',
 					'paypal'
 					
 				)
@@ -37,7 +38,7 @@ if( !class_exists( 'NNSettings' ) ){
 			'cashier_vars' => array(
 				'title' => 'Cashier Page',
 				'sections' => array(
-					'cashier'				
+					'plan_key'				
 				)
 			)
 		);
@@ -46,7 +47,7 @@ if( !class_exists( 'NNSettings' ) ){
 		public $paypal_section = array(
 			'id' => 'paypal',
 			'title' => 'PayPal',
-			'page' => NN_TD,
+			'page' => NN_TD.'_payment_creds',
 			'cb_type' => 'string',
 			'cb_string' =>'Please enter your PayPal credentials to use PayPal as a valid payment option.', //Callback used to render the description of the section. 
 			'fields' => array(
@@ -68,10 +69,10 @@ if( !class_exists( 'NNSettings' ) ){
 			),
 		);
 		
-		public $stripe_section = array(
-			'id' => 'stripe',
-			'title' => 'Stripe',
-			'page' => NN_TD,
+		public $stripe_secret_section = array(
+			'id' => 'stripe_secret',
+			'title' => 'Stripe Secret Keys',
+			'page' => NN_TD.'_payment_creds',
 			'cb_type' => 'string',
 			'cb_string' =>'Please enter your Stripe credentials to use Stripe as a valid payment option.', //Callback used to render the description of the section. 
 			'fields' => array(
@@ -92,25 +93,49 @@ if( !class_exists( 'NNSettings' ) ){
 			),
 		);
 		
-		public $cashier_section = array(
-			'id' => 'cashier',
-			'title' => 'Cashier Options',
-			'page' => NN_TD,
+		public $stripe_public_section = array(
+			'id' => 'stripe_public',
+			'title' => 'Stripe Public Keys',
+			'page' => NN_TD.'_payment_creds',
 			'cb_type' => 'string',
-			'cb_string' =>'This is a text string.', //Callback used to render the description of the section. 
+			'cb_string' =>'Please enter your Stripe credentials to use Stripe as a valid payment option.', //Callback used to render the description of the section. 
 			'fields' => array(
 				array(
-					'id' 			=> 	'option_1', 						//
-					'title'			=> 	'Option 1',							//Field name
+					'id' 			=> 	'sandbox_key', 				//
+					'title'			=> 	'Sandbox Key',				//Field name
 					'type'			=>	'text', 					//Callback based on field's input type.
-					'description' 	=>	'field description name.',	// This is sent to the callback function 
+					'description' 	=>	'field description name.',	// This is sent to the callback function as an $arg variable and used as $arg[0]
 					
 				),
 				array(
-					'id' 			=> 	'option_2', 						//
-					'title'			=> 	'Option 2',							//Field name
+					'id' 			=> 	'prod_key', 				//
+					'title'			=> 	'Production Key',			//Field name
 					'type'			=>	'text', 					//Callback based on field's input type.
-					'description' 	=>	'field description name.',	// This is sent to the callback function 
+					'description' 	=>	'field description name.',	// This is sent to the callback function as an $arg variable and used as $arg[0]
+					
+				),
+			),
+		);
+		
+		public $plan_key_section = array(
+			'id' => 'plan_key',
+			'title' => 'Stripe Plan Keys',
+			'page' => NN_TD.'_cashier_vars',
+			'cb_type' => 'string',
+			'cb_string' =>'The plan keys for products in Stripe', //Callback used to render the description of the section. 
+			'fields' => array(
+				array(
+					'id' 			=> 	'certificate_recurring', 						//
+					'title'			=> 	'Doula Training',							//Field name
+					'type'			=>	'text', 					//Callback based on field's input type.
+					'description' 	=>	'Plan key for Doula Training',	// This is sent to the callback function 
+					
+				),
+				array(
+					'id' 			=> 	'library_month', 						//
+					'title'			=> 	'Childbirth Library',							//Field name
+					'type'			=>	'text', 					//Callback based on field's input type.
+					'description' 	=>	'Plan key for Childbirth Support Library.',	// This is sent to the callback function 
 
 				),
 			),
@@ -163,7 +188,7 @@ if( !class_exists( 'NNSettings' ) ){
 					$section_name =  $section.'_section';
 					$args[ $section_name ] = $this->$section_name;
 				}
-				
+				//ep("opt name is: $option_name");
 				$setting = new Setting( $option_name, $args );
 				//print_pre( $setting );
 			}			
@@ -225,7 +250,7 @@ if( !class_exists( 'NNSettings' ) ){
 			
 			foreach( $this->tabs as $tab => $arr ){
 				
-				$output .='<a href="?page=settings&tab='.$tab.'" class="nav-tab ';
+				$output .='<a href="?page='.NN_TD.'&tab='.$tab.'" class="nav-tab ';
 				$output .= $active_tab == $tab ? 'nav-tab-active' : '';
 				$output .= '">'.$arr[ 'title' ].'</a>';
 			}
@@ -249,15 +274,23 @@ if( !class_exists( 'NNSettings' ) ){
 			
 			foreach(  $this->tabs as $tab => $arr ){
 				if( $tab == $active_tab ){
-					foreach( $arr[ 'sections' ] as $section ){
+					
+					//print_pre( get_settings_errors());
+					
+					settings_errors();
+					
+					//echo 'Option Name: '. $this->option_name. '<br />';
+					settings_fields( $this->option_name );
+					do_settings_sections( $this->option_name );
+
+					/* foreach( $arr[ 'sections' ] as $section ){
+						
 						$section_prop = $section.'_section';
 						$section_id = $this->$section_prop[ 'id' ].'_section';
 						
 						echo 'The Section ID is: '. $section_id.'<br />';
-						echo 'Option Name: '. $this->option_name. '<br />';
-						settings_fields( $this->option_name.'_group' );
-						do_settings_sections( $this->option_name.'_group' );
-					}
+						do_settings_fields( NN_TD, $section_id );
+					} */
 							
 				}
 			}
