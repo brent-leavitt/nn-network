@@ -1,0 +1,234 @@
+Line 98 from data\Stripe\NNStripeCollect::init
+
+This is the POST data sent to the collection page. 
+
+array(19) {
+  ["service_id"]=>
+  string(0) ""
+  ["enrollment_type"]=>
+  string(13) "library_month"
+  ["price"]=>
+  string(3) "500"
+  ["return_success"]=>
+  string(9) "thank-you"
+  ["return_fail"]=>
+  string(12) "registration"
+  ["interval"]=>
+  string(1) "0"
+  ["duration"]=>
+  string(2) "1m"
+  ["_nn_payment_nonce"]=>
+  string(10) "39a36d7ba3"
+  ["_wp_http_referer"]=>
+  string(9) "/cashier/"
+  ["stripeToken"]=>
+  string(28) "tok_1EkFwoEY0jlqbLN4gkGuSUUx"
+  ["stripeTokenType"]=>
+  string(4) "card"
+  ["stripeEmail"]=>
+  string(22) "518@trainingdoulas.com"
+  ["stripeBillingName"]=>
+  string(11) "TestUser518"
+  ["stripeBillingAddressCountry"]=>
+  string(13) "United States"
+  ["stripeBillingAddressCountryCode"]=>
+  string(2) "US"
+  ["stripeBillingAddressZip"]=>
+  string(5) "65340"
+  ["stripeBillingAddressLine1"]=>
+  string(13) "1234 N 5678 W"
+  ["stripeBillingAddressCity"]=>
+  string(8) "Marshall"
+  ["stripeBillingAddressState"]=>
+  string(2) "MO"
+}
+
+Line 99 from data\Stripe\NNStripeCollect::init
+
+This is the server response to setting up a new subscription. 
+
+object(Stripe\Subscription)#701 (33) {
+  ["id"]=>
+  string(18) "sub_FEjPRP5giQntzq"
+  ["object"]=>
+  string(12) "subscription"
+  ["application_fee_percent"]=>
+  NULL
+  ["billing"]=>
+  string(20) "charge_automatically"
+  ["billing_cycle_anchor"]=>
+  int(1560282483)
+  ["billing_thresholds"]=>
+  NULL
+  ["cancel_at"]=>
+  NULL
+  ["cancel_at_period_end"]=>
+  bool(false)
+  ["canceled_at"]=>
+  NULL
+  ["collection_method"]=>
+  string(20) "charge_automatically"
+  ["created"]=>
+  int(1560282483)
+  ["current_period_end"]=>
+  int(1562874483)
+  ["current_period_start"]=>
+  int(1560282483)
+  ["customer"]=>
+  string(18) "cus_FEjPXdfmvx4S8G"
+  ["days_until_due"]=>
+  NULL
+  ["default_payment_method"]=>
+  NULL
+  ["default_source"]=>
+  NULL
+  ["default_tax_rates"]=>
+  array(0) {
+  }
+  ["discount"]=>
+  NULL
+  ["ended_at"]=>
+  NULL
+  ["items"]=>
+  object(Stripe\Collection)#725 (5) {
+    ["object"]=>
+    string(4) "list"
+    ["data"]=>
+    array(1) {
+      [0]=>
+      object(Stripe\SubscriptionItem)#720 (9) {
+        ["id"]=>
+        string(17) "si_FEjPZet10ym1VY"
+        ["object"]=>
+        string(17) "subscription_item"
+        ["billing_thresholds"]=>
+        NULL
+        ["created"]=>
+        int(1560282483)
+        ["metadata"]=>
+        object(Stripe\StripeObject)#715 (0) {
+        }
+        ["plan"]=>
+        object(Stripe\Plan)#718 (19) {
+          ["id"]=>
+          string(19) "plan_F6dP7S9MilOACx"
+          ["object"]=>
+          string(4) "plan"
+          ["active"]=>
+          bool(true)
+          ["aggregate_usage"]=>
+          NULL
+          ["amount"]=>
+          int(500)
+          ["billing_scheme"]=>
+          string(8) "per_unit"
+          ["created"]=>
+          int(1558415029)
+          ["currency"]=>
+          string(3) "usd"
+          ["interval"]=>
+          string(5) "month"
+          ["interval_count"]=>
+          int(1)
+          ["livemode"]=>
+          bool(false)
+          ["metadata"]=>
+          object(Stripe\StripeObject)#711 (0) {
+          }
+          ["nickname"]=>
+          string(39) "Childbirth Library Monthly Subscription"
+          ["product"]=>
+          string(19) "prod_DXuvzA0BGIwaGm"
+          ["tiers"]=>
+          NULL
+          ["tiers_mode"]=>
+          NULL
+          ["transform_usage"]=>
+          NULL
+          ["trial_period_days"]=>
+          NULL
+          ["usage_type"]=>
+          string(8) "licensed"
+        }
+        ["quantity"]=>
+        int(1)
+        ["subscription"]=>
+        string(18) "sub_FEjPRP5giQntzq"
+        ["tax_rates"]=>
+        array(0) {
+        }
+      }
+    }
+    ["has_more"]=>
+    bool(false)
+    ["total_count"]=>
+    int(1)
+    ["url"]=>
+    string(54) "/v1/subscription_items?subscription=sub_FEjPRP5giQntzq"
+  }
+  ["latest_invoice"]=>
+  string(27) "in_1EkFwtEY0jlqbLN4Ln2kLZlv"
+  ["livemode"]=>
+  bool(false)
+  ["metadata"]=>
+  object(Stripe\StripeObject)#698 (0) {
+  }
+  ["plan"]=>
+  object(Stripe\Plan)#709 (19) {
+    ["id"]=>
+    string(19) "plan_F6dP7S9MilOACx"
+    ["object"]=>
+    string(4) "plan"
+    ["active"]=>
+    bool(true)
+    ["aggregate_usage"]=>
+    NULL
+    ["amount"]=>
+    int(500)
+    ["billing_scheme"]=>
+    string(8) "per_unit"
+    ["created"]=>
+    int(1558415029)
+    ["currency"]=>
+    string(3) "usd"
+    ["interval"]=>
+    string(5) "month"
+    ["interval_count"]=>
+    int(1)
+    ["livemode"]=>
+    bool(false)
+    ["metadata"]=>
+    object(Stripe\StripeObject)#727 (0) {
+    }
+    ["nickname"]=>
+    string(39) "Childbirth Library Monthly Subscription"
+    ["product"]=>
+    string(19) "prod_DXuvzA0BGIwaGm"
+    ["tiers"]=>
+    NULL
+    ["tiers_mode"]=>
+    NULL
+    ["transform_usage"]=>
+    NULL
+    ["trial_period_days"]=>
+    NULL
+    ["usage_type"]=>
+    string(8) "licensed"
+  }
+  ["quantity"]=>
+  int(1)
+  ["schedule"]=>
+  NULL
+  ["start"]=>
+  int(1560282483)
+  ["start_date"]=>
+  int(1560282483)
+  ["status"]=>
+  string(6) "active"
+  ["tax_percent"]=>
+  NULL
+  ["trial_end"]=>
+  NULL
+  ["trial_start"]=>
+  NULL
+}

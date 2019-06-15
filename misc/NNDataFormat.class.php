@@ -6,14 +6,14 @@ Last Updated 18 Dec 2018
 
 Description: This takes all incoming data from internal and third party transactions and turns into a universal formatted data set for use in the backend processes. 
 
-Question: Shouldn't internal functions be correctly formatted before they get here? 
+Question: Shouldn't internal functions be correctly formatted before they get here? Yes. 
+
+This doesn't call any backend functionality. This is simply a prepretory class. All data regardless of the source should be properly formatted after passing through this class. 
 
 		
 */
 	
 namespace misc;
-
-use \core\NNAction as Action;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -107,7 +107,7 @@ if( !class_exists( 'NNDataFormat' ) ){
 		Description: 
 	*/	
 		
-		public function __construct( $data, $source){
+		public function __construct( $data, $source ){
 			
 			$this->init( $data, $source );
 			
@@ -138,10 +138,11 @@ if( !class_exists( 'NNDataFormat' ) ){
 			
 			if( $this->set_source( $source ) )				
 				$formatted = $this->set_format();
-			dump( __LINE__, __METHOD__, $formatted );
+			//dump( __LINE__, __METHOD__, $formatted );
 			//This sends formatted Data to the backend for processing. Do I need to do anything else? 
-			if( $formatted )
-				$action = new Action( $this->out );
+			
+			//if( $formatted )
+				//$action = new Action( $this->out );
 			
 			
 			

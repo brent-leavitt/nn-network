@@ -136,7 +136,7 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 
 	/*
 		Name: set_plan
-		Description: 
+		Description: Plans are specified in the options table and set on the NN_Network Setting page. 
 	*/	
 		public function set_plan( $enrollment ){
 			

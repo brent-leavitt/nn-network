@@ -17,25 +17,12 @@ Description: class independent list of functions
 	
 function nn_format_data( $data, $source = '' ){
 	
-	$formatter = new misc\NNDataFormat( $data );
+	$formatter = new misc\NNDataFormat( $data, $source );
 	
-	$formatted = array();
+	$formatted = ( !empty( $source ) )? $formatter->do_formatting() : [] ; 
 	
-	switch( $source ){
-		
-		case 'stripe':
-				
-			$formatted = $formatter->stripe();
-			break;
-			
-		default:
-			
-			$formatted = $formatter->basic();
-			break;
-		
-	}
 	
-	return ( !empty( $formatted ) )? $formatted : NULL ;
+	return ( !empty( $formatted ) )? $formatted : [] ;
 }
 
 
@@ -197,6 +184,79 @@ function nn_admin_bar($admin_bar) {
 
 add_filter( 'show_admin_bar' , 'nn_admin_bar'); 
 
+
+
+
+/*
+	Name: get_user_by_meta
+	Description:
+	Credit: Tom McFarlin - https://tommcfarlin.com/get-user-by-meta-data/
+*/
+
+function get_user_by_meta( $meta_key, $meta_value ) {
+
+	// Query for users based on the meta data
+	$user_query = new WP_User_Query(
+		array(
+			'meta_key'	  =>	$meta_key,
+			'meta_value'	=>	$meta_value
+		)
+	);
+
+	// Get the results from the query, returning the first user
+	$users = $user_query->get_results();
+
+	return $users[0];
+
+} // end get_user_by_meta_data(){
+	
+
+
+/*
+	Name: nn_unassigned_transaction
+	Description: This function takes new transactions from musers that haven't yet registered for an account and stores them as a transaction post type. 
+*/
+
+function nn_unassigned_transaction(  $type, $post, $response, $source ){
+	
+	switch( $type ){
+		
+		case "subscription":
+			//Format data
+			$formatter = new misc/NNDataFormat( $response, $source );
+			
+			//Incomplete... needs work. 
+			$formatter->add_post_data( $post );
+			
+			$formatted = $formatter->do_formatting();
+			
+			
+			
+			break;
+			
+		case "payment":
+		
+			break;
+			
+		case "invoice":
+		
+			break;
+			
+		case "manual":
+		
+			break;
+			
+		case "refund":
+		
+			break;
+		
+		default: 
+			break;
+		
+	}
+
+	
+}
 
 
 

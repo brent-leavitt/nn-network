@@ -25,6 +25,51 @@ if( !class_exists( 'NNStripeWebHooks' ) ){
 			
 			
 	// Methods
+	
+		
+	/*
+		Name: __construct
+		Description: 
+	*/	
+		
+		public function __construct(){
+			
+			
+		}
+		
+		
+	/*
+		Name: init
+		Description: 
+	*/	
+		
+		public function init(){
+			
+			
+		}
+				
+		
+	/*
+		Name: 
+		Description: 
+	*/	
+		
+		public function __(){
+			
+			
+		}
+				
+		
+	/*
+		Name: 
+		Description: 
+	*/	
+		
+		public function __(){
+			
+			
+		}
+		
 		
 		
 		
