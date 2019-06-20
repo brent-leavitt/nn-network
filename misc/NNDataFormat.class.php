@@ -135,20 +135,10 @@ if( !class_exists( 'NNDataFormat' ) ){
 		private function init( $data, $source ){
 			
 			$this->in = $data;
+			$this->set_source( $source );
 			
-			if( $this->set_source( $source ) )				
-				$formatted = $this->set_format();
-			//dump( __LINE__, __METHOD__, $formatted );
-			//This sends formatted Data to the backend for processing. Do I need to do anything else? 
-			
-			//if( $formatted )
-				//$action = new Action( $this->out );
-			
-			
-			
-			dump( __LINE__, __METHOD__, $this->out );
-		}	
-		
+		}
+	
 	
 	/*
 		Name: set_format
@@ -161,7 +151,7 @@ if( !class_exists( 'NNDataFormat' ) ){
 			$this->do_formatting();
 			
 			//final output is $out array. 	
-			return ( !empty( $this->out ) )? true : false; 
+			return ( !empty( $this->out ) )? $this->out : false; 
 			
 		}
 		
@@ -343,7 +333,7 @@ if( !class_exists( 'NNDataFormat' ) ){
 			
 			//what is the payee email? 
 				
-			return ( is_object( $patron ) )? $patron_id : NULL;
+			return ( is_object( $patron ) )? $patron_id : -1 ;
 		}		
 				
 		
@@ -441,6 +431,17 @@ if( !class_exists( 'NNDataFormat' ) ){
 				
 			}
 			return $data;
+		}
+		
+		
+	/*
+		Name: add_post_data
+		Description: 
+	*/	
+		
+		public function add_post_data( $post ){
+			
+			$this->source->add_post_data( $post );
 		}
 		
 		

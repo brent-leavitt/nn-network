@@ -70,7 +70,19 @@ if( !class_exists( 'NNStripeCollect' ) ){
 			//If response is not false...
 			if( ( $response = $this->process( $post ) ) !== false ){
 				
-				//dump( __LINE__, __METHOD__, $response );
+				$json = json_encode( $response, JSON_FORCE_OBJECT );
+				
+				dump( __LINE__, __METHOD__, $json );
+				
+				//If a successful transaction has been completed, let's format data for use with the system first. 
+				/* $formatter = new misc/NNDataFormat( $response, '' );
+			
+				//Incomplete... needs work. 
+				$formatter->add_post_data( $post );
+				
+				$formatted = $formatter->do_formatting();
+				
+				 */
 				
 				$next_step = $this->next_step( $post, $response );
 				
@@ -103,7 +115,7 @@ if( !class_exists( 'NNStripeCollect' ) ){
 				
 				$redirect = ( !empty( $next_step ) )? $next_step :  $post[ 'return_success' ];
 				
-				$this->redirect( $redirect, $params );
+				//$this->redirect( $redirect, $params );
 				//dump( __LINE__, __METHOD__, $post );
 				//dump( __LINE__, __METHOD__, $response );
 				//dump( __LINE__, __METHOD__, $params );

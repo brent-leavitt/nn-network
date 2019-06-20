@@ -219,6 +219,25 @@ if( !class_exists( 'NNDataStripe' ) ){
 
 		
 	/*
+		Name: add_post_data
+		Description: 
+	*/	
+		
+		public function add_post_data( $post ){
+			
+			//What information is available to add to the object
+			
+			//service_id, enrollment_type
+			
+			 $this->data[ 'metadata' ][ 'service' ] = $post['service_id'];
+			 $this->data[ 'metadata' ][ 'token' ] = $post['enrollment_type'];
+			 $this->data[ 'metadata' ][ 'action' ] = $post['action'];
+			
+			
+		}	
+
+		
+	/*
 		Name: 
 		Description: 
 	*/	

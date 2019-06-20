@@ -55,7 +55,7 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 	*/
 		public function init(){
 			
-			//Establish connection. 
+			//Establish connection. 	
 			require_once( NN_NET_PATH . 'lib/vendor/autoload.php' );	
 			
 			$key = $this->credentials;
