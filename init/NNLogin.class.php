@@ -58,10 +58,10 @@ if( !class_exists( 'NNLogin' ) ){
 	
 		public function do_login() {
 		 
-			if(isset($_POST['nn_login']) && wp_verify_nonce($_POST['_nn_login_nonce'], 'nn-login-nonce')) {
+			if( isset( $_POST['nn_login'] ) && wp_verify_nonce( $_POST['_nn_login_nonce'], 'nn-login-nonce' ) ) {
 		 
 				// this returns the user ID and other info from the user name
-				$user = get_user_by( 'login', $_POST['nn_login']);
+				$user = get_user_by( 'login', $_POST[ 'nn_login' ]);
 				
 				$user_login	= $_POST[ "nn_login" ];	
 				$user_pass	= $_POST[ "nn_password" ];

@@ -42,6 +42,10 @@ If I set up an action hook here to insert additional shortcodes and functions fo
 
 Is there an action hook that I could setup here to 
 		
+		
+		
+		
+	nn_cashier // atts = skip, which allows for skipping registration or login before making payment, not fully developed yet. 
 
 */
 
@@ -58,7 +62,7 @@ if( !class_exists( 'NNShortCodes' ) ){
 		
 		//properties
 		
-		public $shortcodes =[ 'payment', 'register', 'login', 'account', 'm', 'cashier', 'payment_login' ];
+		public $shortcodes =[ 'payment', 'register', 'login', 'account', 'm', 'cashier', 'payment_login', 'receipt' ];
 		
 
 		
@@ -127,7 +131,7 @@ if( !class_exists( 'NNShortCodes' ) ){
 					'show' => '',	
 				), $atts );
 
-			print_pre( $atts );
+			//print_pre( $atts );
 			
 			return 'We are calling the ACCOUNT CB function!!';
 		}
@@ -145,9 +149,9 @@ if( !class_exists( 'NNShortCodes' ) ){
 				//print_pre( $_SERVER );				
 				
 				$post = $_REQUEST;
-				print_pre( $post );
+				//print_pre( $post );
 			
-				if( /* empty( $post[ 'patron' ] ) ||  */$post[ 'patron' ] === "0" ) //If patron is set to 0. 
+				if( empty( $post[ 'patron' ] ) ||  $post[ 'patron' ] === "0" ) //If patron is set to 0. 
 					return $this->get_user_forms( $post , $atts );
 				
 				//Get Cashier Class
@@ -223,6 +227,43 @@ if( !class_exists( 'NNShortCodes' ) ){
 				// Or do a redirect. 
 				
 				$output = '<p>You are already logged in. Move on!</p>';
+				
+			}
+			return $output;
+			
+		
+		}
+	/*
+		Name: load_receipt_cb
+		Description: 
+	*/			
+		public function load_receipt_cb( $atts ){
+		
+			if(!is_user_logged_in()) {
+	 
+				$post = array(
+					'tx_id' => $_REQUEST[ 'tx_id' ],
+					'action' => 'receipt'
+				);
+				
+				$uforms = new UserForms();
+				
+				$output = $uforms->form( 'login', $post );
+				
+/* 				$output = '<p>Testing this field!</p>'; */
+				
+			} else {
+				
+				$tx_id = $_REQUEST[ 'tx_id' ];
+				
+				$output = "<p>The transaction ID is: $tx_id</p>";
+				
+				
+				// could show some logged in user info here
+				// $output = 'user info here';
+				// Or do a redirect. 
+				
+				$output .= '<p>This will programatically pull the receipt by the provided transaction ID! There some work to be done here, because all receipt should be stored elsewhere on the network. But loading a receipt for review should be a network-wide function. Perhaps a function called nn_get_receipt( $receipt_id ) could universally load a receipt by its ID? </p>';
 				
 			}
 			return $output;

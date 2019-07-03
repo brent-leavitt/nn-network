@@ -165,7 +165,7 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 						'description' => $this->data[ 'service_id' ].' - '.$this->data[ 'enrollment_type' ],
 					];
 					
-			dump( __LINE__, __METHOD__, $args );
+			//dump( __LINE__, __METHOD__, $args );
 			//Must have either a valid Token or a strike Customer ID. 
 			if( !empty( $this->token )  ){
 				
@@ -189,7 +189,7 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 				}
 			}
 			
-			dump( __LINE__, __METHOD__, $charge );
+			//dump( __LINE__, __METHOD__, $charge );
 			
 			return $charge;
 			
@@ -431,7 +431,7 @@ if( !class_exists( 'NNStripeDoPayment' ) ){
 	*/				
 		public function handle_error( $error, $action ){
 			
-			echo "The HANDLE ERROR method was called in the NBCS_NET_DO_PAYMENT class";
+			echo "The HANDLE ERROR method was called in the NNStripeDoPayment class";
 		}
 	}
 	

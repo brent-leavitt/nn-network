@@ -446,7 +446,7 @@ if( !class_exists( 'NNCashier' ) ){
 			
 			if( empty( $this->patron->ID ) ){
 				//Not logged in
-				$output = "You are not logged in. Please consider <a href='javascript:history.back()'>signing in</a> to expedite the checkout process.";
+				$output = "You are not logged in. Please <a href='javascript:history.back()'>sign in</a> to begin the checkout process.";
 			}else{
 				//Logged in. 
 				$output = "You are logged in as ";
@@ -467,13 +467,29 @@ if( !class_exists( 'NNCashier' ) ){
 	*/	
 		
 		public function trans_summary(){
+			//print_pre( $this->vars );
+			
+			
+			$price = $this->vars[ 'price' ];
+			$descrip = $this->vars[ 'description' ];
+			$duration = $this->vars[ 'duration' ];
+			
+			$length = '1 month';
+			switch( $duration ){
+				case '1m':
+					$length = '1 month';
+					break;
+				case '2y':
+					$length = '2 years';
+					break;
+			}
 			
 			$output = "<hr>
 			<h3>Transaction Summary</h3>
 			<pre>
-What: {$this->vars[ 'description' ]}
-How Much: $ {$this->vars[ 'price' ]}.00 USD
-How Long: 1 Month
+What: ".$descrip."
+How Much: $".$price.".00 USD
+How Long: ".$length."
 </pre>
 			<hr>
 			";
@@ -491,11 +507,12 @@ How Long: 1 Month
 		
 		public function checkout_buttons(){
 			
-			$output = $this->get_payment_processors();
+			$output = '';
+			
+			//If logged in, show payment options.  
+			if( !empty( $this->patron->ID ) )
+				$output = $this->get_payment_processors();
 
-			
-			
-			
 			return $output;
 		}	
 		

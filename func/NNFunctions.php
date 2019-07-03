@@ -116,7 +116,7 @@ function nn_sanitize_text_array( $in ){
 function nn_errors(){
 	
 		static $wp_error; // Will hold global variable safely
-		return isset($wp_error) ? $wp_error : ($wp_error = new WP_Error(null, null, null));
+		return ( isset($wp_error) )? $wp_error : ( $wp_error = new WP_Error( null, null, null ) );
 	
 }
 

@@ -72,7 +72,7 @@ if( !class_exists( 'NNStripeCollect' ) ){
 				
 				$json = json_encode( $response, JSON_FORCE_OBJECT );
 				
-				dump( __LINE__, __METHOD__, $json );
+				//dump( __LINE__, __METHOD__, $json );
 				
 				//If a successful transaction has been completed, let's format data for use with the system first. 
 				/* $formatter = new misc/NNDataFormat( $response, '' );
@@ -115,7 +115,7 @@ if( !class_exists( 'NNStripeCollect' ) ){
 				
 				$redirect = ( !empty( $next_step ) )? $next_step :  $post[ 'return_success' ];
 				
-				//$this->redirect( $redirect, $params );
+				$this->redirect( $redirect, $params );
 				//dump( __LINE__, __METHOD__, $post );
 				//dump( __LINE__, __METHOD__, $response );
 				//dump( __LINE__, __METHOD__, $params );
@@ -208,7 +208,9 @@ if( !class_exists( 'NNStripeCollect' ) ){
 			
 			$patron_id =  get_current_user_id();
 			
-			if( empty( $patron_id ) ){
+			//HOLD FOR GUEST REGISTRATION DEVELOPMENT
+			
+			/* if( empty( $patron_id ) ){
 				$patron = get_user_by( 'email', $post[ 'stripeEmail' ] );
 				$patron_id = ( !empty( $patron ) )? $patron->ID : 0 ; 
 			}
@@ -224,7 +226,7 @@ if( !class_exists( 'NNStripeCollect' ) ){
 				//This would create a transaction post type without an assigned user. 
 				
 				return 'receipt';
-			}
+			} */
 				 
 			//If at this point, no user account has been found. Store the transaction in an unassigned transactions area, don't create a user account. Acknowledge payment, and have them check their email for reciept and further instructions. 
 			
@@ -232,7 +234,7 @@ if( !class_exists( 'NNStripeCollect' ) ){
 			// That is an individual site question. 
 			// So the childbirth library would check to see if a lite regstiraiton is needed. It sets the applicable parameters if need. 
 			// The certificate LMS checks if a full regsitration is needed. It sets the applicable meta data paramaters if needed. 
-			do_action( 'nn_register_check' );
+			do_action( 'nn_register_check', $post, $response );
 			
 			$meta = get_user_meta( $patron_id );
 			
@@ -243,6 +245,8 @@ if( !class_exists( 'NNStripeCollect' ) ){
 			//lite registration
 			if( isset( $meta[ 'nn_register_lite' ] ) && $meta[ 'nn_register_lite' ] !== 1 )			
 				return 'register_lt';
+				
+				
 				
 			
 			return null;

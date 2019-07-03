@@ -35,10 +35,30 @@ if( !class_exists( 'NNUserForms' ) ){
 		
 		public $registerlite = array(
 			'fields' => array( 
-				'login' => 'text',
-				'email' => 'email',
-				'password' => 'password',
-				'confirm' => 'password'
+				'login' => [
+					'type'		=> 'text',
+					'title' 	=> 'Username',
+					'detail'	=> 'Select a username, must be unique.',
+					'error'		=> 0
+				],
+				'email' => [
+					'type'		=> 'email',
+					'title' 	=> 'Email Address',
+					'detail'	=> 'Please double-check the spelling of your primary email address',
+					'error'		=> 0
+				],
+				'password' => [
+					'type'		=> 'password',
+					'title' 	=> 'Password',
+					'detail'	=> 'Select a Password',
+					'error'		=> 0
+				],
+				'confirm' => [
+					'type'		=> 'password',
+					'title' 	=> 'Confirm Password',
+					'detail'	=> 'Re-enter your password',
+					'error'		=> 0
+				],
 			),	
 			'title' => 'Register',	
 			'header' => "Don't have an account?",	
@@ -48,8 +68,18 @@ if( !class_exists( 'NNUserForms' ) ){
 		
 		public $login = array(
 			'fields' => array( 
-				'login'		=>	'text',
-				'password' 	=>	'password',
+				'login'		=>	[
+					'type'		=> 'text',
+					'title' 	=> 'Username',
+					'detail'	=> 'Enter your username',
+					'error'		=> 0
+				],
+				'password' 	=>	[
+					'type'		=> 'password',
+					'title' 	=> 'Password',
+					'detail'	=> 'Enter your password',
+					'error'		=> 0
+				],
 			),	
 			'title' => 'Login',	
 			'header' => "Already have an account? Login now!",	
@@ -66,7 +96,7 @@ if( !class_exists( 'NNUserForms' ) ){
 		
 		public function __construct(){			
 		
-		
+			$this->set_errors();
 			
 		}
 		
@@ -86,7 +116,6 @@ if( !class_exists( 'NNUserForms' ) ){
 			unset( $post[ 'action' ] ); */
 		 
 			$action = 'nn-'. $type .'-nonce';
-						
 			
 			//ep( $action );	
 			//unset( $post[ '_nn_nonce' ] );
@@ -98,7 +127,7 @@ if( !class_exists( 'NNUserForms' ) ){
 		 
 				<?php 
 				// show any error messages after form submission
-				$this->show_error_messages(); ?>
+				$this->show_error_messages( $type ); ?>
 		 
 		 
 		 
@@ -134,8 +163,8 @@ if( !class_exists( 'NNUserForms' ) ){
 						</p>
 						*/
 						
-						foreach( $vals[ 'fields' ] as $key => $val ){
-							echo $this->fields( $val, $key ); 
+						foreach( $vals[ 'fields' ] as $key => $arr ){
+							echo $this->fields( $arr, $key ); 
 						}
 						
 						?>
@@ -160,13 +189,13 @@ if( !class_exists( 'NNUserForms' ) ){
 		*/	
 		
 		
-		public function fields( $type, $val, $required = true ){
+		public function fields( $arr, $val, $required = true ){
 			
 			ob_start(); ?>	
 			
 				<p>
-					<label for="nn_<?php echo $val ?>"><?php echo ucfirst( $val ) ?></label>
-					<input name="nn_<?php echo $val ?>" id="nn_<?php echo $val; ?>" class="<?php echo ($required)? 'required':''; ?>" type="<?php echo $type ?>"/>
+					<label for="nn_<?php echo $val ?>"><?php echo ucfirst( $arr[ 'title' ] ) ?></label>
+					<input name="nn_<?php echo $val ?>" id="nn_<?php echo $val; ?>" class="<?php echo ($required)? 'required':''; ?> <?php echo ( $arr[ 'error' ] !== 0 )? 'error' : '' ;?>" type="<?php echo $arr[ 'type' ]; ?>" placeholder="<?php echo $arr[ 'detail' ]; ?>"/>
 				</p>
 				
 				<?php
@@ -175,13 +204,14 @@ if( !class_exists( 'NNUserForms' ) ){
 
 		/*
 			Name: show_error_messags
-			Description: 
+			Description: $type = type of form. 
 		*/	
 		
 		
-		public function show_error_messages(){
+		public function show_error_messages( $type ){
 			
 			if($codes = nn_errors()->get_error_codes()) {
+				print_pre( nn_errors() );
 				
 				echo '<div class="nn_errors">';
 					// Loop error codes and display errors
@@ -238,6 +268,24 @@ if( !class_exists( 'NNUserForms' ) ){
 		public function hidden( $key, $val ){
 	
 			return "<input type='hidden' name='$key' value='$val' />";
+			
+		}		
+		
+		/*
+			Name: set_errors
+			Description: If there are errors on the field.  
+		*/	
+		
+		
+		public function set_errors(){
+	
+			$errors = nn_errors();
+			
+			$e_codes = $errors->get_error_codes();
+			
+			print_pre( $e_codes );
+			//STOPPED HERE. 
+			//$this->vals;
 			
 		}
 		
