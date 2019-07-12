@@ -33,7 +33,7 @@ if( !class_exists( 'NNStripeWebHooks' ) ){
 	*/	
 		
 		public function __construct(){
-			
+			$this->init();
 			
 		}
 		
@@ -45,7 +45,19 @@ if( !class_exists( 'NNStripeWebHooks' ) ){
 		
 		public function init(){
 			
+			$post = $_REQUEST;
 			
+			$timestamp = time();
+			// Gather post data.
+			$post_arr = array(
+				'post_title'    => 'My post'.$timestamp,
+				'post_content'  => 'This post was create at '.$timestamp .' Incoming Data is:'. $post,
+				'post_status'   => 'draft',
+				'post_type' =>'nn_receipt',
+				'post_author'   => 1
+			);
+						
+			wp_create_post( $post_arr );
 		}
 				
 		

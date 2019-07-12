@@ -35,7 +35,7 @@ if( !class_exists( 'NNUserForms' ) ){
 		
 		public $registerlite = array(
 			'fields' => array( 
-				'login' => [
+				'username' => [
 					'type'		=> 'text',
 					'title' 	=> 'Username',
 					'detail'	=> 'Select a username, must be unique.',
@@ -68,7 +68,7 @@ if( !class_exists( 'NNUserForms' ) ){
 		
 		public $login = array(
 			'fields' => array( 
-				'login'		=>	[
+				'username'		=>	[
 					'type'		=> 'text',
 					'title' 	=> 'Username',
 					'detail'	=> 'Enter your username',
@@ -126,6 +126,7 @@ if( !class_exists( 'NNUserForms' ) ){
 				<h3 class="nn_header"><?php _e( $vals[ 'title' ] ); ?></h3>
 		 
 				<?php 
+				//print_pre( $vals );
 				// show any error messages after form submission
 				$this->show_error_messages( $type ); ?>
 		 
@@ -164,7 +165,8 @@ if( !class_exists( 'NNUserForms' ) ){
 						*/
 						
 						foreach( $vals[ 'fields' ] as $key => $arr ){
-							echo $this->fields( $arr, $key ); 
+							$id = $type."_".$key; //connects each field to the type and specific values id. For error handling.
+							echo $this->fields( $arr, $id ); 
 						}
 						
 						?>
@@ -191,11 +193,13 @@ if( !class_exists( 'NNUserForms' ) ){
 		
 		public function fields( $arr, $val, $required = true ){
 			
+			$value = ( !empty( $_POST[ 'nn_'.$val ] ) && $arr[ 'error' ] === 0 )? $_POST[ 'nn_'.$val ] : '';
+			
 			ob_start(); ?>	
 			
 				<p>
 					<label for="nn_<?php echo $val ?>"><?php echo ucfirst( $arr[ 'title' ] ) ?></label>
-					<input name="nn_<?php echo $val ?>" id="nn_<?php echo $val; ?>" class="<?php echo ($required)? 'required':''; ?> <?php echo ( $arr[ 'error' ] !== 0 )? 'error' : '' ;?>" type="<?php echo $arr[ 'type' ]; ?>" placeholder="<?php echo $arr[ 'detail' ]; ?>"/>
+					<input name="nn_<?php echo $val ?>" id="nn_<?php echo $val; ?>" class="<?php echo ($required)? 'required':''; ?> <?php echo ( $arr[ 'error' ] !== 0 )? 'error' : '' ;?>" type="<?php echo $arr[ 'type' ]; ?>" value="<?php echo $value ?>" placeholder="<?php echo $arr[ 'detail' ]; ?>"/>
 				</p>
 				
 				<?php
@@ -211,13 +215,17 @@ if( !class_exists( 'NNUserForms' ) ){
 		public function show_error_messages( $type ){
 			
 			if($codes = nn_errors()->get_error_codes()) {
-				print_pre( nn_errors() );
+				//print_pre( nn_errors() );
+				//print_pre( $codes );
 				
 				echo '<div class="nn_errors">';
 					// Loop error codes and display errors
 				   foreach($codes as $code){
-						$message = nn_errors()->get_error_message( $code );
-						echo '<span class="error"><strong>' . __('Oops!') . '</strong> ' . $message . '</span><br/>';
+					   $arr = explode( '_', $code );
+					   if( $arr[ 1 ] === $type ){
+						   $message = nn_errors()->get_error_message( $code );
+							echo '<span class="error"><strong>' . __('Oops!') . '</strong> ' . $message . '</span><br/>';
+					   }
 					}
 				echo '</div>';
 			}	
@@ -273,7 +281,7 @@ if( !class_exists( 'NNUserForms' ) ){
 		
 		/*
 			Name: set_errors
-			Description: If there are errors on the field.  
+			Description: If there are errors on the field,  change the error value to 1. 
 		*/	
 		
 		
@@ -283,9 +291,15 @@ if( !class_exists( 'NNUserForms' ) ){
 			
 			$e_codes = $errors->get_error_codes();
 			
-			print_pre( $e_codes );
-			//STOPPED HERE. 
-			//$this->vals;
+			foreach( $e_codes as $code ){
+				
+				$arr = explode( '_', $code );
+				
+				$type = $arr[ 1 ];
+				$field = $arr[ 2 ];
+				
+				$this->$type[ 'fields' ][ $field ][ 'error' ] = 1;  
+			}
 			
 		}
 		

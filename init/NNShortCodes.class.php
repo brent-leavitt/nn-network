@@ -151,7 +151,7 @@ if( !class_exists( 'NNShortCodes' ) ){
 				$post = $_REQUEST;
 				//print_pre( $post );
 			
-				if( empty( $post[ 'patron' ] ) ||  $post[ 'patron' ] === "0" ) //If patron is set to 0. 
+				if( !is_user_logged_in() ||  $post[ 'patron' ] === "0" ) //If patron is set to 0. 
 					return $this->get_user_forms( $post , $atts );
 				
 				//Get Cashier Class
