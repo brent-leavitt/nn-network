@@ -16,17 +16,18 @@ Author URI: https://tech.trainingdoulas.com/
 License: GPLv2
 
 */
+namespace nn_network;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-if( !defined( 'NN_NET_PATH' ) )
-	define( 'NN_NET_PATH', plugin_dir_path( __FILE__ )  );
+if( !defined( 'NN_PATH' ) )
+	define( 'NN_PATH', plugin_dir_path( __FILE__ )  );
 
 if( !defined( 'CRON_DEBUG' ) )
 	define( 'CRON_DEBUG', false ); //
 
-if( !defined( 'NN_NET_DEV' ) )
-	define( 'NN_NET_DEV', true ); //Used mostly for determining which set of credentials to call. 
+if( !defined( 'NN_DEV' ) )
+	define( 'NN_DEV', true ); //Used mostly for determining which set of credentials to call. 
 
 
 if( !defined( 'NN_PREFIX' ) )
@@ -53,26 +54,26 @@ if( !class_exists( 'NN_Network' ) ){
 		public function init(){
 			
 			
-			if( NN_NET_DEV )
-				$dev = new misc\NNDev();
+			if( NN_DEV )
+				$dev = new misc\Dev();
 			
 		 	
-			$listener	 = new init\NNListener();		//Add Query Vars Listeners
-			$shortcodes	 = new init\NNShortCodes();		//Shortcodes	
-			/*	$email_settings = new init\NNEmail();		//Email Settings
+			$listener	 = new init\Listener();		//Add Query Vars Listeners
+			$shortcodes	 = new init\ShortCodes();		//Shortcodes	
+			/*	$email_settings = new init\Email();		//Email Settings
 				 */
 			 
 			//setup Custom Post Types
 			$this->set_cpts();
 			
 			//login controls
-			$login = new init\NNLogin();
+			$login = new init\Login();
 			
 			//register controls
-			$reglite = new init\NNRegisterLite();
+			$reglite = new init\RegisterLite();
 			
 			//Crons schedule.
-			$cron = new init\NNCron();
+			$cron = new init\Cron();
 			$cron->schedule();
 			
 			//setup activation and deactivation hooks
@@ -84,7 +85,7 @@ if( !class_exists( 'NN_Network' ) ){
 		}
 		
 		public function admin_init(){
-			$settings = new init\NNSettings(); //Add a settings page
+			$settings = new init\Settings(); //Add a settings page
 			$settings->init();
 		}
 		
@@ -104,14 +105,14 @@ if( !class_exists( 'NN_Network' ) ){
 				'settings' => array( NN_TD )
 			);
 			
-			$menus = new init\NNAdminMenu( $args, 'add' ); //Add a settings page
+			$menus = new init\AdminMenu( $args, 'add' ); //Add a settings page
 			
 		}
 		
 		//Add Custom Post Types
 		public function set_cpts(){
 			
-			$cpts = new init\NNCPT();
+			$cpts = new init\CPT();
 			$cpts->setup();
 			
 		}
@@ -119,25 +120,25 @@ if( !class_exists( 'NN_Network' ) ){
 		//Remove Custom Post Types
 		public function remove_cpts(){
 		
-			$cpts = new init\NNCPT();
+			$cpts = new init\CPT();
 			$cpts->remove();
 		
 		}
 		
 		public function set_caps(){
-			$caps = new init\NNCPT();
+			$caps = new init\CPT();
 			$caps->set_caps();
 			
 		}
 		
 		
 		public function set_crons(){
-			$cron = new init\NNCron();
+			$cron = new init\Cron();
 			$cron->init();
 			
 		}		
 		public function stop_crons(){
-			$cron = new init\NNCron();
+			$cron = new init\Cron();
 			$cron->remove_cron();
 			
 		}
@@ -189,7 +190,7 @@ if( !class_exists( 'NN_Network' ) ){
 			
 			//Add Tokens to all sites. 
 			/* (HOLD WHILE IN LOCAL DEV)
-			$tokens = new init\NNToken();
+			$tokens = new init\Token();
 			$tokens->setup();
 			*/
 			
@@ -219,7 +220,7 @@ if( !class_exists( 'NN_Network' ) ){
 			flush_rewrite_rules();	// clear the permalinks to remove our post type's rules from the database
 			
 			//Remove tokens from all sites. 
-			$tokens = new init\NNToken();
+			$tokens = new init\Token();
 			//$tokens->remove();
 			
 			
@@ -239,11 +240,11 @@ if( !class_exists( 'NN_Network' ) ){
 }
 
 //Network Developer Tools
-include_once('func/NNDevTools.php');
+include_once('func/DevTools.php');
 
 
 //Network Functions 
-require_once('func/NNFunctions.php');
+require_once('func/Functions.php');
 
 //Setup Cron Jobs for Network
 //require_once('func/nbcs_net_crons.php');
