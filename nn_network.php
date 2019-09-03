@@ -70,6 +70,7 @@ if( !class_exists( 'NN_Network' ) ){
 			$login = new init\Login();
 			
 			//register controls
+			remove_action( 'sanitize_user', 'strtolower' );//Allows for Uppercase Characters in registration.
 			$reglite = new init\RegisterLite();
 			
 			//Crons schedule.

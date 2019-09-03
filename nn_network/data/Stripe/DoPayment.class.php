@@ -172,6 +172,10 @@ if( !class_exists( 'DoPayment' ) ){
 						'amount' => $this->data[ 'price' ],
 						'currency' => 'usd',
 						'description' => $this->data[ 'service_id' ].' - '.$this->data[ 'enrollment_type' ],
+						'metadata' => array(
+							'service' => $this->data[ 'service_id' ],
+							'enrollment' => $this->data[ 'enrollment_type' ],
+						)
 					];
 					
 			//dump( __LINE__, __METHOD__, $args );
@@ -228,7 +232,10 @@ if( !class_exists( 'DoPayment' ) ){
 					$subscription = \Stripe\Subscription::create([
 						'customer' => $customer_id,
 						'items' => [['plan' => $this->plan ]],
-						
+						'metadata' => array(
+							'service' => $this->data[ 'service_id' ],
+							'enrollment' => $this->data[ 'enrollment_type' ],
+						)
 					]);
 					
 					
@@ -260,6 +267,10 @@ if( !class_exists( 'DoPayment' ) ){
 						'amount' => $this->data[ 'price' ],
 						'currency' => 'usd',
 						'description' => $this->data[ 'service_id' ].' - '.$this->data[ 'enrollment_type' ],
+						'metadata' => array(
+							'service' => $this->data[ 'service_id' ],
+							'enrollment' => $this->data[ 'enrollment_type' ],
+						)
 					];
 			
 			//Must have either a valid Token or a strike Customer ID. 
@@ -306,9 +317,9 @@ if( !class_exists( 'DoPayment' ) ){
 						'description' => $this->data[ 'service_id' ].' - '.$this->data[ 'enrollment_type' ],
 						'source' => $source,
 						'customer' => $customer->id,
-						'metadata'=> array(
-							'service_id' => $this->data[ 'service_id' ],
-							'enrollment_type' => $this->data[ 'enrollment_type' ],
+						'metadata' => array(
+							'service' => $this->data[ 'service_id' ],
+							'enrollment' => $this->data[ 'enrollment_type' ],
 						)
 					]);
 						
@@ -332,10 +343,9 @@ if( !class_exists( 'DoPayment' ) ){
 						'billing' => 'send_invoice',
 						'days_until_due' => 30,
 						'trial_period_days' => 30,
-						'metadata'=> array(
-							'installments_paid' => 1,
-							'service_id' => $this->data[ 'service_id' ],
-							'enrollment_type' => $this->data[ 'enrollment_type' ],
+						'metadata' => array(
+							'service' => $this->data[ 'service_id' ],
+							'enrollment' => $this->data[ 'enrollment_type' ],
 						)
 					]);			
 				

@@ -7,7 +7,8 @@ Admin Menu  - Model Class for  Network Plugin
 Last Updated 15 Jul 2019
 -------------
 
-
+	Note: THis was lifted from the Cert LMS as it can be applied across the newtork in principle, must be modified for general adaptation as a model class. 
+	
 	This is the file where we handle the functions that will create the admin menus for the plugin. 
 */
 
@@ -24,19 +25,7 @@ if( !class_exists( 'AdminMenu' ) ){
 		* 
 		*/
 		
-		public 	$icons = array(
-			//https://developer.wordpress.org/resource/dashicons/
-			//'menu_slug'	=> 'icon_slug',
-			'education'		=> 'welcome-learn-more',
-			'publishing' 	=> 'book',
-			'accounts' 		=> 'heart',
-			'messages' 		=> 'format-chat',
-			'finance' 		=> 'chart-line',
-			'settings' 		=> 'admin-settings',
-			'reports' 		=> 'chart-pie',
-			
-		),
-		$default_slugs = array(
+		public $default_slugs = array(
 			'dashboard' 	=> 'index.php',
 			'posts' 		=> 'edit.php',
 			'media' 		=> 'upload.php',
@@ -47,28 +36,7 @@ if( !class_exists( 'AdminMenu' ) ){
 			'users' 		=> 'users.php',
 			'tools' 		=> 'tools.php',
 			'settings' 		=> 'options-general.php',
-			
-			//Custom Post Types
-			'tracks'		=> 'edit.php?post_type='.NN_PREFIX.'track',
-			'courses'		=> 'edit.php?post_type='.NN_PREFIX.'course',
-			'materials'		=> 'edit.php?post_type='.NN_PREFIX.'material',
-			'certificates'	=> 'edit.php?post_type='.NN_PREFIX.'certificate',
-			'assignments'	=> 'edit.php?post_type='.NN_PREFIX.'assignment'
-		),
-
-		$access = array(
-			//slugs that users have access to, this determines $capability variable 
-			'admin' => array(
-				'publishing',
-				'accounts',
-				'finance',
-				'settings',
-				'reports'
-			),
-			'trainer' => array( 
-				'education',
-				'messages'
-			)
+		
 		);
 
 				
@@ -84,47 +52,51 @@ if( !class_exists( 'AdminMenu' ) ){
 		params: $slug = string, $pos = int
 	*/	
 		
-		public function add_menu( $slug, $pos ){
+		public function add_menu( $slug, $pos, $icon = "warning" ){
 			
-			//echo "Modl\Admin\NBAdminMenu.class <b>add_menu</b> function called. Slug: $slug and Pos: $pos <br />";
-			
-			//Setup all paramaters to runn the add_menu_page
+			if( !array_key_exists( $slug, $this->default_slugs ) ){
 				
-			//menu_title
-			$menu_title = ucwords( str_replace( '_', ' ', $slug ) );
-			
-			//page_title
-			$page_title =  $menu_title. " Overview";
-			
-			//capability
-			$capability = ( in_array( $slug, $this->access['admin'] ) )? 'edit_users' : 'edit_assignments';
-			
-			//menu slug
-			//Menu Slugs can be replaced with PHP files that represent the new page. 
-			
-			$menu_slug =  $slug;
-			
-			//callback 
-			//  NULL 'cuz $menu_slug loads file. See Plugin Dev manual. 
-			
-			$callable = array( $this, 'menu_callable' );
-			
-			//menu icon
-			$icon_url = 'dashicons-'.$this->icons[ $slug ];
-			
-			//position
-			$position = $pos;
-			
-			
-			add_menu_page(
-				$page_title, 		//string
-				$menu_title, 		//string
-				$capability,		//string 
-				$menu_slug, 		//string 
-				$callable,			//callable
-				$icon_url,			//string 
-				$position			//int 
-			);
+				//echo "Modl\Admin\NBAdminMenu.class <b>add_menu</b> function called. Slug: $slug and Pos: $pos <br />";
+				
+				//Setup all paramaters to runn the add_menu_page
+					
+				//menu_title
+				$menu_title = ucwords( str_replace( '_', ' ', $slug ) );
+				
+				//page_title
+				$page_title =  $menu_title. " Overview";
+				
+				//capability
+				$capability = 'edit_users';
+				
+				//menu slug
+				//Menu Slugs can be replaced with PHP files that represent the new page. 
+				
+				$menu_slug =  $slug;
+				
+				//callback 
+				//  NULL 'cuz $menu_slug loads file. See Plugin Dev manual. 
+				
+				$callable = array( $this, 'menu_callable' );
+				
+				//menu icon
+				$icon_url = 'dashicons-'.$icon;
+				
+				//position
+				$position = $pos;
+				
+				
+				add_menu_page(
+					$page_title, 		//string
+					$menu_title, 		//string
+					$capability,		//string 
+					$menu_slug, 		//string 
+					$callable,			//callable
+					$icon_url,			//string 
+					$position			//int 
+				);	
+				
+			}
 			
 		}
 		
@@ -139,7 +111,7 @@ if( !class_exists( 'AdminMenu' ) ){
 			
 			//Buggy in so much as setting will disapper when default menus are removed and replaced by updated menus. 
 			//Parent Slug
-			$parent_slug = ( !empty( $this->default_slugs[ $parent ] ) )? $this->default_slugs[ $parent ] : $parent ;
+			$parent_slug = ( $this->default_slugs[ $parent ] ) ?? $parent ;
 				
 			//menu_title
 			$menu_title = ucwords( str_replace( '_', ' ', $slug ) );
@@ -150,9 +122,9 @@ if( !class_exists( 'AdminMenu' ) ){
 			//capability
 			$capability = 'edit_users';//( in_array( $slug, $this->access['admin'] ) )? 'edit_users' : 'read_posts';
 			
+			//Is this necessary, or can we just assign to callable assuming that a sub page would never be a primary default page. 
 			
 			//Menu Slugs can be replaced with PHP files that represent the new page. 
-			
 			//$menu_slug =  'certificates-lms/view/admin/'.$parent.'/'.$slug.'.php';
 			if( !isset( $this->default_slugs[ $slug ] ) ){
 				//menu slug

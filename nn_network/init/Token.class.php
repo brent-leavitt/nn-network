@@ -1,5 +1,8 @@
 <?php
 /*
+
+REMOVE from network, only pertains to User Options which can be accessed exclusively from the People_CRM
+
 nn_network\init\Token
 
 Enrollment Token Class - Initial Class for NN Network Plugin

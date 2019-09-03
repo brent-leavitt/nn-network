@@ -1,4 +1,4 @@
-<?php 
+	<?php 
 
 /* 
 !INCOMPLETE!
@@ -16,8 +16,8 @@ namespace nn_network\data\Nn;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-if( !class_exists( 'NNDataPaypal' ) ){
-	class NNDataPaypal{
+if( !class_exists( 'DataNn' ) ){
+	class DataNn{
 
 	// PROPERTIES
 		

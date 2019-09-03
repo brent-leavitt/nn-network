@@ -126,6 +126,9 @@ if( !class_exists( 'RegisterLite' ) ){
 					
 					if( $new_user_id ) {
 						
+						//Add user to masteruser list in base site (if using multisite)
+						if( is_multisite() ) add_user_to_blog( NN_BASESITE, $new_user_id, 'reader' );
+						
 						// send an email to the admin alerting them of the registration
 						wp_new_user_notification( $new_user_id );
 		 
