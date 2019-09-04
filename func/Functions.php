@@ -190,23 +190,30 @@ add_filter( 'show_admin_bar' , 'nn_admin_bar');
 /*
 	Name: get_user_by_meta
 	Description:
-	Credit: Tom McFarlin - https://tommcfarlin.com/get-user-by-meta-data/
+	
 */
 
-function get_user_by_meta( $meta_key, $meta_value ) {
+function get_user_by_meta( $key, $val ){
+			
+			$result = get_users( array('meta_key' => $key, 'meta_value' => $val ) );
+			
+			return $result[0] ?? NULL; 
 
-	// Query for users based on the meta data
-	$user_query = new WP_User_Query(
-		array(
-			'meta_key'	  =>	$meta_key,
-			'meta_value'	=>	$meta_value
-		)
-	);
+} // end get_user_by_meta_data(){
+	
 
-	// Get the results from the query, returning the first user
-	$users = $user_query->get_results();
 
-	return $users[0];
+/*
+	Name: get_user_id_by_meta
+	Description:
+	
+*/
+
+function get_user_id_by_meta( $key, $val ){
+			
+			$result = get_users( array('meta_key' => $key, 'meta_value' => $val ) );
+			
+			return $result[0]->ID ?? NULL; 
 
 } // end get_user_by_meta_data(){
 	
