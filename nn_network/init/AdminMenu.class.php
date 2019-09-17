@@ -46,21 +46,22 @@ if( !class_exists( 'AdminMenu' ) ){
 			
 			//An alternative to this may be to create another array (set_menus aray) with four values: main or sub, menu_slug, position, parent
 			
-			foreach( $array as $main_menu => $sub_menu_array ){
+			foreach( $array as $main_menu => $menu_details ){
 				
 				$this->set_menu[] = array( 
 					'type' 		=> 'main',		// $type
 					'slug'		=> $main_menu, 	// $menu_slug
 					'pos' 		=> $pos,		// $position
-					'parent' 	=> null			// $parent
+					'parent' 	=> null,		// $parent
+					'icon' 		=> ( $array[ $main_menu ][ 'icon' ] ) ?? ''
 				);
 				
 				/* $menu = new AdminMenu();
 				$menu->add_menu( $main_menu, $pos ); */
 				
 				$sub_pos  = 1;
-				
-				foreach( $sub_menu_array as $menu_val ){
+				if( !isset( $menu_details['sub'] ) ) continue;
+				foreach( $menu_details['sub'] as $menu_val ){
 					
 					$this->set_menu[] = array( 
 						'type' 		=> 'sub',		// $type
@@ -113,7 +114,7 @@ if( !class_exists( 'AdminMenu' ) ){
 				
 				if( strcmp( $m['type'], 'main' ) == 0 ){
 					
-					$menu->add_menu( $m['slug'] , $m['pos'] ); //$slug, $pos
+					$menu->add_menu( $m[ 'slug' ] , $m[ 'pos' ], $m[ 'icon' ] ); //$slug, $pos, $icon
 					
 				}elseif( strcmp( $m['type'], 'sub' ) == 0 ){
 					
