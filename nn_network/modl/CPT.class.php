@@ -19,6 +19,7 @@ if( !class_exists( 'CPT' ) ){
 			'post_item' => '', 			//
 			'post_items' => '', 		//
 			'description' => '', 		//
+			'show_in_menu' => '', 		//
 			'menu_pos' => 51,			//
 			'menu_icon' => 'awards',	//
 			'supports' => array( 'title', 'editor', 'page-attributes', 'revisions', 'comments' ),		//
@@ -76,6 +77,10 @@ if( !class_exists( 'CPT' ) ){
 				//Set Post Description
 				if( empty( $a[ 'description' ] ) )
 					$a[ 'description' ] =  ' This is the '.$p_name.' post type.';
+				
+				//Set show_in_menu
+				if( empty( $a[ 'show_in_menu' ] ) )
+					$a[ 'show_in_menu' ] =  true;
 				
 				//Set rewrite
 				if( empty( $a[ 'rewrite' ] ) )
@@ -143,7 +148,7 @@ if( !class_exists( 'CPT' ) ){
 				'add_new_item' => __('Add New '.$a[ 'post_item' ], NN_TD),
 				'edit_item' => __('Edit '.$a[ 'post_item' ], NN_TD),
 				'new_item' => __('New '.$a[ 'post_item' ], NN_TD),
-				'all_items' => __('All '.$a[ 'post_items' ], NN_TD),
+				'all_items' => __( $a[ 'post_items' ], NN_TD),
 				'view_item' => __('View '.$a[ 'post_item' ], NN_TD),
 				'search_items' => __('Search '.$a[ 'post_items' ], NN_TD),
 				'not_found' =>  __('No '.$a[ 'post_items' ].' found', NN_TD),
@@ -194,7 +199,7 @@ if( !class_exists( 'CPT' ) ){
 				'publicly_queryable' => true,
 				'query_var' => true,
 				'show_ui' => true,
-				'show_in_menu' => true, //Toggle here to hide from main menu. 
+				'show_in_menu' => $a[ 'show_in_menu' ], //Toggle here to hide from main menu. 
 				'has_archive' => true, 
 				'hierarchical' => true,
 				'menu_position' => $a[ 'menu_pos' ],

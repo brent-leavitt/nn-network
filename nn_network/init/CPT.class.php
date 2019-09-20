@@ -35,11 +35,6 @@ if( !class_exists( 'CPT' ) ){
 		
 		public $post_types = array(
 			'guide',
-			/* 'receipt',
-			'invoice',
-			'notice',
-			'noticetemplate',
-			'record', */
 		);
 		
 		public function __construct( ){
@@ -59,9 +54,9 @@ if( !class_exists( 'CPT' ) ){
 				array( 
 					'post_type'=>'guide',
 					'description'=>'enrollment actions or services used for assigning behaviours to tokens',
-					
 					'menu_icon'=>'index-card', 
 					'hierarchical' => false,
+					'show_in_menu' => 'utilities',
 					'exclude_from_search' => true,
 					'supports' => array( 
 						'title', 
@@ -73,100 +68,6 @@ if( !class_exists( 'CPT' ) ){
 				) 
 			);
 			
-		/* 	$receipt =  new CPT( 
-				array( 
-					'post_type'=>'receipt',
-					'description'=>'receipt of transactions processed',
-					
-					'menu_icon'=>'cart', 
-					'hierarchical' => false,
-					'exclude_from_search' => false,
-					'supports' => array( 
-						'title', 
-						'editor', 
-						'revisions' 
-					)
-				) 
-			);
-			
-			$receipt->set_status( [ 'complete' ] );
-			
-			$invoice =  new CPT( 
-				array( 
-					'post_type'=>'invoice',
-					'description'=>'finacial transactions to be received',
-					
-					'menu_icon'=>'media-spreadsheet', 
-					'hierarchical' => false,
-					'exclude_from_search' => true,
-					'supports' => array( 
-						'title', 
-						'editor', 
-						'comments', 
-						'author', 
-						'revisions' 
-					)
-				) 
-			);
-			
-			$invoice->set_status( [ 'issued' ] );
-			
-			$notice =  new CPT( 
-				array( 
-					'post_type'=>'notice',
-					'description'=>'',
-					
-					'menu_icon'=>'email', 
-					'hierarchical' => false,
-					'exclude_from_search' => true,
-					'supports' => array( 
-						'title', 
-						'editor', 
-						'comments', 
-						'author', 
-						'revisions' 
-					)
-				) 
-			);
-
-			$notice->set_status( [ 'sent', 'posted', 'delivered', 'opened', 'read', 'clicked' ] );
-			
-			$noticetemplate =  new CPT( 
-				array( 
-					'post_type'=>'noticetemplate',
-					'description'=>'',
-					
-					'menu_icon'=>'admin-page', 
-					'hierarchical' => false,
-					'exclude_from_search' => true,
-					'supports' => array( 
-						'title', 
-						'editor', 
-						'comments', 
-						'author', 
-						'revisions' 
-					)
-				) 
-			);	
-			
-			$record =  new CPT( 
-				array( 
-					'post_type'=>'record',
-					'description'=>'',
-					
-					'menu_icon'=>'backup', 
-					'hierarchical' => false,
-					'exclude_from_search' => true,
-					'supports' => array( 
-						'title', 
-						'editor', 
-						'comments', 
-						'author', 
-						'revisions' 
-					)
-				) 
-			);		
-			$record->set_status( [ 'recorded' ] ); */
 			
 			//metaBoxes are temporarily disabled.
 			//add_filter( 'rwmb_meta_boxes', array( $this, 'set_meta_boxes') );

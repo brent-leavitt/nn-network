@@ -40,5 +40,5 @@ A secondary meta_data entry is stored for old or retired service tokens associat
 	
 Tokens do not represent Services themselves, like a patron's certificate or the library subscription service. 
 
-A patron certificate is a CPT which has a great deal of other data connected to it. Including number of payments received. 
+A patron certificate is a CPT which has a great deal of other data connected to it.
 	
