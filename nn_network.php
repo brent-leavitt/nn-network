@@ -1,14 +1,14 @@
 <?php 
 /*
-NN Network (Base File) Psuedo Code
-5 October 2018
+NN Network (Base File)
+20 Sep 2019
 -------------------
 
 // Description : This is the plugin root file for network. 
 
 /*
 Plugin Name: NN Network
-Plugin URI: https://tech.trainingdoulas.com//
+Plugin URI: https://tech.trainingdoulas.com/nn-network/
 Description: Plugin that encompasses all functions, classes and activities that are needed across the entire NN Network
 Version: 1.0
 Author: Brent Leavitt
