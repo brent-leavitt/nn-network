@@ -182,9 +182,14 @@ if( !class_exists( 'ShortCodes' ) ){
 				// set this to true so the CSS is loaded
 				//$nn_load_css = true;
 		 
-				$login = new Login();
+				//OLD $login = new Login();
+				$uforms = new UserForms();
 				
-				$output = $login->login_form_fields();
+				
+				//OLD $output = $login->login_form_fields();
+				
+				$output = $uforms->form( 'login' );
+				
 				
 /* 				$output = '<p>Testing this field!</p>'; */
 				
