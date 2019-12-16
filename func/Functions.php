@@ -28,7 +28,7 @@ function nn_format_data( $data, $source = '' ){
 
 
 /*
-	Name: nn_do_core_action
+	Name: nn_do_core_action (deprecated?) 
 	Description: This initiates the backend core processes 
 	Params: (string) $action, (array) $data
 */

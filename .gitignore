@@ -6,3 +6,8 @@ core/NN_.class.php
 core/sub/nb_net._.class.php
 misc/NN_.class.php
 init/NN_.class.php
+.phpunit.result.cache
+.phpcs.xml.dist
+.travis.yml
+bin
+lib/*
