@@ -23,8 +23,11 @@ namespace nn_network\init;
 if( !class_exists( 'Login' ) ){
 	class Login{
 
-	
-			
+		private $login,
+				$pass,
+				$nonce;
+				
+		private $prefix = 'nn_login_';
 		
 		//Methods
 		/*
@@ -35,7 +38,9 @@ if( !class_exists( 'Login' ) ){
 		
 		public function __construct(){			
 				
-			$this->init();
+			$this->login = $_POST( "nn_login_username" );
+			$this->pass = $_POST( "nn_login_password" );
+			$this->nonce = $_POST( "_nn_login_nonce" );
 			
 		}
 		
@@ -60,7 +65,7 @@ if( !class_exists( 'Login' ) ){
 	
 		public function do_login() {
 		 
-			if( isset( $_POST['nn_login_username'] ) && wp_verify_nonce( $_POST['_nn_login_nonce'], 'nn-login-nonce' ) ) {
+			if( isset( $this->login ) && wp_verify_nonce( $this->nonce, 'nn-login-nonce' ) ) {
 		 
 				// this returns the user ID and other info from the user name
 				$user = get_user_by( 'login', $_POST[ 'nn_login_username' ]);
