@@ -11,3 +11,5 @@ init/NN_.class.php
 .travis.yml
 bin
 lib/*
+vendor/*
+

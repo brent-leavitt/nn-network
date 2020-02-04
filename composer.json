@@ -1,0 +1,14 @@
+{
+    "require-dev": {
+        "phpunit/phpunit": "^8.5"
+    },
+    "require": {
+        "stripe/stripe-php": "^6.16",
+        "paypal/rest-api-sdk-php": "^1.14"
+    },
+	"autoload": {
+		"psr-4": {
+			"nn_network\\": "nn_network/"
+		}
+	}
+}

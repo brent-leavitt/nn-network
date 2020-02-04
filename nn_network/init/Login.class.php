@@ -18,7 +18,7 @@ namespace nn_network\init;
 //use proc\NNError as Error; 
 
 // Exit if accessed directly
-if ( !defined('ABSPATH')) exit;
+//if ( !defined('ABSPATH')) exit;
 	
 if( !class_exists( 'Login' ) ){
 	class Login{
